@@ -1,3 +1,178 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@layer utilities {
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #section-to-print,
+        #section-to-print * {
+            visibility: visible;
+        }
+        #section-to-print {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    }
+    @keyframes bounce-x {
+        0%,
+        100% {
+            transform: translateX(-25%);
+            animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+        }
+        50% {
+            transform: none;
+            animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+        }
+    }
+    .animate-bounce-x {
+        animation: bounce-x 1s infinite;
+    }
+    .svg-icon {
+        width: 1.5em;
+        height: 1.5em;
+    }
+    .svg-icon path,
+    .svg-icon polygon,
+    .svg-icon rect {
+        fill: #3c3c3c;
+    }
+    .svg-icon circle {
+        stroke: #3c3c3c;
+        stroke-width: 2;
+    }
+    .tab {
+        animation: zoomEffect 1s;
+    }
+    .modalzoom {
+        animation: zoomEffect 0.5s;
+    }
+    .modalzoomout {
+        visibility: hidden;
+        animation: zoomoutEffect 0.3s;
+    }
+    .fade-in {
+        animation: fadeIn 0.7s;
+    }
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            -webkit-transition: 1s ease;
+            transition: 1s ease;
+        }
+        to {
+            opacity: 100;
+        }
+    }
+    /* Go from zero to full opacity */
+    @keyframes zoomEffect {
+        from {
+            opacity: 0;
+            -webkit-transform: scale(0);
+            -ms-transform: scale(0);
+            transform: scale(0);
+            -webkit-transition: .1s ease;
+            transition: .1s ease;
+        }
+        to {
+            -webkit-transform: scale(1);
+            -ms-transform: scale(1);
+            transform: scale(1);
+        }
+    }
+    .vtab {
+        animation: fadeEffect 1s;
+    }
+    /* Go from zero to full opacity */
+    @keyframes fadeEffect {
+        from {
+            opacity: 0;
+            -webkit-transform: rotateY(50deg);
+            -ms-transform: rotateY(50deg);
+            transform: rotateY(50deg);
+            -webkit-transition: .1s ease;
+            transition: .1s ease;
+        }
+        to {
+            -webkit-transform: rotate(0deg);
+            -ms-transform: rotate(0deg);
+            transform: rotate(0deg);
+        }
+    }
+    @keyframes zoomoutEffect {
+        from {
+            -webkit-transform: scale(1);
+            -ms-transform: scale(1);
+            transform: scale(1);
+            -webkit-transition: .1s ease;
+            transition: .1s ease;
+        }
+        to {
+            opacity: 0;
+            -webkit-transform: scale(0);
+            -ms-transform: scale(0);
+            transform: scale(0);
+        }
+    }
+    /* width */
+     ::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+        position: relative;
+    }
+    /* Track */
+     ::-webkit-scrollbar-track {
+        border-radius: 100vh;
+        background: #edf2f7;
+        position: relative;
+    }
+    /* Handle */
+     ::-webkit-scrollbar-thumb {
+        background: #cbd5e0;
+        border-radius: 100vh;
+        border: 3px solid #edf2f7;
+        position: relative;
+    }
+    /* Handle on hover */
+     ::-webkit-scrollbar-thumb:hover {
+        background: #a0aec0;
+    }
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    /* Firefox */
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
+    .table-wrp {
+        max-height: 70vh;
+        overflow-y: auto;
+        display: block;
+    }
+    .max-h-0 {
+        max-height: 0;
+    }
+    .flickity-viewport {
+        height: 500px !important;
+    }
+}
+
+@layer components {
+    .table-wrp {
+        @apply max-h-screen overflow-y-auto block max-w-full;
+    }
+    .horizontal-btn {
+        @apply border-transparent text-gray-500 py-3 px-1 text-center font-semibold text-sm;
+    }
+    .horizontal-btn:hover {
+        @apply bg-lime-50 border border-lime-100;
+    }
+    .horizontal-btn-active {
+        @apply bg-lime-100 text-lime-600 border border-lime-200 w-full py-2 px-1 font-semibold text-sm;
+    }
+}
