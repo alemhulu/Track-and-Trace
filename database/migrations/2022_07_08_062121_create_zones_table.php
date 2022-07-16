@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\country;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,14 +14,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('woredas', function (Blueprint $table) {
+        Schema::create('zones', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('code')->nullable();
-            $table->unsignedBigInteger('region_id');
-            $table->unsignedBigInteger('country_id');
-            $table->unsignedBigInteger('zone_id')->nullable();
-            $table->unique(['name', 'region_id', 'country_id', 'zone_id']);
+            $table->boolean('is_subcity')->default(false);
+
+            $table->foreignId('region_id')->nullable()->constrained();
+            $table->foreignId('country_id')->nullable()->constrained();
+            
+            $table->unique(['name', 'region_id', 'country_id']);
             $table->timestamps();
         });
     }
@@ -32,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('woredas');
+        Schema::dropIfExists('zones');
     }
 };

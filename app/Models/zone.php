@@ -5,31 +5,14 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class zone extends Model
+class Zone extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
+    protected $fillable=[
+        'name',
         'code',
-        'is_subcity',
-        'region_id',
-        'country_id',
-        'name'
+        'is_sub_city',
+        'country_id'
     ];
-
-     public function woredas()
-    {
-        return $this->hasMany(woreda::class);
-    }
-
-    public function region()
-    {
-        return $this->belongsTo(region::class, 'region_id');
-    }
-
-    public function country()
-    {
-        return $this->belongsTo(country::class, 'country_id');
-    }
 }
-

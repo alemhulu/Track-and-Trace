@@ -23,9 +23,8 @@ return new class extends Migration
             $table->string('mobile');
             $table->string('contact_person_name');
             $table->string('contact_person_mobile');
-            $table->foreignId('country_id')->defualt('Ethiopia')->constrained();
-            $table->foreignId('city_id')->nullable()->constrained();
-            $table->foreignId('sub_city_id')->nullable()->constrained();
+            $table->string('contact_person_email');
+            $table->foreignId('country_id')->defualt('1')->constrained();
             $table->foreignId('region_id')->nullable()->constrained();
             $table->foreignId('zone_id')->nullable()->constrained();
             $table->foreignId('woreda_id')->nullable()->constrained();
