@@ -14,5 +14,5 @@ class Zone extends Model
         'code',
         'is_sub_city',
         'country_id'
-    ];
+    ]; 
 }

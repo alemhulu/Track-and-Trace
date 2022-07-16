@@ -13,5 +13,5 @@ class Region extends Model
         'code',
         'is_city',
         'country_id'
-    ];
+    ]; 
 }
