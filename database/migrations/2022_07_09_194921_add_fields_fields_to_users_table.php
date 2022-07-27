@@ -15,8 +15,12 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->foreignId('role_id')->nullable()->constrained();
-            $table->foreignId('grade_id')->nullable()->constrained();
-            $table->string('teacher_qualification')->nullable();
+            
+            $table->string('is_firtst_time')->default('0')->nullable();
+            $table->string('phone')->nullable();
+            $table->string('position')->default('0')->nullable();
+            
+            $table->foreignId('organization_id')->nullable()->constrained();
         });
     }
 

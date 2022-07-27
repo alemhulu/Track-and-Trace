@@ -17,9 +17,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('code')->nullable();
-            $table->unsignedBigInteger('region_id');
-            $table->unsignedBigInteger('country_id');
-            $table->unsignedBigInteger('zone_id')->nullable();
+
+            $table->foreignId('region_id')->default('1')->constrained();
+            $table->foreignId('country_id')->nullable()->constrained();
+            $table->foreignId('zone_id')->nullable()->constrained();
+            
             $table->unique(['name', 'region_id', 'country_id', 'zone_id']);
             $table->timestamps();
         });

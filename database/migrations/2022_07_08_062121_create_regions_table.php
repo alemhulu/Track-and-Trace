@@ -18,7 +18,9 @@ return new class extends Migration
             $table->string('name');
             $table->string('code')->nullable();
             $table->boolean('is_city')->default(false);
-            $table->unsignedBigInteger('country_id');
+
+            $table->foreignId('country_id')->defualt('1')->constrained();
+
             $table->unique(['name', 'country_id']);
             $table->timestamps();
         });
