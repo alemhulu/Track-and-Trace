@@ -9,10 +9,26 @@ class Zone extends Model
 {
     use HasFactory;
 
-    protected $fillable=[
-        'name',
+    protected $fillable = [
         'code',
+        'is_subcity',
         'region_id',
-        'is_sub_city'
+        'country_id',
+        'name'
     ];
+
+     public function woredas()
+    {
+        return $this->hasMany(woreda::class);
+    }
+
+    public function region()
+    {
+        return $this->belongsTo(region::class, 'region_id');
+    }
+
+    public function country()
+    {
+        return $this->belongsTo(country::class, 'country_id');
+    }
 }
