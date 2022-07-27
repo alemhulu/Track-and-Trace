@@ -9,8 +9,8 @@
             <a href="#" class="text-gray-600">{{ $title }}</a>
             <p class="text-gray-500 font-medium">
                 @isset($total)
-                {{ $total }}
-                @endisset {{__(' Total') }}
+                {{ $total }} {{__(' Total') }}
+                @endisset
             </p>
         </div>
         <div class="flex-shrink-0 pr-2">
