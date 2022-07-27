@@ -5,22 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Woreda extends Model
+class Kebele extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'name',
         'code',
+        'woreda_id',
         'zone_id',
         'region_id',
         'country_id',
     ];
 
-    public function kebeles()
+    public function woreda()
     {
-        return $this->hasMany(Kebele::class);
-    } 
+        return $this->belongsTo(woreda::class, 'woreda_id');
+    }   
 
     public function zone()
     {
