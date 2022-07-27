@@ -9,67 +9,46 @@
                 <div class=" hidden sm:flex flex-col text-left">
                     <div class="font-medium text-xs text-gray-500">FDRE</div>
                     <div class="font-medium text-xs text-gray-500">Ministry of Education</div>
-                    <div class="font-semibold text-gray-700 leading-tight">Track And Trace
+                    <div class="font-semibold text-gray-700 leading-tight">Track & Trace
                     </div>
                 </div>
             </div>
+
+            <div class="w-full h-2 mt-2 flex">
+                <div class="bg-yellow-400 h-full w-3/12"></div>
+                <div class="bg-red-600 h-full w-4/12"></div>
+                <div class="bg-blue-600 h-full w-2/12"></div>
+                <div class="bg-blue-700 h-full w-3/12"></div>
+            </div>
+
             <div class="mt-5 flex-1 flex flex-col">
                 <nav class="flex-1 px-2 pb-4 space-y-1">
+                    <x-side-navigation.link href="/dashboard" icon="fi-rr-dashboard" name="Dashboard"
+                        :active="request()->routeIs('dashboard')" />
 
-                    <a href="/dashboard"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-semibold rounded-md">
-                        <i class="fi fi-rr-dashboard mr-3 flex text-2xl z-10 py-1"></i>
-                        Dashboard
-                    </a>
+                    <x-side-navigation.link href="/location" icon="fi-rr-map-marker-home" name="Location"
+                        :active="request()->routeIs('location')" />
 
-                    <a href="/location"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-semibold rounded-md">
-                        <i class="fi fi-rr-map-marker-home mr-3 flex text-2xl z-10 py-1"></i>
-                        Location
-                    </a>
+                    <x-side-navigation.link href="/organization" icon="fi-rr-building " name="Organization"
+                        :active="request()->routeIs('organization')" />
 
-                    <a href="/organization"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-semibold rounded-md">
-                        <i class="fi fi-rr-building mr-3 flex text-2xl z-10 py-1"></i>
-                        Organization
-                    </a>
+                    <x-side-navigation.link href="/warehouse" icon="fi-rr-home-location-alt " name="Warehouse"
+                        :active="request()->routeIs('warehouse')" />
 
-                    <a href="/warehouse"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-semibold rounded-md">
-                        <i class="fi fi-rr-home-location-alt mr-3 flex text-2xl z-10 py-1"></i>
-                        Warehouse
-                    </a>
+                    <x-side-navigation.link href="/book" icon="fi-rr-book" name="Book"
+                        :active="request()->routeIs('book')" />
 
-                    <a href="/book"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-semibold rounded-md">
-                        <i class="fi fi-rr-book mr-3 flex text-2xl z-10 py-1"></i>
-                        Book
-                    </a>
+                    <x-side-navigation.link href="/print-order" icon="fi-rr-print" name="Print Order"
+                        :active="request()->routeIs('print-order')" />
 
-                    <a href="/print-order"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-semibold rounded-md">
-                        <i class="fi fi-rr-print mr-3 flex text-2xl z-10 py-1"></i>
-                        Print Order
-                    </a>
+                    <x-side-navigation.link href="/route" icon="fi-rr-chart-tree" name="Route"
+                        :active="request()->routeIs('route')" />
 
-                    <a href="/route"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-semibold rounded-md">
-                        <i class="fi fi-rr-chart-tree mr-3 flex text-2xl z-10 py-1"></i>
-                        Route
-                    </a>
+                    <x-side-navigation.link href="/distribution" icon="fi-rr-truck-side" name="Distribution"
+                        :active="request()->routeIs('distribution')" />
 
-                    <a href="/distribution"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-semibold rounded-md">
-                        <i class="fi fi-rr-truck-side mr-3 flex text-2xl z-10 py-1"></i>
-                        Distribution
-                    </a>
-
-                    <a href="/trace"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-semibold rounded-md">
-                        <i class="fi fi-rr-paw mr-3 flex text-2xl z-10 py-1"></i>
-                        Trace
-                    </a>
-
+                    <x-side-navigation.link href="/trace" icon="fi-rr-paw" name="Trace"
+                        :active="request()->routeIs('trace')" />
                 </nav>
             </div>
         </div>
