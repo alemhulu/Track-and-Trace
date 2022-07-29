@@ -2,7 +2,7 @@
 <x-data-table.tr>
     <td class="" colspan="{{ $colspan }}">
         <button type="button"
-            class="relative block w-full  rounded-lg p-5 text-center hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+            class="relative block w-full  rounded-lg p-5 text-center hover:border-gray-400 focus:outline-none">
             <svg class="mx-auto h-8 w-8 text-gray-400" xmlns="http://www.w3.org/2000/svg" stroke="currentColor"
                 fill="none" viewBox="0 0 48 48" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
