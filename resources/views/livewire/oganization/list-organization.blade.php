@@ -103,7 +103,7 @@
                 </td>
             </x-data-table.tr>
             @empty
-            <x-data-table.empty colspan=4 />
+            <x-data-table.empty colspan=6 />
             @endforelse
         </x-slot>
     </x-form.table>
