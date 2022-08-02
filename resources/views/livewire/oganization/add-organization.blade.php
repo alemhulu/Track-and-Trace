@@ -1,6 +1,7 @@
 <x-form.card function="addOrganization" title="Add New Organization">
     <form class=" space-y-8 divide-y divide-gray-200">
         <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
+            {{-- Basic Profile information --}}
             <div>
                 <div>
                     <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -72,6 +73,7 @@
                 </div>
             </div>
 
+            {{-- Contact Person Information --}}
             <div class="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
                 <div>
                     <h3 class="text-lg leading-6 font-medium text-gray-900">
@@ -84,14 +86,6 @@
                 <div class="space-y-6 sm:space-y-5">
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                         <x-jet-label value="Name" />
-                        <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-jet-input type="text" name="username" id="username" autocomplete="username"
-                                class="max-w-xl" />
-                        </div>
-                    </div>
-
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
-                        <x-jet-label value="Phone" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
                             <x-jet-input type="text" name="username" id="username" autocomplete="username"
                                 class="max-w-xl" />
