@@ -14,11 +14,11 @@
         </x-page.nav>
 
         <div id="List" class="mt-6  tab mb-6" style="display:none; ">
-            {{-- <livewire:oganization.list-organization> --}}
+            <livewire:book.list-book>
         </div>
 
         <div id="AddBook" class="mt-6  tab mb-6" style="display:none; ">
-            {{-- <livewire:oganization.add-organization> --}}
+            <livewire:book.add-book>
         </div>
 
         <div id="BookSettings" class="mt-6  tab mb-6" style="display:none; ">
