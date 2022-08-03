@@ -7,7 +7,7 @@
 
     <div class="mb-6">
         <x-page.nav col='3'>
-            <x-page.nav-link class="bg-yellow-500" title="List" tabLink="List" icon="fi fi-rr-list" total="0" />
+            <x-page.nav-link class="bg-yellow-500" title="List" tabLink="List" icon="fi fi-rr-book" total="0" />
             <x-page.nav-link class="bg-yellow-600" title="Add Book" tabLink="AddBook" icon="fi fi-rr-plus" />
             <x-page.nav-link class="bg-yellow-700" title="Book Settings" tabLink="BookSettings" icon="fi fi-rr-settings"
                 total="5" />
