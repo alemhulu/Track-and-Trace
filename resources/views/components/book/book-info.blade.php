@@ -1,6 +1,6 @@
 @props(['image', 'grade', 'subject', 'type', 'edition', 'ISBN'])
 <div class="flex items-center">
-    <div class="flex-shrink-0 h-48 w-32 bg-cover bg-center rounded" style="background-image: url('{{ $image }}')">
+    <div class="flex-shrink-0 h-40 w-24 bg-cover bg-center rounded" style="background-image: url('{{ $image }}')">
     </div>
     <div class="ml-4">
         <div class="text-md font-semibold text-gray-600">

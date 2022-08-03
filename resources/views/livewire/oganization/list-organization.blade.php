@@ -18,83 +18,21 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="flex items-center">
-                        <div class="flex-shrink-0 h-16 w-16">
-                            <img class="h-16 w-16 rounded-lg"
-                                src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=4&w=256&h=256&q=60"
-                                alt="">
-                        </div>
-                        <div class="ml-4">
-                            <div class="text-sm font-medium text-gray-700">
-                                Name
-                            </div>
-                            <div class="text-sm text-gray-500">
-                                jane.cooper@example.com
-                            </div>
-                            <div class="text-sm text-gray-500">
-                                0987654321
-                            </div>
-                        </div>
-                    </div>
+                    <x-organization.info image="logom.png" name="Ministry of Education" email="mail@ministry.com"
+                        phone="0987654321" />
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="flex items-center">
-                        <div class="text-xs text-gray-500">
-                            <div class="">
-                                Country
-                            </div>
-                            <div class="">
-                                Region / City
-                            </div>
-                            <div class="">
-                                Zone / Sub-city
-                            </div>
-                        </div>
-                        <div class="ml-4 text-sm font-medium text-gray-700">
-                            <div class="">
-                                Ethiopia
-                            </div>
-                            <div class="">
-                                Addis Ababa
-                            </div>
-                            <div class="">
-                                Yeka
-                            </div>
-                        </div>
-                    </div>
+                    <x-organization.location country="Ethiopia" region="Addis Ababa" zone="Arada" />
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="flex items-center">
-                        <div class="text-xs text-gray-500">
-                            <div class="">
-                                Name
-                            </div>
-                            <div class="">
-                                Email
-                            </div>
-                            <div class="">
-                                Phone
-                            </div>
-                        </div>
-                        <div class="ml-4 text-sm font-medium text-gray-700">
-                            <div class="">
-                                Jane Cooper
-                            </div>
-                            <div class="">
-                                jane.cooper@example.com
-                            </div>
-                            <div class="">
-                                0987654321
-                            </div>
-                        </div>
-                    </div>
+                    <x-organization.contact name="Abebe Kebede" email="abe@kebede.com" phone="0987654312" />
                 </td>
 
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">
-                        Org Type
+                <td class=" px-5 py-2 whitespace-nowrap">
+                    <div class="text-sm font-semibold text-gray-500">
+                        Organization
                     </div>
                 </td>
 

@@ -5,7 +5,7 @@
             <x-data-table.th scope="col"> {{__('Book') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Book Standards') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Book File') }}</x-data-table.th>
-            <x-data-table.th scope="col"> {{__('Created At') }}</x-data-table.th>
+            <x-data-table.th scope="col"> {{__('Copies') }}</x-data-table.th>
             <x-data-table.th scope="col" class="sr-only">{{__('Action') }}</x-data-table.th>
         </x-slot>
 
@@ -32,7 +32,7 @@
 
                 <td class="px-5 py-2 whitespace-nowrap">
                     <div class="text-md font-semibold text-gray-500">
-                        Aug 14, 2013
+                        14,2013 copies
                     </div>
                 </td>
 
@@ -49,7 +49,7 @@
                 <td class="px-5 py-2 whitespace-nowrap">
                     <x-book.book-info
                         image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO4PF0UBFIlAShsDV_dJAqaXPUMuSHLAT-bcp6nyF52wSILxHhmiXOjB2ZYb8Vri76pbI&usqp=CAU"
-                        grade="Grade 12" subject="Physics" type="Student Text Book" edition="1st Edition 2011"
+                        grade="Grade 12" subject="Physics" type="Student Text Book" edition="2nd Edition 2011"
                         ISBN="4820715" />
                 </td>
 
@@ -62,8 +62,8 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-md font-semibold text-gray-500">
-                        Jun 27, 2013
+                    <div class="text-md font-semibold text-gray-500 lining-nums">
+                        50,500 copies
                     </div>
                 </td>
 
