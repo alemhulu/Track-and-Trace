@@ -32,7 +32,7 @@
 
                 <td class="px-5 py-2 whitespace-nowrap">
                     <div class="text-md font-semibold text-gray-500">
-                        Jun 14, 2013
+                        Aug 14, 2013
                     </div>
                 </td>
 
@@ -49,7 +49,7 @@
                 <td class="px-5 py-2 whitespace-nowrap">
                     <x-book.book-info
                         image="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTO4PF0UBFIlAShsDV_dJAqaXPUMuSHLAT-bcp6nyF52wSILxHhmiXOjB2ZYb8Vri76pbI&usqp=CAU"
-                        grade="Grade 12" subject="Physics" type="Student Text Book" edition="1st Edition 2013"
+                        grade="Grade 12" subject="Physics" type="Student Text Book" edition="1st Edition 2011"
                         ISBN="4820715" />
                 </td>
 
