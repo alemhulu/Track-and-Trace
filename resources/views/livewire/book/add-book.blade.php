@@ -77,13 +77,6 @@
                 </div>
 
                 <div class="space-y-6 sm:space-y-5">
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                        <x-jet-label value="Font" />
-                        <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-jet-input type="text" name="font" id="font" class="max-w-xl" />
-                        </div>
-                    </div>
-
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                         <x-jet-label value="Print Type" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">

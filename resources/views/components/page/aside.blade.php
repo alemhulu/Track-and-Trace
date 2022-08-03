@@ -4,8 +4,8 @@
     <div class="border-b border-gray-200 mb-2 py-1 sm:px-4">
         <div class="flex justify-between items-center flex-wrap py-1">
             <header class="flex-shrink-0">
-                <div class="py-1  ">
-                    <h2 class="font-semibold text-lg text-lime-800 leading-tight">
+                <div class="py-2">
+                    <h2 class="font-semibold text-lg text-lime-800">
                         {{ $title }}
                 </div>
             </header>

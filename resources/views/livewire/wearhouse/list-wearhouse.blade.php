@@ -6,6 +6,7 @@
             <x-data-table.th scope="col"> {{__('Description') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Organization') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Conact Person') }}</x-data-table.th>
+            <x-data-table.th scope="col"> {{__('Stores') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Books In Wearhouse') }}</x-data-table.th>
             <x-data-table.th scope="col" class="sr-only">{{__('Action') }}</x-data-table.th>
         </x-slot>
@@ -37,7 +38,11 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-lg text-gray-600 font-semibold">2000</div>
+                    <div class="text-lg text-gray-600 font-semibold">5</div>
+                </td>
+
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <div class="text-lg text-gray-600 font-semibold">200K+</div>
                 </td>
 
                 <td class="px-5 py-2">

@@ -8,6 +8,25 @@
                 <x-jet-input-error for="name" alert="Grade Name" />
             </div>
 
+
+            <div>
+                <x-jet-label for="departmentIds">
+                    Subject <span class="text-gray-400"> / Select One or More</span>
+                </x-jet-label>
+                <div class="mt-1 grid grid-cols-10 gap-2 p-4 border border-lime-500 rounded-md font-semibold">
+                    <x-form.multi-check-box name="Biology" model="subjectId" value='1' />
+                    <x-form.multi-check-box name="Chemistry" model="subjectId" value='1' />
+                    <x-form.multi-check-box name="Maths" model="subjectId" value='1' />
+                    <x-form.multi-check-box name="Physics" model="subjectId" value='1' />
+                    <x-form.multi-check-box name="English" model="subjectId" value='1' />
+                    <x-form.multi-check-box name="Amharic" model="subjectId" value='1' />
+                    <x-form.multi-check-box name="Civic" model="subjectId" value='1' />
+                    <x-form.multi-check-box name="History" model="subjectId" value='1' />
+                    <x-form.multi-check-box name="Geography" model="subjectId" value='1' />
+                    <x-form.multi-check-box name="ICT" model="subjectId" value='1' />
+                </div>
+            </div>
+
             <div>
                 <x-jet-label for="code" value="{{ __('Code') }}" />
                 <x-jet-input type="text" wire:model.defer="code" placeholder="Type Code" />
@@ -27,6 +46,7 @@
         <x-slot name="tableHeaders">
             <x-data-table.th scope="col">#</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Name') }}</x-data-table.th>
+            <x-data-table.th scope="col"> {{__('Subject') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Code') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Description') }}</x-data-table.th>
             <x-data-table.th scope="col" class="sr-only">{{__('Action') }}</x-data-table.th>
@@ -46,6 +66,10 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">{{$record->subject}}</div>
+                </td>
+
+                <td class="px-5 py-2 whitespace-nowrap">
                     <div class="text-sm text-gray-900">{{$record->code}}</div>
                 </td>
 
@@ -59,11 +83,11 @@
                 </td>
             </x-data-table.tr>
             @empty
-            <x-data-table.empty colspan=5 />
+            <x-data-table.empty colspan=6 />
             @endforelse
         </x-slot>
         {{-- {{$grades->links()}} --}}
     </x-form.table>
 
-    <livewire:book.grade.edit-grade>
+    {{-- <livewire:book.grade.edit-grade> --}}
 </div>
