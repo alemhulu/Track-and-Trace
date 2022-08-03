@@ -5,11 +5,5 @@
         </h2>
     </x-slot>
 
-    <div class="">
-        <div class="w-auto">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-
-            </div>
-        </div>
-    </div>
+    <livewire:wearhouse.list-wearhouse>
 </x-app-layout>
