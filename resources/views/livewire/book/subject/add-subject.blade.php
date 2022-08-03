@@ -3,16 +3,6 @@
     <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white sm:rounded-md">
         <x-form.card function="addSubject" title="Add New Subject">
             <div>
-                <x-jet-label for="grade_id" value="{{ __('Grade') }}" />
-                <x-form.select wire:model="grade_id" id="grade_id" class="max-w-full">
-                    <option>Grade</option>
-                    <option>Grade 8</option>
-                    <option>Grade 10</option>
-                </x-form.select>
-                <x-jet-input-error for="grade_id" alert="Grade" />
-            </div>
-
-            <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
                 <x-jet-input type="text" wire:model.defer="name" placeholder="Subject Name" />
                 <x-jet-input-error for="name" alert="Subject Name" />

@@ -53,7 +53,7 @@
         </x-form.card>
     </aside>
 
-    <x-form.table title="Country List">
+    <x-form.table title="Kebele List">
         <x-slot name="tableHeaders">
             <x-data-table.th scope="col">#</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Kebele') }}</x-data-table.th>

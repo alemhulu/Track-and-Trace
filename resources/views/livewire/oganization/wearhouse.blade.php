@@ -13,6 +13,17 @@
             </div>
 
             <div>
+                <x-jet-label for="user_id" value=" {{__('Assign user')}}" />
+                <x-form.select wire:model="user_id" id="user_id">
+                    <option value=""> {{__('select user')}}</option>
+                    {{-- @foreach ($oganizations as $oganization)
+                    <option value="{{ $oganization->id }}">{{ $oganization->name }}</option>
+                    @endforeach --}}
+                </x-form.select>
+                <x-jet-input-error for="organizaton_id" alert="Select Oganization" />
+            </div>
+
+            <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
                 <x-jet-input type="text" wire:model.defer="name" placeholder="Type Wearhouse Name"
                     class="block w-full" />
@@ -34,6 +45,7 @@
             <x-data-table.th scope="col">#</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Name') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Description') }}</x-data-table.th>
+            <x-data-table.th scope="col"> {{__('Assigned User') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Organization') }}</x-data-table.th>
             <x-data-table.th scope="col" class="sr-only">{{__('Action') }}</x-data-table.th>
         </x-slot>
@@ -52,12 +64,17 @@
 
                 <td class="px-5 py-2 whitespace-nowrap">
                     <div class="text-sm text-gray-700">
-                        {{$record->is_city == 1 ? 'City' : 'Region'}}
+                        {{$record->decription == 1 ? 'City' : 'Region'}}
                     </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">{{$record->Country->name}}</div>
+                    <x-organization.contact name="Abebe Kebede" email="abe@kebede.com" phone="0987654312" />
+                </td>
+
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <x-organization.info image="logom.png" name="Ministry of Education" email="mail@ministry.com"
+                        phone="0987654321" />
                 </td>
 
                 <td class="px-5 py-2">

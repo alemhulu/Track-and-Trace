@@ -16,7 +16,7 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                         <x-jet-label value="Type" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-form.select wire:model="country_id" id="country_id" class="max-w-md">
+                            <x-form.select wire:model="type_id" id="type_id" class="max-w-md">
                                 <option>Organazation</option>
                                 <option>School</option>
                                 <option>Campany</option>
@@ -27,15 +27,14 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                         <x-jet-label value="Name" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-jet-input type="text" name="username" id="username" autocomplete="username"
-                                class="max-w-xl" />
+                            <x-jet-input type="text" name="name" id="name" placeholder="name" class="max-w-xl" />
                         </div>
                     </div>
 
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                         <x-jet-label value="Email" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-jet-input type="text" name="username" id="username" autocomplete="username"
+                            <x-jet-input type="text" name="email" id="email" placeholder="example@example.com"
                                 class="max-w-xl" />
                         </div>
                     </div>
@@ -43,7 +42,7 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                         <x-jet-label value="Telephone" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-jet-input type="text" name="username" id="username" autocomplete="username"
+                            <x-jet-input type="text" name="telephone" id="telephone" placeholder="0115456790"
                                 class="max-w-xl" />
                         </div>
                     </div>
@@ -51,8 +50,16 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                         <x-jet-label value="Mobile phone" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-jet-input type="text" name="username" id="username" autocomplete="username"
+                            <x-jet-input type="text" name="phone" id="phone" placeholder="0912345678"
                                 class="max-w-xl" />
+                        </div>
+                    </div>
+
+                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
+                        <x-jet-label value="Website" />
+                        <div class="mt-1 sm:mt-0 sm:col-span-2">
+                            <x-jet-input type="url" name="website" id="website" placeholder="http://example.com"
+                                class=" max-w-xl" />
                         </div>
                     </div>
 
@@ -85,26 +92,13 @@
                 </div>
                 <div class="space-y-6 sm:space-y-5">
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                        <x-jet-label value="Name" />
+                        <x-jet-label value="Assign User" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-jet-input type="text" name="username" id="username" autocomplete="username"
-                                class="max-w-xl" />
-                        </div>
-                    </div>
-
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
-                        <x-jet-label value="Phone" />
-                        <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-jet-input type="text" name="username" id="username" autocomplete="username"
-                                class="max-w-xl" />
-                        </div>
-                    </div>
-
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
-                        <x-jet-label value="Email" />
-                        <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-jet-input type="text" name="username" id="username" autocomplete="username"
-                                class="max-w-xl" />
+                            <x-form.select wire:model="user_id" id="user_id" class="max-w-md">
+                                <option>select user</option>
+                                <option>user 1</option>
+                                <option>user 2</option>
+                            </x-form.select>
                         </div>
                     </div>
                 </div>
@@ -134,7 +128,7 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                         <x-jet-label value="Region / City" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-form.select wire:model="country_id" id="country_id" class="max-w-md">
+                            <x-form.select wire:model="region_id" id="region_id" class="max-w-md">
                                 <option>Organazation</option>
                                 <option>School</option>
                                 <option>Campany</option>
@@ -145,7 +139,7 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                         <x-jet-label value="Zone / Sub-City" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-form.select wire:model="country_id" id="country_id" class="max-w-md">
+                            <x-form.select wire:model="zone_id" id="zone_id" class="max-w-md">
                                 <option>Organazation</option>
                                 <option>School</option>
                                 <option>Campany</option>
@@ -156,7 +150,7 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                         <x-jet-label value="Kebele" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-form.select wire:model="country_id" id="country_id" class="max-w-md">
+                            <x-form.select wire:model="kebele_id" id="kebele_id" class="max-w-md">
                                 <option>Organazation</option>
                                 <option>School</option>
                                 <option>Campany</option>
