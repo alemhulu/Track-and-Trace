@@ -118,7 +118,7 @@
                             file:rounded-lg file:border-0
                             file:text-sm file:font-semibold
                             file:bg-blue-50 file:text-blue-700
-                            hover:file:bg-blue-100 file:focus:ring-0 file:focus:border-lime-200" />
+                            hover:file:bg-blue-100 file:focus:ring-0 file:focus:border-lime-200 " />
                         </div>
                     </div>
 
@@ -130,7 +130,7 @@
                                     <img src="" alt="" srcset=""
                                         class=" h-48 w-32 border-dashed border-gray-200 rounded bg-cover">
                                     <label for="front"
-                                        class="mt-4 py-1 px-4 text-center bg-blue-50 w-32 text-blue-700 rounded text-sm font-semibold">Choose
+                                        class="mt-4 py-2 px-4 text-center bg-blue-50 w-32 text-blue-700 rounded-lg text-sm font-semibold hover:bg-blue-100 shadow-xl shadow-blue-100">Choose
                                         Front</label>
                                     <x-jet-input type="file" name="font" id="front" class="hidden" />
                                 </div>
@@ -139,7 +139,7 @@
                                     <img src="" alt="" srcset=""
                                         class="h-48 w-32 border-dashed border-gray-200 rounded bg-cover">
                                     <label for="back"
-                                        class="mt-4 py-1 px-4 text-center bg-blue-50 w-32 text-blue-700 rounded text-sm font-semibold">Choose
+                                        class="mt-4 py-2 px-4 text-center bg-blue-50 w-32 text-blue-700 rounded-lg text-sm font-semibold hover:bg-blue-100 shadow-xl shadow-blue-100">Choose
                                         Back</label>
                                     <x-jet-input type="file" name="font" id="back" class="hidden" />
                                 </div>
