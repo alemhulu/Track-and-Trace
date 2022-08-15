@@ -26,11 +26,11 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        Gate::define('manage-users', function (User $user) {
-            return $user->role_id == 1;
-        });
-        Gate::define('manage-courses', function (User $user) {
-            return $user->role_id == 3;
-        });
+         // Implicitly grant "Super-Admin" role all permission checks using can()
+       Gate::before(function ($user, $ability) {
+        if ($user->hasRole('Super-Admin')) {
+            return true;
+        }
+    });
     }
 }

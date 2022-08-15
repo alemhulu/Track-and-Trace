@@ -29,12 +29,19 @@
                 <!-- Page Heading -->
                 @if (isset($header))
                 <header class="bg-white shadow mx-3 rounded-lg">
-                    <div class="mx-auto py-6 px-4 sm:px-6 lg:px-8 horizontal-btn-active rounded-lg">
+                    <div class="mx-auto py-6 px-4 sm:px-6 lg:px-8 rounded-lg flex justify-between items-center">
                         {{ $header }}
+                        @if (isset($actionButton))
+                        <div class="flex justify-between gap-3">
+                            {{ $actionButton }}
+                        </div>
+                        @endif
                     </div>
                 </header>
                 <!-- Page Content -->
                 <main class="m-3">
+                    <x-validation-errors />
+                    <x-session-messages />
                     {{ $slot }}
                 </main>
                 @endif
