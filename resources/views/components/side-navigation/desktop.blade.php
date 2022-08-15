@@ -26,6 +26,12 @@
                     <x-side-navigation.link href="/dashboard" icon="fi-rr-dashboard" name="Dashboard"
                         :active="request()->routeIs('dashboard')" />
 
+                    <x-side-navigation.link href="{{ route('users.index') }}" icon="fi-rr-user" name="Users"
+                        :active="request()->routeIs('users')" />
+
+                    <x-side-navigation.link href="{{ route('roles.index') }}" icon="fi-rr-key" name="Roles"
+                        :active="request()->routeIs('roles')" />
+
                     <x-side-navigation.link href="/location" icon="fi-rr-map-marker-home" name="Location"
                         :active="request()->routeIs('location')" />
 

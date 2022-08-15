@@ -33,7 +33,6 @@ class CreateNewUser implements CreatesNewUsers
             'password' => Hash::make($input['password']),
             'grade_id' => $input['grade_id'] ?? Null,
             'teacher_qualification' => $input['teacher_qualification'] ?? Null,
-            'role_id' => $input['role_id'] ?? Null
         ]);
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,15 +30,9 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/distribution', function () { return view('main.distribution.index'); })->name('distribution');
     Route::get('/trace', function () { return view('main.trace.index'); })->name('trace');
 
-    Route::group(['prefix' => 'student', 'as' => 'student.'], function() {
-        Route::resource('lessons', \App\Http\Controllers\Students\LessonController::class);
-    });
+    Route::resource('roles', RoleController::class);
+    Route::resource('users', UserController::class);
 
-   Route::group(['prefix' => 'teacher', 'as' => 'teacher.'], function() {
-       Route::resource('courses', \App\Http\Controllers\Teachers\CourseController::class);
-   });
-   
-    Route::group([ 'prefix' => 'admin', 'as' => 'admin.'], function() {
-        Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
-    });
+
+
 });
