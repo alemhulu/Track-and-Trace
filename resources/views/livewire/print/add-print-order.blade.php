@@ -26,11 +26,11 @@
                         <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                             <x-jet-label value="Package QR code" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
-                                <div class="grid grid-cols-2 gap-5">
+                                <div class="grid sm:grid-cols-2 gap-5">
                                     <div class="col-span-1">
                                         <x-jet-label value="Start" />
                                         <span
-                                            class="relative flex mt-1 text-lg rounded-md border py-2 px-4 text-gray-600 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50">
+                                            class=" flex sm:mt-1 text-lg rounded-md border py-2 px-4 text-gray-500 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50">
                                             0000000000001
                                             {{-- <i class="absolute right-2 top-3  fi fi-rr-hastag"></i> --}}
                                         </span>
@@ -39,7 +39,7 @@
                                     <div class="col-span-1">
                                         <x-jet-label value="End" />
                                         <span
-                                            class="flex mt-1 text-lg rounded-md border py-2 px-4 text-gray-600 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50">
+                                            class="flex sm:mt-1 text-lg rounded-md border py-2 px-4 text-gray-500 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50">
                                             0000000001000
                                         </span>
                                     </div>
@@ -50,11 +50,11 @@
                         <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                             <x-jet-label value="Book Barcode" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
-                                <div class="grid grid-cols-2 gap-5">
+                                <div class="grid sm:grid-cols-2 gap-5">
                                     <div class="col-span-1">
                                         <x-jet-label value="Start" />
                                         <span
-                                            class="flex mt-1 text-lg rounded-md border py-2 px-4 text-gray-600 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50">
+                                            class="flex sm:mt-1 text-lg rounded-md border py-2 px-4 text-gray-500 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50">
                                             11010203010001
                                         </span>
                                     </div>
@@ -62,7 +62,7 @@
                                     <div class="col-span-1">
                                         <x-jet-label value="End" />
                                         <span
-                                            class="flex mt-1 text-lg rounded-md border py-2 px-4 text-gray-600 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50">
+                                            class="flex sm:mt-1 text-lg rounded-md border py-2 px-4 text-gray-500 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50">
                                             11010203019001
                                         </span>
                                     </div>
@@ -110,10 +110,10 @@
                         <div
                             class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                             <x-jet-label value="Select Books" />
-                            <div class="mt-1 sm:mt-0 sm:col-span-2 grid grid-cols-2 gap-5">
+                            <div class="mt-1 sm:mt-0 col-span-2 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5 ">
                                 <div>
                                     <x-jet-label value="Student Text Book" />
-                                    <x-form.select wire:model="user_id" id="user_id" class="max-w-md">
+                                    <x-form.select wire:model="user_id" id="user_id" class="mt-0 max-w-md">
                                         <option>select subject</option>
                                         <option>Biology</option>
                                         <option>English</option>
@@ -122,7 +122,7 @@
 
                                 <div>
                                     <x-jet-label value="Teacher Guide Books" />
-                                    <x-form.select wire:model="user_id" id="user_id" class="max-w-md">
+                                    <x-form.select wire:model="user_id" id="user_id" class="mt-0 max-w-md">
                                         <option>select subject</option>
                                         <option>Biology</option>
                                         <option>English</option>
@@ -159,7 +159,7 @@
                         <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                             <x-jet-label value="Number of Copies" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
-                                <div class="grid grid-cols-2 gap-5">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                                     <div class="col-span-1">
                                         <x-jet-label value="Student Text Books" />
                                         <x-jet-input type="number" @class(['max-w-md'])
