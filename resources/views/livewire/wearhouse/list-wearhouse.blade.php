@@ -1,4 +1,38 @@
 <div>
+    <section class="bg-white rounded-lg">
+        <div class="max-w-screen-xl px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
+            <div class="mt-4">
+                <dl class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
+                        <dt class="order-last text-lg font-medium text-gray-500">
+                            Total Wearhouses
+                        </dt>
+
+                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">
+                            700
+                        </dd>
+                    </div>
+
+                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
+                        <dt class="order-last text-lg font-medium text-gray-500">
+                            Total Stores
+                        </dt>
+
+                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">2.4K</dd>
+                    </div>
+
+                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
+                        <dt class="order-last text-lg font-medium text-gray-500">
+                            Total Books in Stores
+                        </dt>
+
+                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">2.1M</dd>
+                    </div>
+                </dl>
+            </div>
+        </div>
+    </section>
+
     <x-form.table title="Wearhouse List">
         <x-slot name="tableHeaders">
             <x-data-table.th scope="col">#</x-data-table.th>
