@@ -55,6 +55,12 @@
 
                     <x-side-navigation.link href="/trace" icon="fi-rr-paw" name="Trace"
                         :active="request()->routeIs('trace')" />
+
+                    @can('view-logs')
+                    <x-side-navigation.link href="/log-viewer" icon="fi-rr-info" name="LOG"
+                        :active="request()->routeIs('log-viewer')" />
+                    @endcan
+
                 </nav>
             </div>
         </div>

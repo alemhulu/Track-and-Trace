@@ -37,25 +37,28 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'org-publish']);
         Permission::create(['name' => 'org-unpublish']);
 
-          // Role permissions
-          Permission::create(['name' => 'role-list']);
-          Permission::create(['name' => 'role-create']);
-          Permission::create(['name' => 'role-edit']);
-          Permission::create(['name' => 'role-delete']);
+        // Role permissions
+        Permission::create(['name' => 'role-list']);
+        Permission::create(['name' => 'role-create']);
+        Permission::create(['name' => 'role-edit']);
+        Permission::create(['name' => 'role-delete']);
 
-            // Settings permissions
-            Permission::create(['name' => 'location-list']);
-            Permission::create(['name' => 'location-create']);
-            Permission::create(['name' => 'location-edit']);
-            Permission::create(['name' => 'location-delete']);
+        // Settings permissions
+        Permission::create(['name' => 'location-list']);
+        Permission::create(['name' => 'location-create']);
+        Permission::create(['name' => 'location-edit']);
+        Permission::create(['name' => 'location-delete']);
 
-             // Contact messages permissions
-            Permission::create(['name' => 'book-list']);
-            Permission::create(['name' => 'book-show']);
-            Permission::create(['name' => 'book-edit']);
-            Permission::create(['name' => 'book-update']);    
-            Permission::create(['name' => 'book-delete']);
+            // Contact messages permissions
+        Permission::create(['name' => 'book-list']);
+        Permission::create(['name' => 'book-show']);
+        Permission::create(['name' => 'book-edit']);
+        Permission::create(['name' => 'book-update']);    
+        Permission::create(['name' => 'book-delete']);
 
+        // Log viewer permissions
+        Permission::create(['name' => 'view-logs']);
+            
         // create roles and assign existing permissions
         $role1 = Role::create(['name' => 'Org-Manager']);
         $role1->givePermissionTo('book-list');
