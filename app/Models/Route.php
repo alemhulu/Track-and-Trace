@@ -8,4 +8,17 @@ use Illuminate\Database\Eloquent\Model;
 class Route extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'name',
+        'from_wearhouse',
+        'to_wearhouse',
+        'description',
+        'is_active',
+    ];
+
+    public function steps()
+    {
+        return $this->hasMany(DistributionSteps::class);
+    }
 }

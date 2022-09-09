@@ -1,6 +1,12 @@
-@props(['id', 'view', 'edit', 'delete'])
+@props(['id', 'view', 'edit', 'delete', 'add', 'text'=>'Add'])
 
 @php
+$btn = "flex justify-center items-center px-2 py-1.5 transition
+delay-75 ease-out transform hover:-translate-y-0.5 hover:scale-105 gap-1 border rounded-full
+border border-blue-600 hover:bg-blue-500 mx-2 border-opacity-40 hover:text-white
+active:bg-blue-600 active:hover:scale-110 focus:scale-105 focus:-translate-y-0.5 focus:text-lime-900
+focus:bg-blue-400 font-bold text-gray-500 cursor-pointer";
+
 $info = "flex justify-center items-center px-1 p-1 transition
 delay-75 ease-out transform hover:-translate-y-0.5 hover:scale-105 gap-2 border rounded-md
 border border-blue-600 hover:bg-blue-500 mx-1 border-opacity-30 hover:text-white
@@ -21,6 +27,16 @@ focus:bg-red-400";
 @endphp
 
 <div class="flex  items-center text-xs">
+
+    @isset($add)
+    <a wire:click="{{ $add }}()">
+        <div class="{{$btn }}">
+            <i class="fi fi-rr-plus flex"></i>
+            {{ $text }}
+        </div>
+    </a>
+    @endisset
+
     @isset($view)
     <a wire:click="{{ $view }}({{$id}})">
         <div class="{{$info }}">

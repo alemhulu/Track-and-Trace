@@ -13,11 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('distributions', function (Blueprint $table) {
+        Schema::create('distribution_steps', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
-            $table->text('description');
-            $table->boolean('is_active')->default(0);
+            $table->foreignId('distribution_id');
+            $table->foreignId('route_id');
+            $table->unsignedInteger('step');
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('distributions');
+        Schema::dropIfExists('distribution_steps');
     }
 };
