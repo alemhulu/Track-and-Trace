@@ -25,6 +25,9 @@ class User extends Authenticatable
      *
      * @var string[]
      */
+
+     protected $connection = 'mysql';
+
     protected $fillable = [
         'name',
         'email',
