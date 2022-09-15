@@ -28,29 +28,6 @@ class AddDistribution extends Component
         return view('livewire.distribution.add-distribution');
     }
 
-    public function mount()
-    {
-        $this->steps = DistributionSteps::all();
-    }
-
-    public function addStep()
-    {
-        $this->steps->push( new DistributionSteps() );
-    }
-
-    public function deleteStep($index)
-    {
-        $route = $this->steps[$index];
-        $this->steps->forget($index);
-
-        $route->delete();
-    }    
-
-    public function save()
-    {
-        $this->validate();
-    }
-
     public function alertError($name)
     {
         $this->dispatchBrowserEvent(
