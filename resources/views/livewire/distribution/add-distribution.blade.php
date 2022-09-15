@@ -67,7 +67,7 @@
                                 Distribution Routes and Steps
                             </h3>
                             <p class="mt-1 max-w-2xl text-sm text-gray-500">
-                                Basic Distribution information
+                                Distribution Steps information
                             </p>
                         </div>
 
