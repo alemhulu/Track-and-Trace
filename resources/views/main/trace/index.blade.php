@@ -8,7 +8,7 @@
     <div class="">
         <div class="w-auto">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-
+                <livewire:trace.trace-book-index>
             </div>
         </div>
     </div>
