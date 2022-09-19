@@ -7,7 +7,7 @@ else {
 $search = "";
 }
 @endphp
-<div class="relative py-6 px-5 sm:px-6 lg:py-3 lg:px-0 bg-white sm:rounded-lg overflow-auto">
+<div class="relative py-6 px-5 sm:px-6 lg:py-3 lg:px-0 bg-white sm:rounded-lg lg:col-span-8 col-span-full">
 
     <x-form.header search="{{ $search }}">
         {{ __($title) }}
