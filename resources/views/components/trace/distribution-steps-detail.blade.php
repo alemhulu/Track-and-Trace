@@ -13,9 +13,9 @@
             @php $i = 1; $record = 1;@endphp
             {{-- @forelse($books as $record) --}}
             <x-data-table.tr>
-                <td class="px-5 py-2 whitespace-nowrap">
+                <td class="px-5 py-2">
                     <div class="text-sm text-gray-700">
-                        <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
+                        <div class=" rounded-full bg-blue-600 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">1</span>
                         </div>
                     </div>
@@ -29,7 +29,7 @@
                     <x-trace.from-info company="MoE" />
                 </td>
 
-                <td class="px-5 py-2 flex-wrap">
+                <td class="px-5 py-2 whitespace-nowrap">
                     <x-trace.to-info company="Oromia Region" />
                 </td>
 
@@ -47,7 +47,7 @@
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
                     <div class="text-sm text-gray-700">
-                        <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
+                        <div class=" rounded-full bg-blue-600 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">2</span>
                         </div>
                     </div>
@@ -61,7 +61,7 @@
                     <x-trace.from-info company="Oromia Region" />
                 </td>
 
-                <td class="px-5 py-2 flex-wrap">
+                <td class="px-5 py-2 whitespace-nowrap">
                     <x-trace.to-info company="East Shoa Zone" />
                 </td>
 
@@ -79,7 +79,7 @@
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
                     <div class="text-sm text-gray-700">
-                        <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
+                        <div class=" rounded-full bg-blue-600 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">3</span>
                         </div>
                     </div>
@@ -93,7 +93,7 @@
                     <x-trace.from-info company="East Shoa Zone" />
                 </td>
 
-                <td class="px-5 py-2 flex-wrap">
+                <td class="px-5 py-2 whitespace-nowrap">
                     <x-trace.to-info company="Adaa Woreda" />
                 </td>
 
@@ -111,7 +111,7 @@
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
                     <div class="text-sm text-gray-700">
-                        <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
+                        <div class=" rounded-full bg-blue-600 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">4</span>
                         </div>
                     </div>
@@ -126,7 +126,7 @@
                     <x-trace.from-info company="Adaa Woreda" />
                 </td>
 
-                <td class="px-5 py-2 flex-wrap">
+                <td class="px-5 py-2 whitespace-nowrap">
                     <x-trace.to-info company="Bishoftu Priparatory School" />
                 </td>
 

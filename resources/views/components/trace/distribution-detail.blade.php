@@ -9,7 +9,7 @@
             </p>
         </div>
 
-        <div class="md:px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3 lg:border rounded-md">
+        <div class="md:px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3 lg:border border-dashed rounded-md">
             <div class="">
                 <dl class="grid grid-cols-1 gap-5 md:grid-cols-7 space-y-4 lg:space-y-0">
                     <div class="flex flex-col md:col-span-3 lg:col-span-2 space-y-2 justify-center">
