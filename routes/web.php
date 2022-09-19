@@ -33,7 +33,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
 
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
-    Route::resource('destribution-details', DistributionController::class);
+    Route::resource('distribution-details', DistributionController::class);
 
 
 });

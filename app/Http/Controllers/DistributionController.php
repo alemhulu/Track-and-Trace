@@ -46,7 +46,7 @@ class DistributionController extends Controller
      */
     public function show(Distribution $distribution)
     {
-        return $distribution;
+        // return $distribution;
         return view('main.trace.distribution-detail', compact('distribution'));
     }
 

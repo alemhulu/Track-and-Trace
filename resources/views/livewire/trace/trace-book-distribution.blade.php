@@ -83,7 +83,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" />
+                    <x-action.table-button id="{{ $record }}" view="showDistribution" />
                 </td>
             </x-data-table.tr>
 
@@ -120,7 +120,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" />
+                    <x-action.table-button id="{{ $record }}" view="showDistribution" />
                 </td>
             </x-data-table.tr>
 
@@ -156,7 +156,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" />
+                    <x-action.table-button id="{{ $record }}" view="showDistribution" />
                 </td>
             </x-data-table.tr>
             {{-- @empty --}}

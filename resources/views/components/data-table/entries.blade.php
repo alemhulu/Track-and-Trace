@@ -1,4 +1,4 @@
-<div class="flex px-5 gap-x- items-center bg-lime-50 text-lime-800 pb-1 pt-4 text-sm">
+<div class="flex px-5 items-center bg-lime-50 text-lime-800 pb-1 pt-4 text-sm w-full">
     <span class="pr-1">Show</span>
     <x-action.select class="w-20 flex py-0.5" wire:model="recordes">
         <option value="5">5</option>

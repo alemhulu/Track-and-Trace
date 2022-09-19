@@ -1,4 +1,4 @@
-@props(['function', 'title' ])
+@props(['function', 'title' ,'buttons'=> true])
 <form wire:submit.prevent={{ $function }} class="h-auto">
     <div class="relative mb-10 py-6 px-2 sm:px-4 lg:py-0 lg:px-0 lg:col-span-8 bg-white sm:rounded-lg">
         <x-form.header>
@@ -11,6 +11,7 @@
             </div>
         </div>
 
+        @if ($buttons)
         <div class="px-2 sm:px-4 py-3 text-right mb-0 space-x-4">
             <x-jet-secondary-button onclick="openTab(event,'non')" class="">
                 {{__('Cancel') }}
@@ -21,5 +22,7 @@
                 <x-action.button-loader wire:loading wire:target='{{ $function }}' />
             </x-jet-button>
         </div>
+        @endif
+
     </div>
 </form>
