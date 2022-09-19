@@ -27,7 +27,7 @@
             <x-data-table.th scope="col">#</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Name') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Code') }}</x-data-table.th>
-            <x-data-table.th scope="col"> {{__('Country') }}</x-data-table.th>
+            <x-data-table.th scope="col"> {{__('Description') }}</x-data-table.th>
             <x-data-table.th scope="col" class="sr-only">{{__('Action') }}</x-data-table.th>
         </x-slot>
 
@@ -44,7 +44,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{$record->id}}" edit="editCountry" delete="deleteCountry">
+                    <x-action.table-button id="{{$record->id}}" edit="editType" delete="deleteType">
                     </x-action.table-button>
                 </td>
             </x-data-table.tr>
@@ -56,5 +56,5 @@
     </x-form.table>
 
     {{-- Edit country Modal --}}
-    <livewire:location.modal.edit-country>
+    <livewire:location.modal.editType>
 </div>
