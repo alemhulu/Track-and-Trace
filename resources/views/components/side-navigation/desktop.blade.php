@@ -54,7 +54,7 @@
                         :active="request()->routeIs('distribution')" />
 
                     <x-side-navigation.link href="/trace" icon="fi-rr-paw" name="Trace"
-                        :active="request()->routeIs('trace')" />
+                        :active="( request()->routeIs('trace') | request()->routeIs('distribution-details.*'))" />
 
                     @can('view-logs')
                     <x-side-navigation.link href="/log-viewer" icon="fi-rr-info" name="LOG"

@@ -1,10 +1,13 @@
-@props(['image' =>'', 'name'=>'', 'email'=>'', 'phone'=>''])
+@props(['image' =>'', 'name'=>'', 'email'=>'', 'phone'=>'', 'h'=>16])
 <div class="flex items-center">
-    <div class="flex-shrink-0 h-16 w-16">
-        <img class="h-16 w-16 rounded-lg " src="{{ $image }}" alt="">
+    @if ($image)
+    <div class="flex-shrink-0 h-{{ $h }} w-{{ $h }} mr-2">
+        <img class="h-{{ $h }} w-{{ $h }} rounded-lg " src="/{{ $image }}" alt="">
     </div>
-    <div class="ml-2">
-        <div class="ml-1 text-sm font-semibold text-gray-600">
+    @endif
+
+    <div class="">
+        <div class=" text-sm font-semibold text-gray-600">
             <div class=""> {{ $name }} </div>
             <div class=""> {{ $email }} </div>
             <div class=""> {{ $phone }} </div>

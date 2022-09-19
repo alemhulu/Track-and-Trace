@@ -9,8 +9,8 @@ class TraceBookDistribution extends Component
    
     public function showDistribution($id)
     {
-        dd($id);
-        return redirect()->to('destribution-details.show',$id);
+        
+        return redirect()->route('distribution-details.show',$id);
     }
 
     public function render()

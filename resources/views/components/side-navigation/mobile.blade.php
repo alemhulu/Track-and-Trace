@@ -48,72 +48,43 @@
             </div>
             <div class="mt-5 flex-1 flex flex-col">
                 <nav class="flex-1 px-2 pb-4 space-y-1">
+                    <x-side-navigation.link href="/dashboard" icon="fi-rr-dashboard" name="Dashboard"
+                        :active="request()->routeIs('dashboard')" />
 
-                    <a href="#"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <svg class="mr-3 flex-shrink-0 h-6 w-6 " fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
-                            </path>
-                        </svg>
-                        Dashboard
-                    </a>
+                    <x-side-navigation.link href="{{ route('users.index') }}" icon="fi-rr-user" name="Users"
+                        :active="request()->routeIs('users')" />
 
-                    <a href="#"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <svg class="mr-3 flex-shrink-0 h-6 w-6 " fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z">
-                            </path>
-                        </svg>
-                        Team
-                    </a>
+                    <x-side-navigation.link href="{{ route('roles.index') }}" icon="fi-rr-key" name="Roles"
+                        :active="request()->routeIs('roles')" />
 
-                    <a href="#"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <svg class="mr-3 flex-shrink-0 h-6 w-6 " fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z">
-                            </path>
-                        </svg>
-                        Projects
-                    </a>
+                    <x-side-navigation.link href="/location" icon="fi-rr-map-marker-home" name="Location"
+                        :active="request()->routeIs('location')" />
 
-                    <a href="#"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <svg class="mr-3 flex-shrink-0 h-6 w-6 " fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                        Calendar
-                    </a>
+                    <x-side-navigation.link href="/organization" icon="fi-rr-building " name="Organization"
+                        :active="request()->routeIs('organization')" />
 
-                    <a href="#"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <svg class="mr-3 flex-shrink-0 h-6 w-6 " fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
-                            </path>
-                        </svg>
-                        Documents
-                    </a>
+                    <x-side-navigation.link href="/warehouse" icon="fi-rr-home-location-alt " name="Warehouse"
+                        :active="request()->routeIs('warehouse')" />
 
-                    <a href="#"
-                        class="text-gray-600 hover:bg-blue-600 hover:text-white group flex items-center px-2 py-2 text-sm font-medium rounded-md">
-                        <svg class="mr-3 flex-shrink-0 h-6 w-6 " fill="none" viewBox="0 0 24 24" stroke="currentColor"
-                            aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z">
-                            </path>
-                        </svg>
-                        Reports
-                    </a>
+                    <x-side-navigation.link href="/book" icon="fi-rr-book" name="Book"
+                        :active="request()->routeIs('book')" />
+
+                    <x-side-navigation.link href="/print-order" icon="fi-rr-print" name="Print Order"
+                        :active="request()->routeIs('print-order')" />
+
+                    <x-side-navigation.link href="/route" icon="fi-rr-chart-tree" name="Route"
+                        :active="request()->routeIs('route')" />
+
+                    <x-side-navigation.link href="/distribution" icon="fi-rr-truck-side" name="Distribution"
+                        :active="request()->routeIs('distribution')" />
+
+                    <x-side-navigation.link href="/trace" icon="fi-rr-paw" name="Trace"
+                        :active="( request()->routeIs('trace') | request()->routeIs('distribution-details.*') )" />
+
+                    @can('view-logs')
+                    <x-side-navigation.link href="/log-viewer" icon="fi-rr-info" name="LOG"
+                        :active="request()->routeIs('log-viewer')" />
+                    @endcan
 
                 </nav>
             </div>
