@@ -1,6 +1,6 @@
 <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
-    <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white sm:rounded-md">
-        <x-form.card function="addOrganizationType" title="Add New Organization Type ">
+    <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white dark:bg-gray-800 sm:rounded-md">
+        <x-form.card function="addType" title="Add New Organization Type ">
             <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
                 <x-jet-input type="text" wire:model.defer="name" placeholder="Organization Type  Name" />
@@ -36,11 +36,11 @@
             @forelse($types as $record)
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{$i++}}</div>
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$i++}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{$record->name}}</div>
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$record->name}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">

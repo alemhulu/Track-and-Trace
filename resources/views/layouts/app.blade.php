@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" x-data="{'darkMode': false}" x-init="
+    darkMode = JSON.parse(localStorage.getItem('darkMode'));
+    $watch('darkMode', value => localStorage.setItem('darkMode', JSON.stringify(value)))">
 
     <head>
         <meta charset="utf-8">
@@ -18,17 +20,17 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
 
-    <body class="font-sans antialiased">
+    <body :class="{'dark': darkMode === true}" class="font-sans antialiased">
         <x-jet-banner />
 
-        <div class="min-h-screen bg-[#edf1f7]">
+        <div class="min-h-screen bg-[#edf1f7] dark:bg-gray-900">
             <x-side-navigation.desktop />
 
             <div class="md:pl-64 flex flex-col flex-1">
                 @livewire('navigation-menu')
                 <!-- Page Heading -->
                 @if (isset($header))
-                <header class="bg-white shadow mx-3 rounded-lg">
+                <header class="bg-white dark:bg-gray-800 shadow mx-3 rounded-lg">
                     <div class="mx-auto py-6 px-4 sm:px-6 lg:px-8 rounded-lg flex justify-between items-center">
                         {{ $header }}
                         @if (isset($actionButton))

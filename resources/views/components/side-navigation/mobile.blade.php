@@ -36,15 +36,24 @@
         </div>
 
         <!-- Sidebar component, swap this element with another sidebar if you like -->
-        <div class="flex flex-col flex-grow pt-4 bg-white overflow-y-auto">
-            <div class="flex items-center flex-shrink-0 px-2 space-x-2">
-                <x-jet-application-mark class="block h-20 w-auto" />
-                <div class="flex flex-col text-left">
-                    <div class="font-medium text-xs text-gray-500">FDRE</div>
-                    <div class="font-medium text-xs text-gray-500">Ministry of Education</div>
-                    <div class="font-semibold text-gray-700 leading-tight">Track And Trace
+        <div class="flex flex-col flex-grow pt-4 bg-white dark:bg-gray-800 overflow-y-auto">
+            <div class="flex items-center flex-shrink-0 space-x-4 justify-center">
+                <div class="block h-20 bg-image-one dark:bg-image-two  bg-cover bg-center w-20 ">
+                    {{-- <img src="/logom.png" alt="MoE logo" srcset="" {{ $attributes }}> --}}
+                </div>
+                <div class=" sm:hidden flex-col text-left">
+                    <div class="font-medium text-xs text-gray-500 dark:text-gray-300">FDRE</div>
+                    <div class="font-medium text-xs text-gray-500 dark:text-gray-300">Ministry of Education</div>
+                    <div class="font-semibold text-gray-700 leading-tight dark:text-gray-300">Track & Trace
                     </div>
                 </div>
+            </div>
+
+            <div class="w-full h-2 mt-4 flex">
+                <div class="bg-yellow-400 h-full w-3/12"></div>
+                <div class="bg-red-600 h-full w-4/12"></div>
+                <div class="bg-blue-600 h-full w-2/12"></div>
+                <div class="bg-blue-700 h-full w-3/12"></div>
             </div>
             <div class="mt-5 flex-1 flex flex-col">
                 <nav class="flex-1 px-2 pb-4 space-y-1">
@@ -79,7 +88,7 @@
                         :active="request()->routeIs('distribution')" />
 
                     <x-side-navigation.link href="/trace" icon="fi-rr-paw" name="Trace"
-                        :active="( request()->routeIs('trace') | request()->routeIs('distribution-details.*') )" />
+                        :active="( request()->routeIs('trace') | request()->routeIs('distribution-details.*'))" />
 
                     @can('view-logs')
                     <x-side-navigation.link href="/log-viewer" icon="fi-rr-info" name="LOG"

@@ -14,7 +14,7 @@ $image = '/'.$image;
     @endif
 
     <div class="">
-        <div class=" text-sm font-semibold text-gray-600">
+        <div class=" text-sm font-semibold text-gray-600 dark:text-gray-200">
             <div class=""> {{ $name }} </div>
             <div class=""> {{ $email }} </div>
             <div class=""> {{ $phone }} </div>

@@ -1,6 +1,6 @@
 @props(['batch', 'copies', 'packages'])
 <div class="flex items-center">
-    <div class="text-sm text-gray-500 font-semibold text-left">
+    <div class="text-sm text-gray-500 dark:text-gray-300 font-semibold text-left">
         <div class="">
             Batch No.:
         </div>
@@ -11,7 +11,7 @@
             No. Packages:
         </div>
     </div>
-    <div class="ml-3 text-sm font-medium text-gray-700">
+    <div class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-100">
         <div class="">
             {{ $batch }}
         </div>

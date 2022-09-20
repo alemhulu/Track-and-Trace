@@ -1,10 +1,10 @@
 <div>
-    <section class="bg-white rounded-lg">
+    <section class="bg-white dark:bg-gray-800 rounded-lg">
         <div class="mb-2">
-            <h3 class=" text-lg leading-6 font-medium text-gray-900">
+            <h3 class=" text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
                 Distribution
             </h3>
-            <p class="max-w-2xl text-sm text-gray-500">
+            <p class="max-w-2xl text-sm text-gray-500 dark:text-gray-300">
                 Distribution Detail Information
             </p>
         </div>
@@ -15,14 +15,14 @@
                     <div class="flex flex-col md:col-span-3 lg:col-span-2 space-y-2 justify-center">
                         <div>
                             <x-jet-label value="Name" />
-                            <div class="sm:mt-0 sm:col-span-2 text-gray-500">
+                            <div class="sm:mt-0 sm:col-span-2 text-gray-500 dark:text-gray-300">
                                 Name of the distribution
                             </div>
                         </div>
 
                         <div>
                             <x-jet-label value="Package" />
-                            <div class="sm:mt-0 sm:col-span-2 text-gray-500">
+                            <div class="sm:mt-0 sm:col-span-2 text-gray-500 dark:text-gray-300">
                                 50 Packages
                             </div>
                         </div>
@@ -39,7 +39,7 @@
                         <div>
                             <x-jet-label value="Discription" />
                             <div
-                                class="w-full h-auto md:p-3 md:border border-gray-100 rounded-md text-gray-500 text-left">
+                                class="w-full h-auto md:p-3 md:border border-gray-100 rounded-md text-gray-500 dark:text-gray-300 text-left">
                                 Lorem ipsum dolor sit, amet consectetur adipisicing elit. Perspiciatis enim, eaque,
                                 voluptatibus quo officiis molestias, ipsa quae natus iure incidunt beatae error impedit
                                 quod!

@@ -14,20 +14,22 @@
             {{-- @forelse($books as $record) --}}
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">1</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">1</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold">Dist-MoE-To-Addis-Yeka-School-1</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300 font-semibold">Dist-MoE-To-Addis-Yeka-School-1
+                    </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-500">Distribution from MoE through Addiss Abeba , Yeka all the way to
+                    <div class="text-sm text-gray-500 dark:text-gray-300">Distribution from MoE through Addiss Abeba ,
+                        Yeka all the way to
                         School One</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
                         <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">4</span>
                         </div>
@@ -46,20 +48,22 @@
 
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">2</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">2</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold">Minilik High School Distribution Steps</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300 font-semibold">Minilik High School Distribution
+                        Steps</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-500">From MoE Through Arada To Minilik High School Distribution Steps
+                    <div class="text-sm text-gray-500 dark:text-gray-300">From MoE Through Arada To Minilik High School
+                        Distribution Steps
                     </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
                         <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">4</span>
                         </div>
@@ -77,21 +81,23 @@
 
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">3</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">3</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold">Bishoftu Priparatory School Book Distribution</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-300 font-semibold">Bishoftu Priparatory School Book
+                        Distribution</div>
                 </td>
 
                 <td class="px-5 py-2 flex-wrap">
-                    <div class="text-sm text-gray-500">From MoE to Oromia Region East Shoa Zone to Adaa Worda all the
+                    <div class="text-sm text-gray-500 dark:text-gray-300">From MoE to Oromia Region East Shoa Zone to
+                        Adaa Worda all the
                         way to Bishoftu Priparatory School</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">
-                        <div class=" rounded-full bg-gray-500 w-10 h-10 flex items-center justify-center">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
+                        <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">6</span>
                         </div>
                     </div>

@@ -25,7 +25,7 @@ border-transparent rounded-md font-semibold text-xs text-white capitalize tracki
 active:bg-green-600 focus:outline-none focus:border-green-700 focus:ring ring-green-300 disabled:opacity-25
 transition
 ease-in-out duration-150',
-'primary' => 'inline-flex items-center px-4 py-2 bg-blue-800 border
+'primary' => 'inline-flex items-center px-4 py-2 bg-blue-800 dark:bg-blue-600 border
 border-transparent rounded-md font-semibold text-xs text-white capitalize tracking-widest hover:bg-blue-700
 active:bg-blue-900 focus:outline-none focus:border-blue-900 focus:ring ring-blue-300 disabled:opacity-25 transition
 ease-in-out duration-150',

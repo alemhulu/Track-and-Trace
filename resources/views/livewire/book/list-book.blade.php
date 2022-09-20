@@ -1,5 +1,5 @@
 <div>
-    <x-form.table title="Organizations List">
+    <x-form.table title="Books List">
         <x-slot name="tableHeaders">
             <x-data-table.th scope="col">#</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Book') }}</x-data-table.th>
@@ -14,7 +14,7 @@
             {{-- @forelse($books as $record) --}}
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">1</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">1</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
@@ -31,7 +31,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-md font-semibold text-gray-500">
+                    <div class="text-md font-semibold text-gray-500 dark:text-gray-300">
                         14,2013 copies
                     </div>
                 </td>
@@ -43,7 +43,7 @@
 
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">2</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">2</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
@@ -62,7 +62,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-md font-semibold text-gray-500 lining-nums">
+                    <div class="text-md font-semibold text-gray-500 dark:text-gray-300">
                         50,500 copies
                     </div>
                 </td>

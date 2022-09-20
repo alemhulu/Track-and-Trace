@@ -2,8 +2,8 @@
 <div>
     <div class="py-3">
         <div class="mx-auto">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white">
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 bg-white dark:bg-gray-800">
                     <form enctype="{{ $enctype }}" action="{{ $action }}" method="POST">
                         @csrf
                         @method($method)

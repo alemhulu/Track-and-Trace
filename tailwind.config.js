@@ -3,6 +3,8 @@ const colors = require('tailwindcss/colors')
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+    darkMode: 'class',
+
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './vendor/laravel/jetstream/**/*.blade.php',
@@ -40,6 +42,17 @@ module.exports = {
             animation: {
                 life: "life 4750ms linear forwards",
             },
+
+            backgroundImage: (theme) => ({
+                'image-one': "url('https://moe.gov.et/logom.png')",
+                'image-two': "url('https://moe.gov.et/fotlogo.png')",
+            }),
+        },
+    },
+
+    variants: {
+        extend: {
+            backgroundImage: ['dark'],
         },
     },
 

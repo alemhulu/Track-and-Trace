@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
             {{ __('Role Management') }}
         </h2>
     </x-slot>
@@ -28,15 +28,17 @@
                     @forelse($roles as $key => $role)
                     <x-data-table.tr>
                         <x-td>
-                            <div class="text-sm text-gray-700 font-semibold">{{ ++$i}}</div>
+                            <div class="text-sm text-gray-700 dark:text-gray-100 font-semibold">{{ ++$i}}</div>
                         </x-td>
 
                         <x-td>
-                            <div class="text-sm text-gray-700 font-semibold">{{ $role->name }}</div>
+                            <div class="text-sm text-gray-700 dark:text-gray-100 font-semibold">{{ $role->name }}</div>
                         </x-td>
 
                         <x-td>
-                            <div class="text-sm text-gray-500 font-semibold"> {{ $role->permissions->count() }}
+                            <div
+                                class="flex text-sm p-2 text-white bg-blue-500 rounded-full justify-center items-center w-9 h-9">
+                                {{ $role->permissions->count() }}
                             </div>
                         </x-td>
 

@@ -4,10 +4,10 @@
             {{-- Basic Profile information --}}
             <div>
                 <div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
                         Profile
                     </h3>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                         Basic Profile information
                     </p>
                 </div>
@@ -83,10 +83,10 @@
             {{-- Contact Person Information --}}
             <div class="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
                 <div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
                         Contact Person Information
                     </h3>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                         Use a permanent address where you can receive mail.
                     </p>
                 </div>
@@ -106,10 +106,10 @@
 
             <div class="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
                 <div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
                         Location Information
                     </h3>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                         Use a permanent address where you can receive mail.
                     </p>
                 </div>
