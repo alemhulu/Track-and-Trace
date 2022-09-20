@@ -15,7 +15,7 @@
                 {{-- @forelse($books as $record) --}}
                 <x-data-table.tr>
                     <td class="px-5 py-2 whitespace-nowrap">
-                        <div class="text-sm text-gray-700">1</div>
+                        <div class="text-sm text-gray-700 dark:text-gray-100">1</div>
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">
@@ -43,7 +43,7 @@
 
                 <x-data-table.tr>
                     <td class="px-5 py-2 whitespace-nowrap">
-                        <div class="text-sm text-gray-700">2</div>
+                        <div class="text-sm text-gray-700 dark:text-gray-100">2</div>
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">
@@ -74,7 +74,7 @@
 
                 <x-data-table.tr>
                     <td class="px-5 py-2 whitespace-nowrap">
-                        <div class="text-sm text-gray-700">1</div>
+                        <div class="text-sm text-gray-700 dark:text-gray-100">1</div>
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">
@@ -105,7 +105,7 @@
 
                 <x-data-table.tr>
                     <td class="px-5 py-2 whitespace-nowrap">
-                        <div class="text-sm text-gray-700">1</div>
+                        <div class="text-sm text-gray-700 dark:text-gray-100">1</div>
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">

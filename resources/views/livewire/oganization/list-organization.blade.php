@@ -14,7 +14,7 @@
             @forelse($organizations as $record)
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">{{$i++}}</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">{{$i++}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">

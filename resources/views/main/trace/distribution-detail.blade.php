@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
             {{ __('Distribution Detail') }}
         </h2>
     </x-slot>
@@ -11,8 +11,8 @@
                 <x-form.card function="save" title="Trace Book Distribution" :buttons=false>
                     <form class=" space-y-8 divide-y divide-gray-200">
                         <div class="space-y-8 sm:space-y-5">
-                            <x-distribution-detail />
-                            <x-distribution-steps-detail />
+                            <x-trace.distribution-detail />
+                            <x-trace.distribution-steps-detail />
                         </div>
                     </form>
                 </x-form.card>

@@ -1,6 +1,6 @@
 @props(['name', 'type', 'size'])
 <div class="flex items-center">
-    <div class="text-sm font-semibold text-left text-gray-500">
+    <div class="text-sm font-semibold text-left text-gray-500 dark:text-gray-300">
         <div class="">
             File Name:
         </div>
@@ -11,7 +11,7 @@
             File Size:
         </div>
     </div>
-    <div class="ml-3 text-sm font-medium text-gray-700">
+    <div class="ml-3 text-sm font-medium text-gray-700 dark:text-gray-100">
         <div class="">
             {{ $name }}
         </div>

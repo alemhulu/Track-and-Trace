@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
             {{ __('Users Management') }}
         </h2>
     </x-slot>
@@ -29,15 +29,15 @@
                     @forelse($data as $key => $user)
                     <x-data-table.tr>
                         <x-data-table.td>
-                            <div class="text-sm text-gray-700 font-semibold">{{ ++$i}}</div>
+                            <div class="text-sm text-gray-700 dark:text-gray-100 font-semibold">{{ ++$i}}</div>
                         </x-data-table.td>
 
                         <x-data-table.td>
-                            <div class="text-sm text-gray-700 font-semibold">{{ $user->name }}</div>
+                            <div class="text-sm text-gray-700 dark:text-gray-100 font-semibold">{{ $user->name }}</div>
                         </x-data-table.td>
 
                         <x-data-table.td>
-                            <div class="text-sm text-gray-700 font-semibold">{{ $user->email }}</div>
+                            <div class="text-sm text-gray-700 dark:text-gray-100 font-semibold">{{ $user->email }}</div>
                         </x-data-table.td>
 
                         <x-data-table.td>

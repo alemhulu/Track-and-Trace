@@ -14,7 +14,7 @@
             {{-- @forelse($books as $record) --}}
             <x-data-table.tr>
                 <td class="px-5 py-2">
-                    <div class="text-sm text-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
                         <div class=" rounded-full bg-blue-600 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">1</span>
                         </div>
@@ -22,7 +22,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold">From MoE to Oromia Region</div>
+                    <div class="text-sm text-gray-600 font-semibold dark:text-gray-300">From MoE to Oromia Region</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
@@ -46,7 +46,7 @@
 
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
                         <div class=" rounded-full bg-blue-600 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">2</span>
                         </div>
@@ -54,7 +54,8 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold">From Oromia Region to East Shoa Zone</div>
+                    <div class="text-sm text-gray-600 font-semibold dark:text-gray-300">From Oromia Region to East Shoa
+                        Zone</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
@@ -78,7 +79,7 @@
 
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
                         <div class=" rounded-full bg-blue-600 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">3</span>
                         </div>
@@ -86,7 +87,8 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold">From East Shoa Zone to Adaa Woreda</div>
+                    <div class="text-sm text-gray-600 font-semibold dark:text-gray-300">From East Shoa Zone to Adaa
+                        Woreda</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
@@ -110,7 +112,7 @@
 
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
                         <div class=" rounded-full bg-blue-600 w-10 h-10 flex items-center justify-center">
                             <span class="text-sm text-blue-50 font-bold">4</span>
                         </div>
@@ -118,7 +120,8 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold">From Adaa Woreda to Bishoftu Priparatory School
+                    <div class="text-sm text-gray-600 font-semibold dark:text-gray-300">From Adaa Woreda to Bishoftu
+                        Priparatory School
                     </div>
                 </td>
 

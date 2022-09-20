@@ -1,4 +1,5 @@
-<th {{ $attributes ->merge(['class' => 'px-5 py-3 text-left text-xs font-bold text-gray-700 uppercase tracking-wider
+<th {{ $attributes ->merge(['class' => 'px-5 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase
+    tracking-wider
     cursor-pointer '])
     }}>
     <div class="flex items-center">

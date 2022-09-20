@@ -4,10 +4,10 @@
             <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
                 <div>
                     <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
                             Distribution
                         </h3>
-                        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                        <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                             Basic Distribution information
                         </p>
                     </div>
@@ -46,18 +46,17 @@
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
                                 <div class="flex items-center gap-x-2" x-data="{ toggle: 0 }">
                                     <button x-on:click="toggle === 0 ? toggle = 1  : toggle = 0" type="button"
-                                        class="bg-gray-200 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200"
-                                        :class="toggle && 'bg-blue-600'" role="switch" aria-checked="0">
+                                        class="bg-gray-200 dark:bg-gray-400 relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200"
+                                        :class="toggle && 'bg-blue-600 dark:bg-blue-500'" role="switch"
+                                        aria-checked="0">
                                         <span class="sr-only">Use setting</span>
                                         <span aria-hidden="true"
                                             class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
                                             :class="toggle && 'translate-x-5'"></span>
                                     </button>
-                                    <span class="text-gray-600 font-semibold"
+                                    <span class="text-gray-600 dark:text-gray-300 font-semibold"
                                         x-text="toggle === 1 ? 'Active' : 'In Active'"> </span>
-                                    <input type="hidden" wire:model="is_active" name="is_active" class="hidden"
-                                        x-model.number="toggle" />
-                                    <x-jet-input-error for="is_active" alert="Active" />
+                                    <input type="hidden" name="is_active" class="hidden" x-model.number="toggle" />
                                 </div>
                             </div>
                         </div>

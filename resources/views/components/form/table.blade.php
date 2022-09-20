@@ -7,14 +7,14 @@ else {
 $search = "";
 }
 @endphp
-<div class="relative py-6  lg:py-3 bg-white sm:rounded-lg lg:col-span-8 col-span-full overflow-auto">
+<div class="relative py-6  lg:py-3 bg-white dark:bg-gray-800 sm:rounded-lg lg:col-span-8 col-span-full overflow-auto">
 
     <x-form.header search="{{ $search }}">
         {{ __($title) }}
     </x-form.header>
 
     <x-data-table.table class="myTable2 mb-14">
-        <thead class="bg-lime-50">
+        <thead class="bg-lime-50 dark:bg-gray-700">
             <x-data-table.tr>
                 {{ $tableHeaders ?? $slot }}
             </x-data-table.tr>

@@ -4,10 +4,10 @@
             <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
                 <div>
                     <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
                             Book
                         </h3>
-                        <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                        <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                             Basic Book information
                         </p>
                     </div>
@@ -68,10 +68,10 @@
 
             <div class="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
                 <div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
                         Book Standards
                     </h3>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                         Select or wirte the Book standards.
                     </p>
                 </div>
@@ -103,10 +103,10 @@
 
             <div class="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
                 <div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
                         Book Files
                     </h3>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                         Upload Book Files based on the book standards.
                     </p>
                 </div>
@@ -130,7 +130,7 @@
                                     <img src="" alt="" srcset=""
                                         class=" h-48 w-32 border-dashed border-gray-200 rounded bg-cover">
                                     <label for="front"
-                                        class="mt-4 py-2 px-4 text-center bg-blue-50 w-32 text-blue-700 rounded-lg text-sm font-semibold hover:bg-blue-100 shadow-xl shadow-blue-100">Choose
+                                        class="mt-4 py-2 px-4 text-center bg-blue-50 w-32 text-blue-700 rounded-lg text-sm font-semibold hover:bg-blue-100 shadow-xl shadow-blue-100 dark:shadow-gray-700">Choose
                                         Front</label>
                                     <x-jet-input type="file" name="font" id="front" class="hidden" />
                                 </div>
@@ -139,7 +139,7 @@
                                     <img src="" alt="" srcset=""
                                         class="h-48 w-32 border-dashed border-gray-200 rounded bg-cover">
                                     <label for="back"
-                                        class="mt-4 py-2 px-4 text-center bg-blue-50 w-32 text-blue-700 rounded-lg text-sm font-semibold hover:bg-blue-100 shadow-xl shadow-blue-100">Choose
+                                        class="mt-4 py-2 px-4 text-center bg-blue-50 w-32 text-blue-700 rounded-lg text-sm font-semibold hover:bg-blue-100 shadow-xl shadow-blue-100 dark:shadow-gray-700">Choose
                                         Back</label>
                                     <x-jet-input type="file" name="font" id="back" class="hidden" />
                                 </div>

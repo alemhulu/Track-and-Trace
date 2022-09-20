@@ -14,47 +14,21 @@
             {{-- @forelse($books as $record) --}}
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">1</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">1</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">Frist Route from Region</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">Frist Route from Region</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">WareHouse 1</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse 1</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">WareHouse 2</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse 2</div>
                 </td>
 
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="success" class="py-1">Active</x-button>
-                </td>
-
-                <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" edit="editBook" delete="deleteBook" />
-                </td>
-            </x-data-table.tr>
-
-            <x-data-table.tr>
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">2</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">New Route</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">WareHouse B</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">WareHouse A</div>
-                </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
                     <x-button btnType="success" class="py-1">Active</x-button>
@@ -67,19 +41,45 @@
 
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">3</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">2</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">Unknown Route</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">New Route</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">WareHouse A</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse B</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">WareHouse C</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse A</div>
+                </td>
+
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <x-button btnType="success" class="py-1">Active</x-button>
+                </td>
+
+                <td class="px-5 py-2">
+                    <x-action.table-button id="{{ $record }}" view="viewBook" edit="editBook" delete="deleteBook" />
+                </td>
+            </x-data-table.tr>
+
+            <x-data-table.tr>
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">3</div>
+                </td>
+
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">Unknown Route</div>
+                </td>
+
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse A</div>
+                </td>
+
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse C</div>
                 </td>
 
 

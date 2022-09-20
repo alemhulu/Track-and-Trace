@@ -1,10 +1,10 @@
 <div>
-    <section class="bg-white rounded-lg">
-        <div class="max-w-screen-xl px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
-            <div class="mt-4">
+    <section class="bg-white dark:bg-gray-800 rounded-lg">
+        <div class="px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
+            <div class="my-4">
                 <dl class="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500">
+                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
                             Total Wearhouses
                         </dt>
 
@@ -14,7 +14,7 @@
                     </div>
 
                     <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500">
+                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
                             Total Stores
                         </dt>
 
@@ -22,7 +22,7 @@
                     </div>
 
                     <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500">
+                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
                             Total Books in Stores
                         </dt>
 
@@ -50,15 +50,16 @@
             {{-- @forelse($books as $record) --}}
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">1</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">1</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-md font-semibold text-gray-600">MoE Wearhouse 1</div>
+                    <div class="text-md font-semibold text-gray-600 dark:text-gray-200">MoE Wearhouse 1</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 whitespace-pre-line">Ministry of Education Wearhouse located at
+                    <div class="text-sm text-gray-700 dark:text-gray-200 whitespace-pre-line">Ministry of Education
+                        Wearhouse located at
                         around CMC</div>
                 </td>
 
@@ -72,11 +73,11 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-lg text-gray-600 font-semibold">5</div>
+                    <div class="text-lg text-gray-600 font-semibold dark:text-gray-300">5</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-lg text-gray-600 font-semibold">200K+</div>
+                    <div class="text-lg text-gray-600 font-semibold dark:text-gray-300">200K+</div>
                 </td>
 
                 <td class="px-5 py-2">

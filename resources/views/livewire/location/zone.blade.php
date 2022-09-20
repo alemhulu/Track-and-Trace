@@ -1,5 +1,5 @@
 <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
-    <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white sm:rounded-md">
+    <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white dark:bg-gray-800 sm:rounded-md">
         <x-form.card function="addZone" title="Add New Zone / Sub-City">
             <div>
                 <x-jet-label for="country_id" value=" {{__('Country')}}" />
@@ -57,25 +57,25 @@
             @forelse($zones as $record)
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">{{$i++}}</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">{{$i++}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">{{$record->name}}</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">{{$record->name}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
                         {{$record->is_subcity == 1 ? 'Sub-City' : 'Zone'}}
                     </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">{{$record->region->name}}</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">{{$record->region->name}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700">{{$record->country->name}}</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">{{$record->country->name}}</div>
                 </td>
 
                 <td class="px-5 py-2">

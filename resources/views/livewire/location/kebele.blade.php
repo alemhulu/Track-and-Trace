@@ -1,5 +1,5 @@
 <div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
-    <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white sm:rounded-md">
+    <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white dark:bg-gray-800 sm:rounded-md">
         <x-form.card function="addKebele" title="Add New Kebele">
             <div>
                 <x-jet-label for="country_id" value=" {{__('Country')}}" />
@@ -69,31 +69,31 @@
             @forelse($kebeles as $record)
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{$i++}}</div>
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$i++}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{$record->name}}</div>
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$record->name}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">
+                    <div class="text-sm text-gray-900 dark:text-gray-100">
                         {{$record->woreda->name ?? '----'}}
                     </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">
+                    <div class="text-sm text-gray-900 dark:text-gray-100">
                         {{$record->zone->name ?? '----'}}
                     </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{$record->region->name}}</div>
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$record->region->name}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{$record->country->name}}</div>
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$record->country->name}}</div>
                 </td>
 
                 <td class="px-5 py-2">
