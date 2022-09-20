@@ -23,7 +23,7 @@
         </div>
 
         <div id="AddStore" class="mt-6  tab mb-6" style="display:none; ">
-            <livewire:oganization.wearhouse>
+            <livewire:oganization.add-store>
         </div>
 
         <div id="Type" class="mt-6  tab mb-6" style="display:none; ">
