@@ -94,11 +94,7 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                         <x-jet-label value="Assign User" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-form.select wire:model="user_id" id="user_id" class="max-w-md">
-                                <option>select user</option>
-                                <option>user 1</option>
-                                <option>user 2</option>
-                            </x-form.select>
+                            <x-user.select :users="$users" :select="$select" :hide="$hide" :user="$user" />
                         </div>
                     </div>
                 </div>
@@ -113,6 +109,7 @@
                         Use a permanent address where you can receive mail.
                     </p>
                 </div>
+
                 <div class="space-y-6 sm:space-y-5">
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                         <x-jet-label value="Country" />

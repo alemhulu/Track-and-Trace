@@ -1,11 +1,17 @@
 <?php
 
 namespace App\Http\Livewire\Oganization;
+
 use App\Models\User;
 use Livewire\Component;
 
-class AddOrganization extends Component
-{
+class AddStore extends Component
+{     
+    public function mount()
+    {
+        $this->stores = [];
+    }
+
     // Search User To Select  START--------------------------------
     public $users='', $user='', $user_id;
     public $select, $selectList;
@@ -54,17 +60,17 @@ class AddOrganization extends Component
         'email' =>'nullable|email|unique:organizations'
     ];
 
-       // Reset Error 
-       public function hydrate()
-       {
-           $this->resetErrorBag();
-           $this->resetValidation();
-       }
+    // Reset Error 
+    public function hydrate()
+    {
+        $this->resetErrorBag();
+        $this->resetValidation();
+    }
 
     public function render()
     {
         $this->users;
         $this->user_id;   
-        return view('livewire.oganization.add-organization', ['users']);
+        return view('livewire.oganization.add-store');
     }
 }
