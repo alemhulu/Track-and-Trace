@@ -3,14 +3,7 @@
         <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
             {{-- Basic Profile information --}}
             <div>
-                <div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
-                        Profile
-                    </h3>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                        Basic Profile information
-                    </p>
-                </div>
+                <x-form.section title="Profile" subtitle="Basic Organization Profile information" />
 
                 <div class="mt-6 sm:mt-5 space-y-6 sm:space-y-5">
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
@@ -82,14 +75,9 @@
 
             {{-- Contact Person Information --}}
             <div class="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
-                <div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
-                        Contact Person Information
-                    </h3>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                        Use a permanent address where you can receive mail.
-                    </p>
-                </div>
+                <x-form.section title="Contact Person Information"
+                    subtitle=" Use a permanent address where you can receive mail." />
+
                 <div class="space-y-6 sm:space-y-5">
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                         <x-jet-label value="Assign User" />
@@ -101,23 +89,20 @@
             </div>
 
             <div class="pt-8 space-y-6 sm:pt-10 sm:space-y-5">
-                <div>
-                    <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
-                        Location Information
-                    </h3>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                        Use a permanent address where you can receive mail.
-                    </p>
-                </div>
+                <x-form.section title="Location Information"
+                    subtitle="Use a permanent address where you can receive mail." />
 
                 <div class="space-y-6 sm:space-y-5">
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                         <x-jet-label value="Country" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
                             <x-form.select wire:model="country_id" id="country_id" class="max-w-md">
-                                <option>Organazation</option>
-                                <option>School</option>
-                                <option>Campany</option>
+                                <option>select</option>
+                                @forelse ( $countries as $country )
+                                <option value="{{ $country->id }}">{{ $country->name }}</option>
+                                @empty
+                                <option disabled>nothing to select !</option>
+                                @endforelse
                             </x-form.select>
                         </div>
                     </div>
@@ -126,9 +111,12 @@
                         <x-jet-label value="Region / City" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
                             <x-form.select wire:model="region_id" id="region_id" class="max-w-md">
-                                <option>Organazation</option>
-                                <option>School</option>
-                                <option>Campany</option>
+                                <option>select</option>
+                                @forelse ( $regions as $region )
+                                <option value="{{ $region->id }}">{{ $region->name }}</option>
+                                @empty
+                                <option disabled>nothing to select !</option>
+                                @endforelse
                             </x-form.select>
                         </div>
                     </div>
@@ -137,9 +125,26 @@
                         <x-jet-label value="Zone / Sub-City" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
                             <x-form.select wire:model="zone_id" id="zone_id" class="max-w-md">
-                                <option>Organazation</option>
-                                <option>School</option>
-                                <option>Campany</option>
+                                <option>select</option>
+                                @forelse ( $zones as $zone)
+                                <option value="{{ $zone->id }}">{{ $zone->name }}</option>
+                                @empty
+                                <option disabled>nothing to select !</option>
+                                @endforelse
+                            </x-form.select>
+                        </div>
+                    </div>
+
+                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
+                        <x-jet-label value="Woreda" />
+                        <div class="mt-1 sm:mt-0 sm:col-span-2">
+                            <x-form.select wire:model="woreda_id" id="woreda_id" class="max-w-md">
+                                <option>select</option>
+                                @forelse ( $woredas as $woreda )
+                                <option value="{{ $woreda->id }}">{{ $woreda->name }}</option>
+                                @empty
+                                <option disabled>nothing to select !</option>
+                                @endforelse
                             </x-form.select>
                         </div>
                     </div>
@@ -148,9 +153,12 @@
                         <x-jet-label value="Kebele" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
                             <x-form.select wire:model="kebele_id" id="kebele_id" class="max-w-md">
-                                <option>Organazation</option>
-                                <option>School</option>
-                                <option>Campany</option>
+                                <option>select</option>
+                                @forelse ( $kebeles as $kebele )
+                                <option value="{{ $kebele->id }}">{{ $kebele->name }}</option>
+                                @empty
+                                <option disabled>nothing to select !</option>
+                                @endforelse
                             </x-form.select>
                         </div>
                     </div>
