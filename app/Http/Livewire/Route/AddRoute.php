@@ -8,6 +8,6 @@ class AddRoute extends Component
 {
     public function render()
     {
-        return view('livewire.route.add-route');
+        return view('livewire.route.add-route')->extends('main.route.index');
     }
 }

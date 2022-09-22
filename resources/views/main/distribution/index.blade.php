@@ -7,17 +7,14 @@
 
     <div class="mb-6">
         <x-page.nav col='2'>
-            <x-page.nav-link class="bg-green-500" title="List" tabLink="List" icon="fi fi-rr-list" total="0" />
-            <x-page.nav-link class="bg-green-700" title="Add Distribution" tabLink="Distribution"
+            <x-page.nav-link class="bg-green-500" title="List" link="distribution.list" icon="fi fi-rr-list"
+                total="0" />
+            <x-page.nav-link class="bg-green-700" title="Add Distribution" link="distribution.add"
                 icon="fi fi-rr-print" />
         </x-page.nav>
 
-        <div id="List" class="mt-6  tab mb-6" style="display:none; ">
-            <livewire:distribution.list-distribution>
-        </div>
-
-        <div id="Distribution" class="mt-6  tab mb-6" style="display:none; ">
-            <livewire:distribution.add-distribution>
+        <div class="mt-6  tab mb-6">
+            @yield('content')
         </div>
     </div>
 </x-app-layout>

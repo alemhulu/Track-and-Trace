@@ -8,6 +8,6 @@ class ListRoute extends Component
 {
     public function render()
     {
-        return view('livewire.route.list-route');
+        return view('livewire.route.list-route')->extends('main.route.index');
     }
 }

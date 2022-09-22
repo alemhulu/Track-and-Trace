@@ -25,7 +25,7 @@ class AddDistribution extends Component
 
     public function render()
     {
-        return view('livewire.distribution.add-distribution');
+        return view('livewire.distribution.add-distribution')->extends('main.distribution.index');
     }
 
     public function alertError($name)

@@ -8,6 +8,6 @@ class ListDistribution extends Component
 {
     public function render()
     {
-        return view('livewire.distribution.list-distribution');
+        return view('livewire.distribution.list-distribution')->extends('main.distribution.index');
     }
 }
