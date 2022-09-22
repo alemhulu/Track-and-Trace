@@ -24,9 +24,11 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/dashboard', function () { return view('dashboard'); })->name('dashboard');
     Route::get('/location', function () { return view('main.location.index'); })->name('location');
     Route::get('/organization', function () { return view('main.organization.index'); })->name('organization');
+    Route::get('/print-order', function () { return view('main.print-order.index'); })->name('print-order');
+    Route::get('/book-packages', function () { return view('main.book-package.index'); })->name('book-packages');
     Route::get('/warehouse', function () { return view('main.warehouse.index'); })->name('warehouse');
     Route::get('/book', function () { return view('main.book.index'); })->name('book');
-    Route::get('/print-order', function () { return view('main.print-order.index'); })->name('print-order');
+    
     Route::get('/route', function () { return view('main.route.index'); })->name('route');
     Route::get('/distribution', function () { return view('main.distribution.index'); })->name('distribution');
     Route::get('/trace', function () { return view('main.trace.index'); })->name('trace');
