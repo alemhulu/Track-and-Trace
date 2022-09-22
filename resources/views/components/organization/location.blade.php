@@ -1,13 +1,12 @@
 @props(['country'=>'', 'region'=>'', 'zone'=>'' ])
 <div class="flex items-center">
-    <div class="text-sm text-gray-500 dark:text-gray-300 font-semibold tracking-tighter">
-        <div class="">Country:</div>
-        <div class="">Region / City:</div>
-        <div class="">Zone / Sub-city:</div>
+    <div class="text-2xl text-blue-700 dark:text-gray-300 font-semibold tracking-tighter">
+        <div class=""><i class="flex fi fi-rr-marker rounded-full p-2 items-center bg-blue-100"></i>
+        </div>
     </div>
-    <div class="ml-4 text-sm font-semibold text-gray-600 dark:text-gray-300">
-        <div class=""> {{ $country }} </div>
-        <div class=""> {{ $region }} </div>
-        <div class=""> {{ $zone }} </div>
+    <div class="ml-2 font-semibold text-gray-600 dark:text-gray-300">
+        <div class="font-bold"> {{ $country }} </div>
+        <div class="text-sm"> {{ $region }} </div>
+        <div class="text-xs"> {{ $zone }} </div>
     </div>
 </div>

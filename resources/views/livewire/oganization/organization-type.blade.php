@@ -4,7 +4,6 @@
             <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
                 <x-jet-input type="text" wire:model.defer="name" placeholder="Organization Type  Name" />
-                <x-jet-input-error for="name" alert="Organization Type  Name" />
             </div>
 
             <div>
@@ -47,8 +46,8 @@
                     <div class="text-sm text-gray-900">{{$record->code}}</div>
                 </td>
 
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900">{{$record->description}}</div>
+                <td class="px-5 py-2 whitespace-pre-line">
+                    <div class="text-sm text-gray-900">{{ substr($record->description, 0, 100) }}</div>
                 </td>
 
                 <td class="px-5 py-2">

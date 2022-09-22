@@ -19,10 +19,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('code')->nullable();
             $table->boolean('is_subcity')->default(false);
-
             $table->foreignId('region_id')->nullable()->constrained();
             $table->foreignId('country_id')->nullable()->constrained();
-            
             $table->unique(['name', 'region_id', 'country_id']);
             $table->timestamps();
         });

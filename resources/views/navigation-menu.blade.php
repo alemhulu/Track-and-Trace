@@ -85,8 +85,8 @@
                     @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
                     <button
                         class="flex text-sm border-2 border-transparent rounded-md sm:pr-1 focus:outline-none focus:border-gray-200 transition space-x-1 dark:border-none">
-                        <img class="flex h-10 w-10 rounded-md object-cover" src="{{ Auth::user()->profile_photo_url }}"
-                            alt="{{ Auth::user()->name }}" />
+                        <img class="flex h-12 w-12 rounded-full object-cover"
+                            src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
                         <div class=" hidden sm:flex flex-col text-left">
                             <div class="font-medium text-base text-gray-800 dark:text-gray-100 leading-tight">
                                 {{ Auth::user()->name }}
@@ -101,7 +101,6 @@
                         <button type="button"
                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition">
                             {{ Auth::user()->name }}
-
                             <svg class="ml-2 -mr-0.5 h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
                                 fill="currentColor">
                                 <path fill-rule="evenodd"
