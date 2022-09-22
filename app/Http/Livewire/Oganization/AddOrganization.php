@@ -140,7 +140,7 @@ class AddOrganization extends Component
             $this->kebeles = Kebele::where('woreda_id', $this->woreda_id)->get();
             $this->users;
             $this->user_id;   
-            return view('livewire.oganization.add-organization');
+            return view('livewire.oganization.add-organization')->extends('main.organization.index');
         }
 
         public function addOrganization()

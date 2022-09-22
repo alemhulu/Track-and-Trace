@@ -48,6 +48,6 @@ class ListOrganization extends Component
             ->when($this->column,function($q,$column){
                 return $q->orderBy($this->column,$this->sortType);
             })->paginate($this->recordes)
-    ]);
+    ])->extends('main.organization.index');
     }
 }

@@ -7,27 +7,18 @@
 
     <div class="mb-6">
         <x-page.nav col='4'>
-            <x-page.nav-link class="bg-yellow-500" title="List" tabLink="List" icon="fi fi-rr-list" total="0" />
-            <x-page.nav-link class="bg-yellow-600" title="Add Organization" tabLink="AddOrganization"
+            <x-page.nav-link class="bg-yellow-500" title="List" link="organization.list" icon="fi fi-rr-list"
+                total="0" />
+            <x-page.nav-link class="bg-yellow-600" title="Add Organization" link="organization.add"
                 icon="fi fi-rr-plus" />
-            <x-page.nav-link class="bg-yellow-700" title="Add Store" tabLink="AddStore" icon="fi fi-rr-plus" />
-            <x-page.nav-link class="bg-yellow-800" title="Type" tabLink="Type" icon="fi fi-rr-settings" total="0" />
+            <x-page.nav-link class="bg-yellow-700" title="Add Store" link="organization.store-add"
+                icon="fi fi-rr-plus" />
+            <x-page.nav-link class="bg-yellow-800" title="Type" link="organization.type" icon="fi fi-rr-settings"
+                total="0" />
         </x-page.nav>
 
-        <div id="List" class="mt-6  tab mb-6" style="display:none; ">
-            <livewire:oganization.list-organization>
-        </div>
-
-        <div id="AddOrganization" class="mt-6  tab mb-6" style="display:none; ">
-            <livewire:oganization.add-organization>
-        </div>
-
-        <div id="AddStore" class="mt-6  tab mb-6" style="display:none; ">
-            <livewire:oganization.add-store>
-        </div>
-
-        <div id="Type" class="mt-6  tab mb-6" style="display:none; ">
-            <livewire:oganization.organization-type>
+        <div class="mt-6  tab mb-6">
+            @yield('content')
         </div>
     </div>
 </x-app-layout>

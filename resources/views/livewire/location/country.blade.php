@@ -4,7 +4,6 @@
             <div>
                 <x-jet-label for="name" value="{{ __('Country') }}" />
                 <x-jet-input type="text" wire:model.defer="name" placeholder="Type Country Name" />
-                <x-jet-input-error for="name" alert="Country Name" />
             </div>
         </x-form.card>
     </aside>

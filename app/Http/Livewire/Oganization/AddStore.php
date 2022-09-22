@@ -71,6 +71,6 @@ class AddStore extends Component
     {
         $this->users;
         $this->user_id;   
-        return view('livewire.oganization.add-store');
+        return view('livewire.oganization.add-store')->extends('main.organization.index');
     }
 }

@@ -137,7 +137,7 @@ class Country extends Component
         ['countries'=>ModelsCountry::when($this->column,function($q,$column){
                 return $q->orderBy($this->column,$this->sortType);
             })->paginate($this->recordes)
-    ]);
+    ])->extends('main.location.index');
     }
 
     // Clear input variables 

@@ -8,6 +8,6 @@ class ListBook extends Component
 {
     public function render()
     {
-        return view('livewire.book.list-book');
+        return view('livewire.book.list-book')->extends('main.book.index');
     }
 }
