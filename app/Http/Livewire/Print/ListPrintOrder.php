@@ -8,6 +8,6 @@ class ListPrintOrder extends Component
 {
     public function render()
     {
-        return view('livewire.print.list-print-order');
+        return view('livewire.print.list-print-order')->extends('main.print-order.index');
     }
 }

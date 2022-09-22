@@ -8,6 +8,6 @@ class AddPrintOrder extends Component
 {
     public function render()
     {
-        return view('livewire.print.add-print-order');
+        return view('livewire.print.add-print-order')->extends('main.print-order.index');
     }
 }

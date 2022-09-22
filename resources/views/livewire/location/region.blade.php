@@ -9,7 +9,6 @@
                     <option value="{{ $country->id }}">{{ $country->name }}</option>
                     @endforeach
                 </x-form.select>
-                <x-jet-input-error for="country_id" alert="Select Country" />
             </div>
 
             <div>
@@ -21,14 +20,12 @@
                     <x-form.radio value="1" type="text" wire:model.defer="is_city" label="City" name="is_city"
                         id="inactive" />
                 </div>
-                <x-jet-input-error for="is_city" alert="Region or City Type" />
             </div>
 
             <div>
                 <x-jet-label for="name" value="{{ __('Region / City') }}" />
                 <x-jet-input type="text" wire:model.defer="name" placeholder="Type Rgion or City Name"
                     class="block w-full" />
-                <x-jet-input-error for="name" alert="Rgion or City Name" />
             </div>
         </x-form.card>
     </aside>

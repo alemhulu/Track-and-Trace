@@ -9,7 +9,6 @@
                     <option value={{ $country->id }}>{{ $country->name }}</option>
                     @endforeach
                 </x-form.select>
-                <x-jet-input-error for="country_id" alert="Select Country" />
             </div>
 
             <div>
@@ -20,7 +19,6 @@
                     <option value={{ $region->id }}>{{ $region->name }}</option>
                     @endforeach
                 </x-form.select>
-                <x-jet-input-error for="region_id" alert="Select Region" />
             </div>
 
             <div>
@@ -31,7 +29,6 @@
                     <option value={{ $zone->id }}>{{ $zone->name }}</option>
                     @endforeach
                 </x-form.select>
-                <x-jet-input-error for="zone_id" alert="Select Zone" />
             </div>
 
             <div>
@@ -42,13 +39,11 @@
                     <option value={{ $woreda->id }}>{{ $woreda->name }}</option>
                     @endforeach
                 </x-form.select>
-                <x-jet-input-error for="woreda_id" alert="Select Woreda" />
             </div>
 
             <div>
                 <x-jet-label for="name" value="{{ __('Kebele') }}" />
                 <x-jet-input type="text" wire:model.defer="name" placeholder="Type Kebele Name" class="block w-full" />
-                <x-jet-input-error for="name" alert="Kebele Name" />
             </div>
         </x-form.card>
     </aside>
