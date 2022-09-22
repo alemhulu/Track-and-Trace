@@ -1,5 +1,5 @@
 @props(['users', 'select', 'hide'=>0, 'user'=>null])
-<div>
+<div class="">
     {{-- <x-label for="username" value="{{ $value }}" /> --}}
     <div class="flex rounded-md shadow-sm relative">
         <x-jet-input type="search" wire:model="select" placeholder="Search ID, Name or Phone"
@@ -10,7 +10,7 @@
         <x-jet-input-error for="search" alert="select Value" />
 
         @if (strlen($select) >1 && strlen($select)< 11) <ul
-            class="divide-y divide-gray-100 block absolute top-14 max-w-md bg-white dark:bg-gray-800 border border-lime-400 rounded-lg shadow-xl">
+            class="divide-y divide-gray-100 block absolute top-14 max-w-md bg-white dark:bg-gray-800 border border-lime-400 rounded-lg shadow-xl overflow-y-auto max-h-[500px] overflow-x-hidden">
             {{-- <x-cardloader /> --}}
             @forelse($users as $user)
             <li wire:target='select' wire:click="setUserId({{$user->id}})">

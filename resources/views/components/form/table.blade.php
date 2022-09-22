@@ -8,6 +8,9 @@ $search = "";
 }
 @endphp
 <div class="relative py-6  lg:py-3 bg-white dark:bg-gray-800 sm:rounded-lg lg:col-span-8 col-span-full overflow-auto">
+    <div wire:loading>
+        <x-action.cardloader />
+    </div>
 
     <x-form.header search="{{ $search }}">
         {{ __($title) }}

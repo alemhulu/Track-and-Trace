@@ -1,4 +1,4 @@
-<div>
+<div class="relative">
     <x-form.table title="Organizations List">
         <x-slot name="tableHeaders">
             <x-data-table.th scope="col">#</x-data-table.th>
@@ -18,22 +18,24 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-organization.info image="logom.png" name="Ministry of Education" email="mail@ministry.com"
-                        phone="0987654321" />
+                    <x-organization.info image="{{ $record->logo }}" name="{{ $record->name }}"
+                        email="{{ $record->email }}" phone="{{ $record->mobile }}" />
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-organization.location country="Ethiopia" region="Addis Ababa" zone="Arada" />
+                    <x-organization.location country="{{ $record->country->name }}" region="{{ $record->region->name }}"
+                        zone="{{ $record->zone->name ?? '-------' }}" />
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-organization.contact name="Abebe Kebede" email="abe@kebede.com" phone="0987654312" />
+                    <x-organization.info h=12 image="{{ $record->contact->profile_photo_url }}"
+                        name="{{ $record->contact->name }}" email="{{ $record->contact->email }}"
+                        phone="{{ $record->contact->phone ?? '-------' }}" />
                 </td>
 
                 <td class=" px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm font-semibold text-gray-500">
-                        Organization
-                    </div>
+                    <x-button class="py-1 text-blue-900 font-bold" btnType="info">{{ $record->type->name }}
+                    </x-button>
                 </td>
 
                 <td class="px-5 py-2">
@@ -44,5 +46,6 @@
             <x-data-table.empty colspan=6 />
             @endforelse
         </x-slot>
+        {{$organizations->links()}}
     </x-form.table>
 </div>

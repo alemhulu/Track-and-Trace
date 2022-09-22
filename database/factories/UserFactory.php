@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 use Laravel\Jetstream\Features;
+use Faker\Generator as Faker; 
 
 class UserFactory extends Factory
 {

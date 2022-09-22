@@ -16,8 +16,8 @@ return new class extends Migration
         Schema::create('organization_types', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();  
-            $table->integer('code')->unique()->nullable();
-            $table->string('description')->nullable();
+            $table->string('code')->unique()->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
