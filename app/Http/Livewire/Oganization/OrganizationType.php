@@ -144,21 +144,23 @@ class OrganizationType extends Component
     ])->extends('main.organization.index');
     }
 
-    // // Clear input variables 
-    // public function clearid(){
-    //     $this->name="";
-    // }
-    
-    public function resetFields()
+    // Clear input variables 
+    public function clearid()
     {
         $this->name="";
     }
-    // public function mount()
-    // {
-    //     $this->types = OrganizationType::all();
-    // }
-    // public function render()
-    // {
-    //     return view('livewire.oganization.organization-type');
-    // }
+    
+//     public function resetFields()
+//     {
+//         $this->name="";
+//     }
+//     public function mount()
+//     {
+//         $this->types = OrganizationType::all();
+//     }
+//     public function render()
+//     {
+//         return view('livewire.oganization.organization-type');
+//     }
+
 }
