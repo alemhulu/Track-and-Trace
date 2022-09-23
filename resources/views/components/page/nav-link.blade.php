@@ -1,15 +1,15 @@
 @props(['title', 'total', 'tabLink'=>'', 'icon', 'link'=>'#'])
 
-<li @class(['col-span-1 flex shadow-sm hover:shadow-md rounded-md hover:font-semibold dark:shadow-gray-800','font-bold
-    shadow-lg'=>request()->routeIs($link)])>
-    <a @if ($link !='#' ) href="{{ route($link) }}" @endif class="flex">
-        <button {{ $attributes ->merge(['type' => 'button', 'class' => 'flex-shrink-0 flex items-center justify-center
-            w-16 text-white text-sm font-semibold rounded-l-md uppercase']) }}>
-            {{ substr($title,0, 3) }}
-        </button>
+<li @class(['col-span-1 flex shadow-sm hover:shadow-md rounded-lg hover:font-semibold dark:shadow-gray-800
+    bg-white','font-bold shadow-xl bg-blue-50 '=> request()->routeIs($link)])>
+    <a @if ($link !=' #' ) href="{{ route($link) }}" @endif class="flex ">
+    <button {{ $attributes ->merge(['type' => 'button', 'class' => 'flex-shrink-0 flex items-center justify-center
+        w-16 h-18 text-white text-sm font-semibold rounded-l-lg uppercase']) }}>
+        {{ substr($title,0, 3) }}
+    </button>
     </a>
 
-    <div class="flex-1 flex items-center justify-between bg-white rounded-r-md truncate dark:bg-gray-800">
+    <div class="flex-1 flex items-center justify-between rounded-r-md truncate">
         <div class="flex-1 px-4 py-2 text-sm truncate">
             <a @if ($link !='#' ) href="{{ route($link) }}" @endif
                 class="text-gray-600 dark:text-gray-300">{{ $title }}</a>

@@ -5,6 +5,10 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Livewire\Book\AddBook;
 use App\Http\Livewire\Book\ListBook;
+use App\Http\Livewire\BookPackage\AvialableBookPackage;
+use App\Http\Livewire\BookPackage\BookPackageIndex;
+use App\Http\Livewire\BookPackage\BookPackageRequest;
+use App\Http\Livewire\BookPackage\SendBookPackage;
 use App\Http\Livewire\Distribution\AddDistribution;
 use App\Http\Livewire\Distribution\ListDistribution;
 use App\Http\Livewire\Location\Country;
@@ -60,7 +64,12 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/print-order/order', AddPrintOrder::class)->name('print-order.order');
     Route::get('/print-order/list', ListPrintOrder::class)->name('print-order.list');
 
-    Route::get('/book-packages', function () { return view('main.book-package.index'); })->name('book-packages');
+    // Book Packages routes 
+    Route::get('/book-packages', BookPackageIndex::class)->name('book-packages');
+    Route::get('/book-packages/request', BookPackageRequest::class)->name('packages.request');
+    Route::get('/book-packages/send', SendBookPackage::class)->name('packages.send');
+    Route::get('/book-packages/available', AvialableBookPackage::class)->name('packages.available');
+
     Route::get('/warehouse', function () { return view('main.warehouse.index'); })->name('warehouse');
 
     // Book routes

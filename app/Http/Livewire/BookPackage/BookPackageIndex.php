@@ -8,6 +8,6 @@ class BookPackageIndex extends Component
 {
     public function render()
     {
-        return view('livewire.book-package.book-package-index');
+        return view('livewire.book-package.book-package-index')->extends('main.book-package.index');
     }
 }

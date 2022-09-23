@@ -1,37 +1,56 @@
-<div>
-    <section class="bg-white dark:bg-gray-800 rounded-lg">
-        <div class="px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
-            <div class="my-4">
-                <dl class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
-                            Total Packages
-                        </dt>
-                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl"> 600 </dd>
-                    </div>
+<div class="bg-white rounded-lg">
+    <x-stat.section class="" name="Packages Information">
+        <x-stat.list value="3792" text="Total Packages" />
+        <x-stat.list value="2400" text="Total Packages Sent" />
+        <x-stat.list value="3792" text="Total Packages Received" />
+        <x-stat.list value="1392" text="Total Packages Available" />
+    </x-stat.section>
 
-                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
-                            Total Packages Sent
-                        </dt>
-                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">420</dd>
-                    </div>
 
-                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
-                            Total Packages Received
-                        </dt>
-                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">600</dd>
-                    </div>
+    <x-form.section class="mx-8 border-b" title="Available Packages Per Book"
+        subtitle="All Package Information Grouped By Subject For all Grades" />
 
-                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
-                            Packages Available in Stores
-                        </dt>
-                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">180</dd>
-                    </div>
-                </dl>
-            </div>
-        </div>
-    </section>
+    <div class="divide-y">
+        <x-stat.section name="Biology">
+            <x-stat.grade-list grade="9" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="10" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="11" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="12" sent="100" received="158" available="58" />
+        </x-stat.section>
+
+        <x-stat.section name="Physics">
+            <x-stat.grade-list grade="9" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="10" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="11" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="12" sent="100" received="158" available="58" />
+        </x-stat.section>
+
+        <x-stat.section name="Chemistry">
+            <x-stat.grade-list grade="9" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="10" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="11" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="12" sent="100" received="158" available="58" />
+        </x-stat.section>
+
+        <x-stat.section name="English">
+            <x-stat.grade-list grade="9" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="10" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="11" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="12" sent="100" received="158" available="58" />
+        </x-stat.section>
+
+        <x-stat.section name="Maths">
+            <x-stat.grade-list grade="9" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="10" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="11" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="12" sent="100" received="158" available="58" />
+        </x-stat.section>
+
+        <x-stat.section name="History">
+            <x-stat.grade-list grade="9" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="10" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="11" sent="100" received="158" available="58" />
+            <x-stat.grade-list grade="12" sent="100" received="158" available="58" />
+        </x-stat.section>
+    </div>
 </div>
