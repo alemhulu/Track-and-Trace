@@ -59,7 +59,7 @@
             <x-data-table.empty colspan=5 />
             @endforelse
         </x-slot>
-        {{-- {{$types->links()}} --}}
+        {{$types->links()}}
     </x-form.table>
 
     {{-- Edit country Modal --}}
