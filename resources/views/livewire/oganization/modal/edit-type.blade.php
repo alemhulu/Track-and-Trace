@@ -12,11 +12,13 @@
             <x-jet-input type="text" wire:model.defer="organizationtype.name" />
             <x-jet-input-error for="organizationtype.name" alert="OrganizationType Name" />
         </div>
+
         <div>
             <x-jet-label for="code" value="{{ __('Code') }}" />
-            <x-jet-input type="integer" wire:model.defer="Code" />
+            <x-jet-input type="number" wire:model.defer="Code" />
             <x-jet-input-error for="organizationtype.code" alert="OrganizationType Code" />
         </div>
+
         <div>
             <x-jet-label for="description" value="{{ __('Description') }}" />
             <x-jet-input type="text" wire:model.defer="Description" />
