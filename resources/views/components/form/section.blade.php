@@ -1,5 +1,5 @@
 @props(['title' => 'Title', 'subtitle' => 'Subtitle'])
-<div>
+<div {{ $attributes->merge([ 'class' => '']) }}>
     <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
         {{ $title }}
     </h3>

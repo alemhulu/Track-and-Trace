@@ -79,7 +79,7 @@
 
                     <td class="px-5 py-2 whitespace-nowrap">
                         <x-book.book-info
-                            image="https://document.kuraztech.com/books/small//1580222211Grade%2011%20Maths.png"
+                            image="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1554186848i/44768375._UY844_SS844_.jpg"
                             grade="Grade 11" subject="Mathematics" type="Student Text Book" edition="1st Edition 2010"
                             ISBN="5732482" />
                     </td>
@@ -110,7 +110,7 @@
 
                     <td class="px-5 py-2 whitespace-nowrap">
                         <x-book.book-info
-                            image="https://document.kuraztech.com/books/small//1580214233Grade%209%20Chemistry%20.png"
+                            image="https://i.gr-assets.com/images/S/compressed.photo.goodreads.com/books/1554186690i/44768361._UY795_SS795_.jpg"
                             grade="Grade 9" subject="Chemistry" type="Student Text Book" edition="1st Edition 2007"
                             ISBN="5678644" />
                     </td>
