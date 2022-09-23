@@ -19,7 +19,7 @@
             :active="(request()->routeIs('print-order') | request()->routeIs('print-order.*'))" />
 
         <x-side-navigation.link href="/book-packages" icon="fi-rr-box" name="Packages"
-            :active="request()->routeIs('book-packages')" />
+            :active="(request()->routeIs('book-packages') | request()->routeIs('packages.*'))" />
 
         <x-side-navigation.link href="/warehouse" icon="fi-rr-home-location-alt " name="Warehouse"
             :active="request()->routeIs('warehouse')" />

@@ -1,37 +1,9 @@
 <div>
-    <section class="bg-white dark:bg-gray-800 rounded-lg">
-        <div class="px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
-            <div class="my-4">
-                <dl class="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
-                            Total Wearhouses
-                        </dt>
-
-                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">
-                            700
-                        </dd>
-                    </div>
-
-                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
-                            Total Stores
-                        </dt>
-
-                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">2.4K</dd>
-                    </div>
-
-                    <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                        <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-300">
-                            Total Books in Stores
-                        </dt>
-
-                        <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">2.1M</dd>
-                    </div>
-                </dl>
-            </div>
-        </div>
-    </section>
+    <x-stat.section name="Warehouse Info" col=3>
+        <x-stat.list value="700" text="Total Warehouse"></x-stat.list>
+        <x-stat.list value="2.4K" text="Total Stores"></x-stat.list>
+        <x-stat.list value="2.1M" text="Total Books In Stores"></x-stat.list>
+    </x-stat.section>
 
     <x-form.table title="Wearhouse List">
         <x-slot name="tableHeaders">
