@@ -8,6 +8,7 @@ use App\Http\Livewire\Book\ListBook;
 use App\Http\Livewire\BookPackage\AvialableBookPackage;
 use App\Http\Livewire\BookPackage\BookPackageIndex;
 use App\Http\Livewire\BookPackage\BookPackageRequest;
+use App\Http\Livewire\BookPackage\PackagesRequestInfo;
 use App\Http\Livewire\BookPackage\SendBookPackage;
 use App\Http\Livewire\Distribution\AddDistribution;
 use App\Http\Livewire\Distribution\ListDistribution;
@@ -69,6 +70,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/book-packages/request', BookPackageRequest::class)->name('packages.request');
     Route::get('/book-packages/send', SendBookPackage::class)->name('packages.send');
     Route::get('/book-packages/available', AvialableBookPackage::class)->name('packages.available');
+    Route::get('/book-packages/request-info', PackagesRequestInfo::class)->name('packages.request-info');
 
     Route::get('/warehouse', function () { return view('main.warehouse.index'); })->name('warehouse');
 

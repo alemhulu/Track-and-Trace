@@ -6,7 +6,6 @@
             <x-data-table.th scope="col"> {{__('Package') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Organization') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Conact Person') }}</x-data-table.th>
-            <x-data-table.th scope="col"> {{__('Request Date') }}</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Status') }}</x-data-table.th>
             <x-data-table.th scope="col" class="sr-only">{{__('Action') }}</x-data-table.th>
         </x-slot>
@@ -40,16 +39,12 @@
                         email="abe@kebede.com" phone="0987654312" />
                 </td>
 
-                <td class="px-5 py-2 ">
-                    <div class="text-gray-600 font-semibold dark:text-gray-300">1 day ago</div>
-                </td>
-
                 <td class="px-5 py-2 whitespace-nowrap">
                     <x-button btnType="danger" class="">Rejected</x-button>
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" />
+                    <x-action.table-button id="{{ $record }}" view="viewRequestInfo" />
                 </td>
             </x-data-table.tr>
 
@@ -79,16 +74,12 @@
                         email="abe@kebede.com" phone="0987654312" />
                 </td>
 
-                <td class="px-5 py-2 ">
-                    <div class="text-gray-600 font-semibold dark:text-gray-300">13 hours ago</div>
-                </td>
-
                 <td class="px-5 py-2 whitespace-nowrap">
                     <x-button btnType="success" class="">Accepted</x-button>
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" />
+                    <x-action.table-button id="{{ $record }}" view="viewRequestInfo" />
                 </td>
             </x-data-table.tr>
 
@@ -116,16 +107,12 @@
                         email="abe@kebede.com" phone="0987654312" />
                 </td>
 
-                <td class="px-5 py-2 ">
-                    <div class="text-gray-600 font-semibold dark:text-gray-300">4 hours ago</div>
-                </td>
-
                 <td class="px-5 py-2 whitespace-nowrap">
                     <x-button btnType="warning" class="animate-pulse hover:animate-none">Pending</x-button>
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" />
+                    <x-action.table-button id="{{ $record }}" view="viewRequestInfo" />
                 </td>
             </x-data-table.tr>
             {{-- @empty --}}
