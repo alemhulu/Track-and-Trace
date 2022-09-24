@@ -1,4 +1,4 @@
-<div class="bg-white rounded-lg">
+<div class="bg-white dark:bg-gray-800 rounded-lg">
     <x-stat.section class="" name="Packages Information">
         <x-stat.list value="3792" text="Total Packages" />
         <x-stat.list value="2400" text="Total Packages Sent" />
@@ -7,10 +7,10 @@
     </x-stat.section>
 
 
-    <x-form.section class="mx-8 border-b" title="Available Packages Per Book"
+    <x-form.section class="mx-8 border-b dark:border-gray-700" title="Available Packages Per Book"
         subtitle="All Package Information Grouped By Subject For all Grades" />
 
-    <div class="divide-y">
+    <div class="divide-y dark:divide-gray-700">
         <x-stat.section name="Biology">
             <x-stat.grade-list grade="9" sent="100" received="158" available="58" />
             <x-stat.grade-list grade="10" sent="100" received="158" available="58" />

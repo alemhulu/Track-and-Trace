@@ -1,4 +1,4 @@
-@props(['function', 'title' ,'buttons'=> true])
+@props(['function'=>'', 'title' ,'buttons'=> true])
 <form wire:submit.prevent={{ $function }} class="h-auto">
     <div class="relative mb-10 py-6 px-2 sm:px-4 lg:py-0 lg:px-0 lg:col-span-8 bg-white sm:rounded-lg dark:bg-gray-800">
         <x-form.header>

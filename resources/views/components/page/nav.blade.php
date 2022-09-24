@@ -20,3 +20,9 @@
     {{$slot}}
 </ul>
 @endif
+
+@if ($col == 6)
+<ul class="mt-3 grid grid-cols gap-4 sm:gap-5 sm:grid-cols-2 lg:grid-cols-6">
+    {{$slot}}
+</ul>
+@endif
