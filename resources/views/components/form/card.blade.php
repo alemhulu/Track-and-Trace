@@ -1,11 +1,12 @@
 @props(['function'=>'', 'title' ,'buttons'=> true])
 <form wire:submit.prevent={{ $function }} class="h-auto">
-    <div class="relative mb-10 py-6 px-2 sm:px-4 lg:py-0 lg:px-0 lg:col-span-8 bg-white sm:rounded-lg dark:bg-gray-800">
+    <div
+        class="relative mb-10 py-6 sm:px-4 lg:py-0 lg:px-0 lg:col-span-8 bg-white sm:rounded-lg rounded-md dark:bg-gray-800">
         <x-form.header>
             {{ __($title) }}
         </x-form.header>
 
-        <div class="px-2 sm:px-4 pt-4 mb-5">
+        <div class="px-2 sm:px-4 pt-2 mb-5">
             <div class="space-y-5 ">
                 {{$slot }}
             </div>

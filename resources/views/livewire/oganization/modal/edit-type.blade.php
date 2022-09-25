@@ -1,6 +1,3 @@
-{{-- <div>
-    {{-- Knowing others is intelligence; knowing yourself is true wisdom. --}}
-{{-- </div> --}}
 <x-data-table.modal name="editType" maxWidth="sm">
     <x-slot name="title">
         OrganizationType Edit

@@ -1,7 +1,7 @@
 <div>
     <x-form.card title="Packages Request Info" buttons="">
 
-        <div class="flex flex-auto lg:justify-between flex-wrap space-x-2 gap-5 items-center">
+        <div class="flex flex-auto lg:justify-between flex-wrap space-x-2 gap-x-5 items-center">
             <div class="">
                 <x-jet-label class="text-gray-400" value="Book"></x-jet-label>
                 <x-book.book-info image="https://i.ytimg.com/vi/NNKPR6nICJI/maxresdefault.jpg" grade="Grade 10"
@@ -31,8 +31,8 @@
             </div>
         </div>
 
-        <div class="pb-4 flex justify-between">
-            <div class="">
+        <div class="flex justify-between flex-wrap ml-2">
+            <div class="sm:pb-4">
                 <x-jet-label class="text-gray-400" value="Request Date"></x-jet-label>
                 <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                     <i class="flex text-2xl fi fi-rr-time-check"></i>
@@ -40,13 +40,24 @@
                 </div>
             </div>
 
-            <div class="space-x-2">
+            <div class="space-x-2 mt-8 sm:mt-0">
                 <x-button type="button" btnType="secondary">CANCEL</x-button>
-                <x-button type="button" btnType="danger">REJECT</x-button>
-                <x-button type="button" btnType="success" disabled>ACCEPT</x-button>
+                <a href="#confirmModal">
+                    <x-button type="button" btnType="danger">REJECT</x-button>
+                </a>
+
+                <a href="#receivingForm">
+                    <x-button type="button" btnType="success">ACCEPT</x-button>
+                </a>
             </div>
         </div>
     </x-form.card>
 
-    <livewire:book-package.packages-request-list>
+    {{-- Table --}}
+    <livewire:book-package.packages-request-list />
+
+    {{-- Modals --}}
+    <livewire:book-package.packages-receiving-from />
+    <livewire:book-package.packages-rejecting-from />
+    <x-form.confirm name="confirmModal" type="frist" message="reject" second="reasonForm" />
 </div>

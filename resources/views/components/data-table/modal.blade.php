@@ -1,4 +1,4 @@
-@props(['name', 'maxWidth','type'])
+@props(['name', 'maxWidth','type', 'buttons' => true])
 
 @php
 $maxWidth = [
@@ -26,7 +26,7 @@ $maxWidth = [
         x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-90"
         class="fixed inset-0 {{ $maxWidth }} bg-white rounded-lg py-3 p-4 m-auto max-h-max">
-        <form wire:submit.prevent="submit">
+        <form wire:ignore.self wire:submit.prevent="submit">
             <aside class="flex flex-col h-full justify-between">
                 {{-- Form Title --}}
                 <div class="border-b border-gray-200 mb-4 sm:px-4">
@@ -42,12 +42,13 @@ $maxWidth = [
                 </div>
 
                 {{-- Form Body --}}
-                <div class="px-4 pb-5 pt-2 space-y-4">
+                <div class="px-4 pb-5 space-y-4">
                     @isset($body)
                     {{ $body }}
                     @endisset
                 </div>
 
+                @if($buttons)
                 {{-- Form Footer --}}
                 <div class="px-4 py-3 text-right sm:px-6">
                     <a href="#" wire:click='clearid'>
@@ -59,14 +60,12 @@ $maxWidth = [
                             @endisset
                         </x-jet-secondary-button>
                     </a>
-                    @isset($type)
-                    @else
                     <x-jet-button onclick="location.href='#';" type="submit" class="ml-4 disabled:opacity-40 flex">
                         <x-action.button-loader wire:loading />
                         Save
                     </x-jet-button>
-                    @endisset
                 </div>
+                @endif
             </aside>
             {{-- <x-action.cardloader /> --}}
         </form>

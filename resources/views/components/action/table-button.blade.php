@@ -1,4 +1,4 @@
-@props(['id', 'view', 'edit', 'delete', 'add', 'text'=>'Add'])
+@aware(['id' => '', 'view', 'edit', 'delete', 'add', 'text'=>'Add'])
 
 @php
 $btn = "flex justify-center items-center px-2 py-1.5 transition
@@ -30,7 +30,6 @@ focus:bg-red-400";
 @endphp
 
 <div class="flex  items-center text-xs">
-
     @isset($add)
     <a wire:click="{{ $add }}()">
         <div class="{{$btn }}">
@@ -57,7 +56,7 @@ focus:bg-red-400";
     @endisset
 
     @isset($delete)
-    <a wire:click="{{ $delete }}({{$id}})">
+    <a href="#{{ $delete }}" x-on:Click="deleteId = {{ $id }}" wire:click="deleteId({{ $id }})">
         <div class="{{ $danger }}"">
             <i class=" fi fi-rr-trash flex dark:text-gray-300"></i>
         </div>

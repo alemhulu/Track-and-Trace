@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\User as ModelsUser;
+use App\View\Components\user;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,6 +27,11 @@ class Organization extends Model
         'organization_type_id',
      ];
 
+     public function users()
+     {
+         return $this->hasMany(ModelsUser::class);
+     }
+
      public function type()
      {
          return $this->belongsTo(OrganizationType::class, 'organization_type_id');
@@ -32,7 +39,7 @@ class Organization extends Model
 
      public function contact()
     {
-        return $this->belongsTo(user::class, 'assigned_user_id');
+        return $this->belongsTo(ModelsUser::class, 'assigned_user_id');
     }
 
      public function woreda()
