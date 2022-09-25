@@ -39,7 +39,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record->id }}" edit="editKebele" delete="deleteKebele" />
+                    <x-action.table-button id="{{ $record->id }}" edit="editOrganization" delete="deleteOrganization" />
                 </td>
             </x-data-table.tr>
             @empty
@@ -48,4 +48,7 @@
         </x-slot>
         {{$organizations->links()}}
     </x-form.table>
+
+    <x-form.confirm name="deleteOrganization" id="{{ $deleteId }}" />
+
 </div>

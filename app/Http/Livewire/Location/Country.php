@@ -69,6 +69,11 @@ class Country extends Component
         $this->emit('editCountry', $id);
     }
 
+    public $deleteId ="";
+
+    public function deleteId($id){
+        $this->deleteId = $id;
+    }
     // Delete the available data
     public function deleteCountry(ModelsCountry $country){
         if($country->regions->count()){

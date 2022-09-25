@@ -1,4 +1,4 @@
-<div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
+<div x-data="{ deleteId: ''}" class="lg:grid lg:grid-cols-12 lg:gap-x-5">
     <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white dark:bg-gray-800 sm:rounded-md">
         <x-form.card function="addCountry" title="Add New Country">
             <div>
@@ -40,5 +40,9 @@
     </x-form.table>
 
     {{-- Edit country Modal --}}
-    <livewire:location.modal.edit-country>
+    <livewire:location.modal.edit-country />
+
+    <div x-show="deleteId != ''">
+        <x-form.confirm name="deleteCountry" id="{{ $deleteId }}" />
+    </div>
 </div>
