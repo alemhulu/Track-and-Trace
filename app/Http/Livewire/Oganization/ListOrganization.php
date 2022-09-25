@@ -50,4 +50,59 @@ class ListOrganization extends Component
             })->paginate($this->recordes)
     ])->extends('main.organization.index');
     }
+
+    public $deleteId ="";
+
+    public function deleteId($id){
+        $this->deleteId = $id;
+    }
+
+    // Delete the available data
+    public function deleteOrganization(Organization $Organization){
+        if($Organization->users->count()){
+            return $this->deleteError('Organization cannot be deleted, it has related data!');
+        }
+        $Organization->delete();
+        $this->alertDelete();
+        $this->resetPage();
+    }
+
+        // Clear input variables 
+        public function clearid(){
+            $this->name="";
+        }
+
+        
+    // Alert Error Notification
+    public function alertError($name)
+    {
+        $this->dispatchBrowserEvent(
+            'alert', ['type' => 'error',  'message' => $name.' Required!']
+        );
+    }
+
+    // Alert Success Notification
+    public function alertSuccess()
+    {
+        $this->dispatchBrowserEvent(
+            'alert', ['type' => 'success',  'message' => 'Organization Added Successfuly']
+        );
+    }
+
+     // Alert Delete Notification
+    public function alertDelete()
+    {
+        $this->dispatchBrowserEvent(
+            'alert',
+            ['type' => 'success',  'message' => 'Organization Deleted Successfully!']
+        );
+    }
+   
+    // Reset Error 
+    public function hydrate()
+    {
+        $this->resetErrorBag();
+        $this->resetValidation();
+    }
+
 }

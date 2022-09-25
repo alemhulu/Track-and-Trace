@@ -12,4 +12,10 @@ class PackagesRequestInfo extends Component
     {
         return view('livewire.book-package.packages-request-info')->extends('main.book-package.index');
     }
+
+    // Clear input variables 
+    public function clearid(){
+    
+    }
+
 }

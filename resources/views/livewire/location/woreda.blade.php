@@ -1,4 +1,4 @@
-<div class="lg:grid lg:grid-cols-12 lg:gap-x-5">
+<div x-data="{ deleteId: ''}" class="lg:grid lg:grid-cols-12 lg:gap-x-5">
     <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white dark:bg-gray-800 sm:rounded-md">
         <x-form.card function="addWoreda" title="Add New Woreda">
             <div>
@@ -83,5 +83,8 @@
             @endforelse
         </x-slot>
     </x-form.table>
-    <livewire:location.modal.edit-woreda>
+    <livewire:location.modal.edit-woreda />
+    <div x-show="deleteId != ''">
+        <x-form.confirm name="deleteWoreda" id="{{ $deleteId }}" />
+    </div>
 </div>

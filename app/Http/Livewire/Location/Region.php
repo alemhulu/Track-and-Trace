@@ -103,6 +103,12 @@ class Region extends Component
         $this->emit('editRegion',$id);
     }
 
+    public $deleteId ="";
+
+    public function deleteId($id){
+        $this->deleteId = $id;
+    }
+    
     public function deleteRegion(regions $region){
         if($region->zones->count()){
             return $this->deleteError('Region cannot be deleted, it has related data!');
@@ -158,4 +164,9 @@ class Region extends Component
         $this->name="";
         $this->code="";
     }
+
+        // Clear input variables 
+        public function clearid(){
+            $this->name="";
+        }
 }

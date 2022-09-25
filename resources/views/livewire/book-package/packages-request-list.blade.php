@@ -34,7 +34,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewRequestInfo" />
+                    <x-action.table-button id="{{ $record }}" view="viewPackageInfo" />
                 </td>
                 </x-data-table.tr>
                 @endfor

@@ -123,6 +123,12 @@ class Zone extends Component
         $this->emit('editZone',$id);
     }
 
+    public $deleteId ="";
+
+    public function deleteId($id){
+        $this->deleteId = $id;
+    }
+    
     public function deleteZone(zones $zone){
         if($zone->woredas->count()){
             return $this->deleteError('Zone cannot be deleted, it has related data!');
@@ -184,4 +190,9 @@ class Zone extends Component
         $this->name="";
         $this->code="";
     }
+
+        // Clear input variables 
+        public function clearid(){
+            $this->name="";
+        }
 }
