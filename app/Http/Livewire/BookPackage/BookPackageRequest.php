@@ -9,7 +9,7 @@ class BookPackageRequest extends Component
 
     public function viewRequestInfo($id)
     {
-        return redirect()->route('packages.request-info');
+        return redirect()->route('packages.request.info');
     }
     
     public function render()

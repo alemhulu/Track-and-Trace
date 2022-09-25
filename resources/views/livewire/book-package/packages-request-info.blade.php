@@ -41,11 +41,12 @@
             </div>
 
             <div class="space-x-2 mt-8 sm:mt-0">
-                <x-button type="button" btnType="secondary">CANCEL</x-button>
+                <a href="{{ route('packages.request') }}">
+                    <x-button type="button" btnType="secondary">CANCEL</x-button>
+                </a>
                 <a href="#confirmModal">
                     <x-button type="button" btnType="danger">REJECT</x-button>
                 </a>
-
                 <a href="#receivingForm">
                     <x-button type="button" btnType="success">ACCEPT</x-button>
                 </a>
