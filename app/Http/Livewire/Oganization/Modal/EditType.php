@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Oganization\Modal;
 
-use App\Models\OrganizationType as ModelsOrganizationType;;
+use App\Models\OrganizationType;
 use Livewire\Component;
 class EditType extends Component
 {

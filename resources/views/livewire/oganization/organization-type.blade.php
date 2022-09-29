@@ -62,4 +62,5 @@
 
     {{-- Edit country Modal --}}
     <livewire:oganization.modal.edit-type>
+        <x-form.confirm name="deleteCountry" id="{{ $deleteId }}" />
 </div>

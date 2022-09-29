@@ -74,10 +74,7 @@ class OrganizationType extends Component
     }
 
     // Delete the available data
-    public function deleteType(ModelsOrganizationType $OrganizationType){
-        // if($OrganizationType->name->count()){
-        //     return $this->deleteError('OrganizationType cannot be deleted, it has related data!');
-        // }
+    public function deleteOrganizationType(ModelsOrganizationType $OrganizationType){
         $OrganizationType->delete();
         // $code->delete();
         // $description->delete();
@@ -150,31 +147,8 @@ class OrganizationType extends Component
     public function clearid()
     {
         $this->name="";
-<<<<<<< HEAD
-        $this->code="";
-        $this->description="";
-
-    }
-    
-    public function resetFields()
-    {
-        $this->name="";
-        $this->code="";
-        $this->description="";
-    }
-    public function mount()
-    {
-        $this->types = OrganizationType::all();
-    }
-//     public function render()
-//     {
-//         return view('livewire.oganization.organization-type');
-//     }
-
-=======
         $this->code=null;
         $this->description=null;
     }
     
->>>>>>> 457f1449265f31ff3d9105a710249217df4bd08e
 }
