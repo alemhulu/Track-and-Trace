@@ -3,7 +3,7 @@
     <!-- Static sidebar for desktop -->
     <div class="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
         <!-- Sidebar component, swap this element with another sidebar if you like -->
-        <div class="flex flex-col flex-grow pt-4 bg-white overflow-y-auto dark:bg-gray-800">
+        <div class="flex flex-col flex-grow pt-4 bg-white overflow-y-auto dark:bg-gray-900">
             <div class="flex items-center flex-shrink-0 px-2 space-x-4">
                 <div class="block h-24 bg-image-one dark:bg-image-two  bg-cover bg-center w-24 ">
                     {{-- <img src="/logom.png" alt="MoE logo" srcset="" {{ $attributes }}> --}}
