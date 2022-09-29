@@ -13,5 +13,11 @@ class OrganizationType extends Model
         'code',
         'description',
     ];
+
+    
+    public function organization()
+    {
+        return $this->hasMany(organization::class);
+    }
 }
 
