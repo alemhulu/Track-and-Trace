@@ -1,8 +1,8 @@
 @props(['search' => false])
-<div class="flex justify-between items-center flex-wrap py-3 border-b border-gray-200 sm:px-5 dark:border-gray-600">
+<div class="flex justify-between items-center flex-wrap py-3 border-b border-gray-200 sm:px-5 dark:border-gray-700">
     <header class="flex flex-shrink-0">
         <div class="mx-auto py-1">
-            <p class="font-semibold text-xl text-lime-800 dark:text-lime-300">
+            <p class="ml-4 sm:ml-0 font-semibold text-xl text-lime-800 dark:text-lime-300">
                 {{ $slot }}
             </p>
         </div>

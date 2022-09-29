@@ -1,4 +1,4 @@
-@props(['batch' => '#PO1091479181', 'quantity' => '00', 'range' => '100000 - 100050'])
+@props(['batch' => '#PO1091479181', 'quantity' => '00', 'range' => '100001 - 100050'])
 <div {{ $attributes->merge([ 'class' => '']) }}>
     <div class="flex flex-col text-center border border-blue-200 dark:border-gray-400 rounded-lg">
         <div class="flex flex-row">

@@ -1,4 +1,4 @@
-@props(['batch' => '#PO1091479181', 'qr' => '100000'])
+@props(['batch' => '#PO1091479181', 'qr' => '100001'])
 <div {{ $attributes->merge([ 'class' => '']) }}>
     <div class="flex flex-col text-center border border-blue-200 dark:border-gray-400 rounded-lg">
         <div class="flex flex-row">
@@ -17,7 +17,8 @@
                 @if ($qr)
                 <div class="text-left pt-1">
                     <x-jet-label class="text-xs text-gray-400 dark:text-gray-400" value="QR Code" />
-                    <span class="text-lg font-bold text-blue-600 dark:text-blue-200 leading-none tracking-wide">
+                    <span
+                        class="flex justify-center p-1 text-md font-bold text-blue-50 dark:text-blue-200 leading-none tracking-wide bg-blue-500 rounded-full">
                         {{ $qr }}</span>
                 </div>
                 @endif

@@ -65,7 +65,7 @@ class OrganizationType extends Component
         $this->resetPage();
         $this->emit('OrganizationTypeAdded');
         $this->alertSuccess();
-        $this->resetFields();
+        $this->clearid();
     }
 
     // edit data
@@ -150,6 +150,7 @@ class OrganizationType extends Component
     public function clearid()
     {
         $this->name="";
+<<<<<<< HEAD
         $this->code="";
         $this->description="";
 
@@ -170,4 +171,10 @@ class OrganizationType extends Component
 //         return view('livewire.oganization.organization-type');
 //     }
 
+=======
+        $this->code=null;
+        $this->description=null;
+    }
+    
+>>>>>>> 457f1449265f31ff3d9105a710249217df4bd08e
 }

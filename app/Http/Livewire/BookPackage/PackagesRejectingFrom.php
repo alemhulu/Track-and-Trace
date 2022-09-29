@@ -4,11 +4,11 @@ namespace App\Http\Livewire\BookPackage;
 
 use Livewire\Component;
 
-class PackagesReceivingFrom extends Component
+class PackagesRejectingFrom extends Component
 {
     public function render()
     {
-        return view('livewire.book-package.packages-receiving-from');
+        return view('livewire.book-package.packages-rejecting-from');
     }
 
          // Clear input variables 

@@ -147,6 +147,12 @@ class Kebele extends Component
         $this->emit('newKebele');
     }
 
+    public $deleteId ="";
+
+    public function deleteId($id){
+        $this->deleteId = $id;
+    }
+    
     public function editKebele($id){
         $this->emit('editKebele',$id);
     }

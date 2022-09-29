@@ -9,14 +9,12 @@
             <div>
                 <x-jet-label for="code" value="{{ __('Code') }}" />
                 <x-jet-input type="text" wire:model.defer="code" placeholder="Type Code" />
-                <x-jet-input-error for="code" alert="Organization Type  Code" />
             </div>
 
             <div>
                 <x-jet-label for="description" value="{{ __('Description') }}" />
                 <x-form.textarea name="description" wire:model.defer="description" placeholder="Type Description"
                     row=3 />
-                <x-jet-input-error for="de" alert="Organization Description" />
             </div>
         </x-form.card>
     </aside>

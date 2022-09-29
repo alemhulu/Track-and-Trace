@@ -132,19 +132,18 @@ class Woreda extends Component
         $this->emit('editWoreda',$id);
     }
 
+    public $deleteId ="";
+
+    public function deleteId($id){
+        $this->deleteId = $id;
+    }
+    
     public function deleteWoreda(woredas $woreda){
         $woreda->delete();
         $this->alertDelete();
         $this->resetPage();
     }
 
-    public function deleteError($name)
-    {
-        $this->dispatchBrowserEvent(
-            'alert',
-            ['type' => 'error',  'message' => $name]
-        );
-    }
 
     protected $listeners = [
         'countryAdded' => 'mount',
@@ -190,4 +189,9 @@ class Woreda extends Component
         $this->name="";
         $this->zone_id="";
     }
+
+        // Clear input variables 
+        public function clearid(){
+            $this->name="";
+        }
 }
