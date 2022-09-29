@@ -8,7 +8,7 @@ $value = old($name) ?? '';
   $attributes->merge(['class' => 'shadow-sm block w-full border-gray-300
 focus:border-indigo-300
 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 rounded-md shadow-sm placeholder:text-gray-400
-placeholder:text-sm mt-1']) }}>
+placeholder:text-sm mt-1 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500']) }}>
 
 {{ $value }} {{ $slot }}
 

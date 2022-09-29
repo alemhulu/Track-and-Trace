@@ -5,20 +5,17 @@
             <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
                 <x-jet-input type="text" wire:model.defer="name" placeholder="Subject Name" />
-                <x-jet-input-error for="name" alert="Subject Name" />
             </div>
 
             <div>
                 <x-jet-label for="code" value="{{ __('Code') }}" />
                 <x-jet-input type="text" wire:model.defer="code" placeholder="Type Code" />
-                <x-jet-input-error for="code" alert="Grade Code" />
             </div>
 
             <div>
                 <x-jet-label for="description" value="{{ __('Description') }}" />
                 <x-form.textarea name="description" wire:model.defer="description" placeholder="Type Description"
                     row="3" />
-                <x-jet-input-error for="de" alert="Subject Description" />
             </div>
         </x-form.card>
     </aside>
@@ -70,5 +67,6 @@
         {{-- {{$subjects->links()}} --}}
     </x-form.table>
 
+    <x-form.confirm name="deleteSubject" id="{{ $deleteId }}" />
     <livewire:book.subject.edit-subject>
 </div>

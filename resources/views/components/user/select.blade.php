@@ -7,7 +7,6 @@
         <div class="absolute left-1 top-2 inline-flex items-center p-2">
             <i class="fi fi-rr-search text-gray-500 flex text-xl"></i>
         </div>
-        <x-jet-input-error for="search" alert="select Value" />
 
         @if (strlen($select) >1 && strlen($select)< 11) <ul
             class="divide-y divide-gray-100 block absolute top-14 max-w-md bg-white dark:bg-gray-800 border border-lime-400 rounded-lg shadow-xl overflow-y-auto max-h-[500px] overflow-x-hidden">
@@ -87,4 +86,5 @@
         </div>
         @endif
     </div>
+    <x-jet-input-error for="assigned_user_id" alert="select Value" />
 </div>
