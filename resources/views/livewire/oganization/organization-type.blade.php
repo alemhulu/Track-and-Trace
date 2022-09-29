@@ -49,7 +49,8 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{$record->id}}" edit="editType" delete="deleteType">
+                    <x-action.table-button id="{{$record->id}}" edit="editOrganizationType"
+                        delete="deleteOrganizationType">
                     </x-action.table-button>
                 </td>
             </x-data-table.tr>
@@ -62,5 +63,5 @@
 
     {{-- Edit country Modal --}}
     <livewire:oganization.modal.edit-type>
-        <x-form.confirm name="deleteCountry" id="{{ $deleteId }}" />
+        <x-form.confirm name="deleteOrganizationType" id="{{ $deleteId }}" />
 </div>

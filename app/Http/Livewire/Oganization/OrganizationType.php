@@ -73,11 +73,17 @@ class OrganizationType extends Component
         $this->emit('editType', $id);
     }
 
+    public $deleteId ="";
+
+    public function deleteId($id){
+        $this->deleteId = $id;
+    }
     // Delete the available data
     public function deleteOrganizationType(ModelsOrganizationType $OrganizationType){
+        if($OrganizationType->organization->count()){
+            return $this->deleteError('OrganizationType cannot be deleted, it has related data!');
+        }
         $OrganizationType->delete();
-        // $code->delete();
-        // $description->delete();
         $this->alertDelete();
         $this->resetPage();
     }
