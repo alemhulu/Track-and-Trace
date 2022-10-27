@@ -2,7 +2,7 @@
 
 namespace App\Http\Livewire\Location;
 
-use App\Models\country;
+use App\Models\Country;
 use App\Models\Region;
 use App\Models\Woreda as woredas;
 use App\Models\Zone;
