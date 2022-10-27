@@ -16,7 +16,7 @@
 
     <div class="py-3">
         <div class="mx-auto">
-            <x-form.table title="Users List">
+            <x-form.table title="Roles List">
                 <x-slot name="tableHeaders">
                     <x-data-table.th scope="col"> {{__('#') }}</x-data-table.th>
                     <x-data-table.th scope="col"> {{__('Name') }}</x-data-table.th>
