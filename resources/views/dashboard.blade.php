@@ -25,7 +25,7 @@
                                         @endif
                                     </div>
                                     <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
-                                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Welcome back !
+                                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Welcome Back !
                                         </p>
                                         <p
                                             class="text-xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl drop-shadow-lg">
