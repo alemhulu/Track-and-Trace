@@ -40,6 +40,7 @@
                         @endif
                     </div>
                 </header>
+
                 <!-- Page Content -->
                 <main class="m-3">
                     <x-validation-errors />
