@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
-            {{ __('Users Management') }}
+            {{ __('Role Management') }}
         </h2>
     </x-slot>
 
@@ -14,7 +14,7 @@
         </a>
     </x-slot>
 
-    <x-form-card action="{{ route('roles.update', $role->id) }}" title="Create New Role" method="PUT">
+    <x-form-card action="{{ route('roles.update', $role->id) }}" title="Edit Role" method="PUT">
         <x-slot name="body">
             <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5">
                 <x-label for="name" value="Name" />
