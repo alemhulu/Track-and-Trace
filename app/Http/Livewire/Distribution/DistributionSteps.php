@@ -37,7 +37,6 @@ class DistributionSteps extends Component
     {
         $route = $this->steps[$index];
         $this->steps->forget($index);
-
         $route->delete();
     }    
 
