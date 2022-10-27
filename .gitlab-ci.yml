@@ -1,26 +1,26 @@
 image: git.moe.gov.et:5050/natiztm/book-track-and-trace:latest
 
 services:
-  - mysql:8.1
+  - mysql:5.7
 
-# variables:
-#   MYSQL_DATABASE: homestead
-#   MYSQL_ROOT_PASSWORD: secret
-#   DB_HOST: mysql
-#   DB_USERNAME: root
+variables:
+  MYSQL_DATABASE: "trace_and_trace"
+  MYSQL_ROOT_PASSWORD: secret
+  DB_HOST: mysql
+  DB_USERNAME: deploy_user
 
 stages:
   - test
   - deploy
 
-# unit_test:
-#   stage: test
-#   script:
-#     - cp .env.example .env
-#     - composer install
-#     - php artisan key:generate
-#     - php artisan migrate
-#     - vendor/bin/phpunit
+unit_test:
+  stage: test
+  script:
+    # - cp .env.example .env
+    - composer install
+    # - php artisan key:generate
+    - php artisan migrate
+    # - vendor/bin/phpunit
 
 deploy_production:
   stage: deploy
@@ -34,7 +34,7 @@ deploy_production:
     - ~/.composer/vendor/bin/envoy run deploy --commit="$CI_COMMIT_SHA"
   environment:
     name: production
-    # url: http://192.168.1.1
+    url: http://213.55.93.152
   when: manual
   only:
     - main
