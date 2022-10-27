@@ -31,7 +31,7 @@
             :active="(request()->routeIs('route') | request()->routeIs('route.*'))" />
 
         <x-side-navigation.link href="/distribution" icon="fi-rr-truck-side" name="Distribution"
-            :active="(request()->routeIs('distribution') | request()->routeIs('distribution'))" />
+            :active="(request()->routeIs('distribution') | request()->routeIs('distribution.*'))" />
 
         <x-side-navigation.link href="/trace" icon="fi-rr-paw" name="Trace"
             :active="( request()->routeIs('trace') | request()->routeIs('distribution-details.*'))" />
