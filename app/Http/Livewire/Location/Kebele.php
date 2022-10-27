@@ -2,11 +2,11 @@
 
 namespace App\Http\Livewire\Location;
 
-use App\Models\country;
-use App\Models\kebele as ModelsKebele;
-use App\Models\region;
-use App\Models\woreda as woredas;
-use App\Models\zone;
+use App\Models\Country;
+use App\Models\Kebele as ModelsKebele;
+use App\Models\Region;
+use App\Models\Woreda as woredas;
+use App\Models\Zone;
 use Livewire\Component;
 use Livewire\WithPagination;
 

@@ -2,10 +2,10 @@
 
 namespace App\Http\Livewire\Location\Modal;
 
-use App\Models\country;
-use App\Models\region;
-use App\Models\woreda;
-use App\Models\zone;
+use App\Models\Country;
+use App\Models\Region;
+use App\Models\Woreda;
+use App\Models\Zone;
 use Livewire\Component;
 
 class EditWoreda extends Component

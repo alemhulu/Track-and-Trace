@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Location\Modal;
 
 use Livewire\Component;
-use App\Models\country;
+use App\Models\Country;
 
 class EditCountry extends Component
 {

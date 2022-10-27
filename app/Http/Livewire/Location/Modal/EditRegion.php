@@ -2,8 +2,8 @@
 
 namespace App\Http\Livewire\Location\Modal;
 
-use App\Models\region;
-use App\Models\country;
+use App\Models\Region;
+use App\Models\Country;
 use Livewire\Component;
 
 class EditRegion extends Component

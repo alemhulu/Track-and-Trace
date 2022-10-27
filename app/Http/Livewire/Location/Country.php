@@ -3,7 +3,7 @@
 namespace App\Http\Livewire\Location;
 
 use Livewire\Component;
-use App\Models\country as ModelsCountry;
+use App\Models\Country as ModelsCountry;
 use Livewire\WithPagination;
 
 class Country extends Component

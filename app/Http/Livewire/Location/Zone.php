@@ -2,9 +2,9 @@
 
 namespace App\Http\Livewire\Location;
 
-use App\Models\country;
-use App\Models\region;
-use App\Models\zone as zones;
+use App\Models\Country;
+use App\Models\Region;
+use App\Models\Zone as zones;
 use Livewire\Component;
 use Livewire\WithPagination;
 

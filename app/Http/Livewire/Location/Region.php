@@ -3,8 +3,8 @@
 namespace App\Http\Livewire\Location;
 
 use Livewire\Component;
-use App\Models\country;
-use App\Models\region as regions;
+use App\Models\Country;
+use App\Models\Region as regions;
 use Livewire\WithPagination;
 
 class Region extends Component
