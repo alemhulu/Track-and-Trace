@@ -142,7 +142,7 @@ class OrganizationType extends Component
     // Render
     public function render()
     {
-        return view('livewire.Oganization.Organization-Type',
+        return view('livewire.oganization.organization-Type',
         ['types'=>ModelsOrganizationType::when($this->column,function($q,$column){
                 return $q->orderBy($this->column,$this->sortType);
             })->paginate($this->recordes)
