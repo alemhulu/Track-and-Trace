@@ -1,27 +1,23 @@
 image: git.moe.gov.et:5050/natiztm/book-track-and-trace:latest
 
 services:
-  - mysql:8.1
-
+  - mysql:5.7
 variables:
-  MYSQL_DATABASE: "trace_and_trace"
-  MYSQL_ROOT_PASSWORD: secret
+  MYSQL_DATABASE: YOUR_DATABASE_NAME
+  MYSQL_ROOT_PASSWORD: YOUR_DATABASE_PASSWORD
   DB_HOST: mysql
-  DB_USERNAME: deploy_user
-
-# stages:
-#   - test
-#   - deploy
-
-# unit_test:
-#   stage: test
-#   script:
-#     - cp .env.example .env
-#     - composer install
-#     - php artisan key:generate
-#     - php artisan migrate
-#     # - vendor/bin/phpunit
-
+  DB_USERNAME: YOUR_DATABASE_USERNAME
+stages:
+  - test
+  - deploy
+unit_test:
+  stage: test
+  script:
+    - cp .env.example .env
+    - composer install
+    - php artisan key:generate
+    - php artisan migrate
+    # - vendor/bin/phpunit
 deploy_production:
   stage: deploy
   script:
@@ -30,8 +26,8 @@ deploy_production:
     - ssh-add <(echo "$SSH_PRIVATE_KEY")
     - mkdir -p ~/.ssh
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
-
     - ~/.composer/vendor/bin/envoy run deploy --commit="$CI_COMMIT_SHA"
+    - chmod -R 777 /var/www/book-track-and-trace
   environment:
     name: production
     url: http://213.55.93.152
