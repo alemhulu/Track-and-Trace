@@ -1,7 +1,5 @@
 # Set the base image for subsequent instructions
-FROM php:8.1
-
-# Update packages
+FROM php:7.2-apache
 # 1. Install development packages and clean up apt cache.
 RUN apt-get update && apt-get install -y \
     curl \
@@ -18,8 +16,13 @@ RUN apt-get update && apt-get install -y \
     unzip \
     zip \
  && rm -rf /var/lib/apt/lists/*
-
-# Install PHP and composer dependencies
+ # 2. Apache configs + document root.
+RUN echo "ServerName laravel-app.local" >> /etc/apache2/apache2.conf
+ENV APACHE_DOCUMENT_ROOT=/var/www/html/current
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+# 3. mod_rewrite for URL rewrite and mod_headers for .htaccess extra headers like Access-Control-Allow-Origin-
+RUN a2enmod rewrite headers
 # 4. Start with base PHP config, then add extensions.
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 RUN docker-php-ext-install \
@@ -32,18 +35,10 @@ RUN docker-php-ext-install \
     opcache \
     pdo_mysql \
     zip
-RUN apt-get install -qq git curl libmcrypt-dev libjpeg-dev libpng-dev libfreetype6-dev libbz2-dev
-
-# Clear out the local repository of retrieved package files
-RUN apt-get clean
-
-
-# Install needed extensions
-# Here you can install any other extension that you need during the test and deployment process
-#RUN docker-php-ext-install mcrypt pdo_mysql zip
-
 # Install Composer
-RUN curl --silent --show-error "https://getcomposer.org/installer" | php -- --install-dir=/usr/local/bin --filename=composer
-
+RUN curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 # Install Laravel Envoy
 RUN composer global require "laravel/envoy=~1.0"
+# 6. We need a user with the same UID/GID as the host user
+# so when we execute CLI commands, all the host file's permissions and ownership remain intact.
+# Otherwise commands from inside the container would create root-owned files and directories
