@@ -1,7 +1,7 @@
 image: git.moe.gov.et:5050/natiztm/book-track-and-trace:latest
 
 services:
-  - mysql:5.7
+  - mysql:8.1
 
 variables:
   MYSQL_DATABASE: "trace_and_trace"
@@ -16,9 +16,9 @@ stages:
 unit_test:
   stage: test
   script:
-    # - cp .env.example .env
+    - cp .env.example .env
     - composer install
-    # - php artisan key:generate
+    - php artisan key:generate
     - php artisan migrate
     # - vendor/bin/phpunit
 
@@ -37,4 +37,4 @@ deploy_production:
     url: http://213.55.93.152
   when: manual
   only:
-    - main
+    - master
