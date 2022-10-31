@@ -9,18 +9,18 @@ variables:
   DB_HOST: mysql
   DB_USERNAME: deploy_user
 
-stages:
-  - test
-  - deploy
+# stages:
+#   - test
+#   - deploy
 
-unit_test:
-  stage: test
-  script:
-    - cp .env.example .env
-    - composer install
-    - php artisan key:generate
-    - php artisan migrate
-    # - vendor/bin/phpunit
+# unit_test:
+#   stage: test
+#   script:
+#     - cp .env.example .env
+#     - composer install
+#     - php artisan key:generate
+#     - php artisan migrate
+#     # - vendor/bin/phpunit
 
 deploy_production:
   stage: deploy
