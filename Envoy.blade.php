@@ -1,7 +1,7 @@
 @servers(['web' => 'deployer@172.20.0.186'])
 @setup
 $repository = 'git@git.moe.gov.et:natiztm/book-track-and-trace.git';
-$releases_dir = '/var/www/html/releases';
+$releases_dir = '/var/www/releases';
 $app_dir = '/var/www/book-track-and-trace';
 $release = date('YmdHis');
 $new_release_dir = $releases_dir .'/'. $release;
