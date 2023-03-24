@@ -52,8 +52,9 @@
                     <x-empty-row colspan=4 />
                     @endforelse
                 </x-slot>
+
+                {!! $roles->render() !!}
             </x-form.table>
         </div>
-        {!! $roles->render() !!}
     </div>
 </x-app-layout>

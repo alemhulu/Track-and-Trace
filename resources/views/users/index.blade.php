@@ -62,8 +62,9 @@
                     <x-data-table.empty colspan=4 />
                     @endforelse
                 </x-slot>
+
+                {!! $data->links() !!}
             </x-form.table>
         </div>
-        {!! $data->links() !!}
     </div>
 </x-app-layout>
