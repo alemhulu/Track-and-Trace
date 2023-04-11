@@ -99,9 +99,15 @@
                     <x-trace.to-info company="Adaa Woreda" />
                 </td>
 
-                <td class="px-5 py-2 whitespace-nowrap">
+                {{-- <td class="px-5 py-2 whitespace-nowrap">
                     <x-button btnType="warning" class="py-1 relative pl-6 pr-2 font-bold">
                         <i class="fi fi-rr-paper-plane flex inset-0 top-1 left-1 absolute text-base"></i>Pending
+                    </x-button>
+                </td> --}}
+
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <x-button btnType="success" class="py-1 relative pl-6 pr-2 font-bold">
+                        <i class="fi fi-rr-checkbox flex inset-0 top-1 left-1 absolute text-base"></i>Recived
                     </x-button>
                 </td>
 
@@ -133,9 +139,15 @@
                     <x-trace.to-info company="Bishoftu Priparatory School" />
                 </td>
 
-                <td class="px-5 py-2 whitespace-nowrap">
+                {{-- <td class="px-5 py-2 whitespace-nowrap">
                     <x-button btnType="warning" class="py-1 relative pl-6 pr-2 font-bold">
                         <i class="fi fi-rr-paper-plane flex inset-0 top-1 left-1 absolute text-base"></i>Pending
+                    </x-button>
+                </td> --}}
+
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <x-button btnType="success" class="py-1 relative pl-6 pr-2 font-bold">
+                        <i class="fi fi-rr-checkbox flex inset-0 top-1 left-1 absolute text-base"></i>Recived
                     </x-button>
                 </td>
 
