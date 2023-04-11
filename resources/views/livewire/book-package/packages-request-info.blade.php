@@ -4,8 +4,8 @@
         <div class="flex flex-auto lg:justify-between flex-wrap space-x-2 gap-x-5 items-center">
             <div class="">
                 <x-jet-label class="text-gray-400" value="Book"></x-jet-label>
-                <x-book.book-info image="https://i.ytimg.com/vi/NNKPR6nICJI/maxresdefault.jpg" grade="Grade 10"
-                    subject="Biology" type="Student Text Book" edition="1st Edition 2013" ISBN="4820715" />
+                <x-book.book-info image="/biology-grade-10.jpg" grade="Grade 10" subject="Biology"
+                    type="Student Text Book" edition="1st Edition 2013" ISBN="4820715" />
             </div>
 
             <div class="flex-grow max-w-xs flex-initial">

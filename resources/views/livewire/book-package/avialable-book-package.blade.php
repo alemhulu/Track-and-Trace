@@ -20,7 +20,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-book.book-info image="https://i.ytimg.com/vi/NNKPR6nICJI/maxresdefault.jpg" grade="Grade 10"
+                    <x-book.book-info image="/biology-grade-10.jpg" grade="Grade 10"
                         subject="Biology" type="Student Text Book" edition="1st Edition 2013" ISBN="4820715" />
                 </td>
 

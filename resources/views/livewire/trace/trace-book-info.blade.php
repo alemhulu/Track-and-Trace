@@ -12,8 +12,8 @@
             <div class="mt-4">
                 <dl class="grid grid-cols-1 gap-5 sm:grid-cols-5">
                     <div class="flex flex-col">
-                        <x-book.book-info image="https://i.ytimg.com/vi/NNKPR6nICJI/maxresdefault.jpg" grade="Grade 10"
-                            subject="Biology" type="Student Text Book" edition="1st Edition 2013" ISBN="4820715" />
+                        <x-book.book-info image="/biology-grade-10.jpg" grade="Grade 10" subject="Biology"
+                            type="Student Text Book" edition="1st Edition 2013" ISBN="4820715" />
                     </div>
 
                     <div
