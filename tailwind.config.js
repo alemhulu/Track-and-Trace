@@ -1,25 +1,25 @@
-const defaultTheme = require('tailwindcss/defaultTheme');
-const colors = require('tailwindcss/colors')
+const defaultTheme = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-    darkMode: 'class',
+    darkMode: "class",
 
     content: [
-        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
-        './vendor/laravel/jetstream/**/*.blade.php',
-        './storage/framework/views/*.php',
-        './resources/views/**/*.blade.php',
+        "./vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php",
+        "./vendor/laravel/jetstream/**/*.blade.php",
+        "./storage/framework/views/*.php",
+        "./resources/views/**/*.blade.php",
     ],
 
     theme: {
         colors: {
             // Build your palette here
-            transparent: 'transparent',
-            current: 'currentColor',
+            transparent: "transparent",
+            current: "currentColor",
             gray: colors.gray,
             red: colors.rose,
-            blue: colors.sky,
+            blue: colors.blue,
             sky: colors.sky,
             yellow: colors.amber,
             lime: colors.sky,
@@ -30,7 +30,7 @@ module.exports = {
         },
         extend: {
             fontFamily: {
-                sans: ['Nunito', ...defaultTheme.fontFamily.sans],
+                sans: ["Nunito", ...defaultTheme.fontFamily.sans],
             },
 
             keyframes: {
@@ -44,17 +44,20 @@ module.exports = {
             },
 
             backgroundImage: (theme) => ({
-                'image-one': "url('https://moe.gov.et/logom.png')",
-                'image-two': "url('https://moe.gov.et/fotlogo.png')",
+                "image-one": "url('https://moe.gov.et/logom.png')",
+                "image-two": "url('https://moe.gov.et/fotlogo.png')",
             }),
         },
     },
 
     variants: {
         extend: {
-            backgroundImage: ['dark'],
+            backgroundImage: ["dark"],
         },
     },
 
-    plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
+    plugins: [
+        require("@tailwindcss/forms"),
+        require("@tailwindcss/typography"),
+    ],
 };
