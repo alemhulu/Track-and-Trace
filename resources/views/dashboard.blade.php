@@ -5,50 +5,27 @@
         </h2>
     </x-slot>
 
-    <div class="">
+    <div class="mb-8">
         <div class="w-auto">
-            <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg dark:bg-gray-800">
-                <section aria-labelledby="profile-overview-title">
-                    <div class="rounded-lg overflow-hidden shadow">
-                        <h2 class="sr-only" id="profile-overview-title">Profile Overview</h2>
-                        <div class=" p-6">
-                            <div class="sm:flex sm:items-center sm:justify-between">
-                                <div class="sm:flex sm:space-x-5">
-                                    <div class="flex-shrink-0">
-                                        @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                                        <img class="mx-auto h-20 w-20 rounded-full drop-shadow-xl" src=" {{
-                                            Auth::user()->profile_photo_url }}" alt="">
-                                        @else
-                                        <img class="mx-auto h-20 w-20 rounded-full drop-shadow-xl"
-                                            src="https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                                            alt="">
-                                        @endif
-                                    </div>
-                                    <div class="mt-4 text-center sm:mt-0 sm:pt-1 sm:text-left">
-                                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">Welcome Back
-                                        </p>
-                                        <p
-                                            class="text-xl font-bold text-gray-900 dark:text-gray-100 sm:text-2xl drop-shadow-lg">
-                                            {{ Auth::user()->name }}
-                                        </p>
-                                        <p class="text-sm font-medium text-gray-600 dark:text-gray-400">
-                                            {{ Auth::user()->email }}
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="mt-5 flex justify-center sm:mt-0">
-                                    <a href="{{ route('profile.show') }}"
-                                        class="flex justify-center items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 dark:bg-gray-300 dark:text-gray-900 dark:border-gray-600">
-                                        Profile
-                                    </a>
-                                </div>
-                            </div>
+            <div class=" overflow-hidden shadow-xl sm:rounded-lg dark:bg-gray-800">
+                <section>
+                    <div class=" rounded-lg grid grid-cols-6 gap-5">
+                        <div class="col-span-6 lg:col-span-4 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900"
+                            id="chart">
                         </div>
-
+                        <div class="col-span-6 lg:col-span-2 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900"
+                            id="chart3">
+                        </div>
+                        <div class="col-span-6 md:col-span-3 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900"
+                            id="chart1">
+                        </div>
+                        <div class="col-span-6 md:col-span-3 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900"
+                            id="chart2">
+                        </div>
                     </div>
                 </section>
 
-                <section class="rounded-lg">
+                {{-- <section class="rounded-lg">
                     <div class=" px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
                         <div class="mt-4">
                             <p class="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-400">Print Orders
@@ -164,8 +141,198 @@
                             </dl>
                         </div>
                     </div>
-                </section>
+                </section> --}}
             </div>
         </div>
     </div>
+
+
 </x-app-layout>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+<script>
+    var options = {
+        colors: ['#688cff', '#005bfc', '#0617db'],
+          series: [ { name: 'Printed', data: [3550, 4100, 3690, 2226, 4445, 7748, 5290, 5553, 8941] },
+                        { name: 'Distributed', data: [3050, 4001, 2236, 2600, 4000, 3008, 4452, 2253, 4991] },
+                        { name: 'Store', data: [1350, 1141, 1036, 1026, 1045, 1048, 1152, 1053, 1041] }
+                    ],
+          chart: {
+          type: 'bar',
+          height: 350
+        },
+        plotOptions: {
+          bar: {
+            horizontal: false,
+            borderRadius: 3,
+            columnWidth: '75%',
+            endingShape: 'rounded'
+          },
+        },
+        dataLabels: {
+          enabled: false
+        },
+        stroke: {
+          show: true,
+          width: 1,
+          radius: 5,
+          colors: ['transparent']
+        },
+        xaxis: {
+          categories: ['Amharic', 'Biology', 'English', 'Chemistry', 'Geogarphy', 'Mathimatics', 'Physics', 'Civics', 'History'],
+        },
+       
+        fill: {
+          opacity: 1
+        },
+        tooltip: {
+                  shared: true,
+                  followCursor: true,
+                  intersect: false
+                  },
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+
+
+        var chart3 = {
+            colors: ['#688cff', '#005bfc', '#0617db', '#053385'],
+          series: [70, 67, 40, 62,],
+          chart: {
+          width: 380,
+          height: 350,
+          type: 'polarArea'
+        },
+        labels: ['Orders', 'Accepted', 'Rejected', 'Printed'],
+        fill: {
+          opacity: 1
+        },
+        stroke: {
+          width: 1,
+          colors: undefined
+        },
+        yaxis: {
+          show: false
+        },
+        legend: {
+          position: 'bottom'
+        },
+        plotOptions: {
+          polarArea: {
+            rings: {
+              strokeWidth: 0
+            },
+            spokes: {
+              strokeWidth: 0
+            },
+          }
+        },
+        theme: {
+          monochrome: {
+            enabled: true,
+            shadeTo: 'dark',
+            shadeIntensity: 0.6
+          }
+        }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart3"), chart3);
+        chart.render();
+      
+
+    var chart1 = {
+        title: {
+                          text: 'Books',
+                          offsetX: 0,
+                          style: {
+                              fontSize: '24px',
+                              color:  '#6b0d00',
+                              cssClass: 'text-gray-500',
+                              fontFamily: 'Nunito'
+                              }
+                    },
+                    subtitle: {
+                      text: 'Books Information',
+                      offsetX: 1,
+                      style: {
+                      fontSize: '14px',
+                      color:  '#88888e',
+                      cssClass: 'text-gray-500',
+                      fontFamily: 'Nunito'
+                      }
+                  },
+                  colors: ["#ff4f36", "#b91e09", "#6b0d00", "#16a349"],
+          series: [210000, 240000, 210000],
+          labels: ["Stock", "Distributed", "On Students Hand"],
+          chart: {
+          type: 'donut',
+          height: 400
+        },
+        legend: {
+            position: 'bottom',
+            offsetY: 0,
+            height: 30,
+          },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+        };
+
+        var chart2 = {
+                     title: {
+                          text: 'Wearhouses',
+                          offsetX: 0,
+                          style: {
+                              fontSize: '24px',
+                              color:  '#ac5709',
+                              cssClass: 'text-gray-500',
+                              fontFamily: 'Nunito'
+                              }
+                    },
+                    subtitle: {
+                      text: 'Wearhouses Informations',
+                      offsetX: 1,
+                      style: {
+                      fontSize: '14px',
+                      color:  '#88888e',
+                      cssClass: 'text-gray-500',
+                      fontFamily: 'Nunito'
+                      }
+                  },
+                  colors: ["#ffad00", "#ac5709", "#ff8500", "#16a349"],
+          series: [700, 2400],
+          labels: ["Wearhouses", "Stores"],
+          chart: {
+          type: 'donut',
+          height: 400
+        },
+        legend: {
+            position: 'bottom',
+            offsetY: 0,
+            height: 30,
+          },
+        responsive: [{
+          breakpoint: 480,
+          options: {
+            chart: {
+              width: 200
+            },
+            legend: {
+              position: 'bottom'
+            }
+          }
+        }]
+        };
+
+        var chart = new ApexCharts(document.querySelector("#chart1"), chart1);chart.render();
+        var chart = new ApexCharts(document.querySelector("#chart2"), chart2);chart.render();
+        
+</script>
