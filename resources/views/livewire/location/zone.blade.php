@@ -82,6 +82,7 @@
             <x-data-table.empty colspan=6 />
             @endforelse
         </x-slot>
+        {{ $zones->links() }}
     </x-form.table>
     <livewire:location.modal.edit-zone />
     <div x-show="deleteId != ''">

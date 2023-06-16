@@ -67,11 +67,13 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$record->region->name}}</div>
+                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$record->zone->region->name?? '----'}}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$record->country->name}}</div>
+                    <div class="text-sm text-gray-900 dark:text-gray-100">
+                        {{$record->zone->region->country->name?? '----'}}
+                    </div>
                 </td>
 
                 <td class="px-5 py-2">
@@ -82,6 +84,7 @@
             <x-data-table.empty colspan=6 />
             @endforelse
         </x-slot>
+        {{ $woredas->links() }}
     </x-form.table>
     <livewire:location.modal.edit-woreda />
     <div x-show="deleteId != ''">
