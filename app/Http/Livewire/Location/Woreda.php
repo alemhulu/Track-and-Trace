@@ -94,13 +94,7 @@ class Woreda extends Component
     public function render()
     {
         return view('livewire.location.woreda', 
-        ['woredas'=>woredas::when($this->country_id,function($q,$country_id){
-            return $q->where('country_id',$this->country_id);
-        })
-        ->when($this->region_id,function($q,$region_id){
-            return $q->where('region_id',$this->region_id);
-        })
-        ->when($this->zone_id,function($q,$zone_id){
+        ['woredas'=>woredas::when($this->zone_id,function($q,$zone_id){
             return $q->where('zone_id',$this->zone_id);
         })
         ->when($this->column,function($q,$column){
