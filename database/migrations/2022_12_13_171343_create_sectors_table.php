@@ -13,15 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('kebeles', function (Blueprint $table) {
+        Schema::create('sectors', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
+            $table->string('name')->nullable();
             $table->string('code')->nullable();
-            $table->foreignId('region_id')->default('1')->constrained();
-            $table->foreignId('country_id')->nullable()->constrained();
-            $table->foreignId('zone_id')->nullable()->constrained();
-            $table->foreignId('woreda_id')->nullable()->constrained();
-            $table->unique(['name', 'region_id', 'country_id', 'zone_id', 'woreda_id']);
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->timestamps();
         });
     }
@@ -33,6 +29,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('kebeles');
+        Schema::dropIfExists('sectors');
     }
 };

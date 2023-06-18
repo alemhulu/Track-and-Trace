@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('code')->nullable();
             $table->string('description')->nullable();
-            $table->foreignId('subject_id')->nullable()->constrained();
+            $table->foreignId('user_id')->nullable()->constrained();
             $table->timestamps();
         });
     }

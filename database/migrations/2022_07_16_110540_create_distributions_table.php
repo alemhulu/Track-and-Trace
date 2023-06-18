@@ -16,8 +16,11 @@ return new class extends Migration
         Schema::create('distributions', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->boolean('is_active')->default(0);
+            $table->string('start_date')->nullable();
+            $table->string('end_date')->nullable();
+            $table->json('distribution')->nullable();
             $table->timestamps();
         });
     }
