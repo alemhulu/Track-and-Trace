@@ -10,9 +10,14 @@ class Distribution extends Model
     use HasFactory;
 
     protected $fillable = [
-        'name',
-        'description',
-        'is_active',
+       'is_active',
+       'printer_id',
+       'moe_id',
+       'region_id',
+       'zone_id',
+       'woreda_id',
+       'school_id',
+       'step',
     ];
 
     public function steps()

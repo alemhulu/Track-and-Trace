@@ -13,11 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('distribution_steps', function (Blueprint $table) {
+        Schema::create('tracks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('distribution_id');
-            $table->foreignId('route_id');
-            $table->unsignedInteger('step');
+            $table->foreignId('distribution_id')->constrained();
+            $table->foreignId('Book_id')->constrained();
+            $table->json('trace');
+            $table->string('start_time');
+            $table->string('end_time');
+            $table->boolean('status');
             $table->timestamps();
         });
     }
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('distribution_steps');
+        Schema::dropIfExists('tracks');
     }
 };

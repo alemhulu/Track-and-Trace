@@ -5,19 +5,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class OrganizationType extends Model
+class delivery extends Model
 {
     use HasFactory;
     protected $fillable=[
+        'student_id',
         'name',
-        'code',
-        'description',
+        'books',
+        'distributed'
     ];
-
-    
-    public function organization()
-    {
-        return $this->hasMany(organization::class);
-    }
 }
-

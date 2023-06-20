@@ -26,7 +26,7 @@ class Region extends Model
         return $this->hasMany(zone::class);
     }
 
-    public function woreda(): HasMany
+    public function woreda()
     {
         return $this->hasMany(woreda::class);
     }
