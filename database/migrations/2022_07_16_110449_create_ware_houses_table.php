@@ -15,11 +15,13 @@ return new class extends Migration
     {
         Schema::create('ware_houses', function (Blueprint $table) {
             $table->id();
+            $table->unsignedInteger('branch');
             $table->foreignId('organization_id');
-            $table->foreignId('user_id')->nullable();
             $table->foreignId('assigned_user_id')->nullable();
-            $table->string('name');
-            $table->text('description');
+            $table->foreignId('country_id')->default(1);
+            $table->foreignId('region_id')->nullable();
+            $table->foreignId('zone_id')->nullable();
+            $table->foreignId('woreda_id')->nullable();
             $table->timestamps();
         });
     }

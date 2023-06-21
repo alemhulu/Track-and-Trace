@@ -26,7 +26,7 @@ class Region extends Model
         return $this->hasMany(zone::class);
     }
 
-    public function woreda(): HasMany
+    public function woreda()
     {
         return $this->hasMany(woreda::class);
     }
@@ -35,4 +35,19 @@ class Region extends Model
     {
         return $this->belongsTo(country::class, 'country_id');
     }
+
+    public function distributions()
+    {
+        return $this->hasMany(Distribution::class);
+    }
+
+    public function organizations()
+    {
+        return $this->hasMany(Organization::class);
+    }
+
+    public function wareHouses()
+    {
+        return $this->hasMany(WareHouse::class);
+    } 
 }

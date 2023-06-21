@@ -5,20 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Route extends Model
+class Sector extends Model
 {
     use HasFactory;
-
     protected $fillable = [
+        'id',
         'name',
-        'from_wearhouse',
-        'to_wearhouse',
-        'description',
-        'is_active',
+        'code',
+        'user_id'
     ];
-
-    public function steps()
+    public function categories()
     {
-        return $this->hasMany(DistributionSteps::class);
+        return $this->belongsToMany(Category::class, 'category_sectors');
     }
 }

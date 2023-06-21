@@ -13,8 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('traces', function (Blueprint $table) {
+        Schema::create('tracks', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('distribution_id')->constrained();
+            $table->foreignId('Book_id')->constrained();
+            $table->json('trace');
+            $table->string('start_time');
+            $table->string('end_time');
+            $table->boolean('status');
             $table->timestamps();
         });
     }
@@ -26,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('traces');
+        Schema::dropIfExists('tracks');
     }
 };

@@ -16,15 +16,18 @@ class OrganizationTypeSeeder extends Seeder
      */
     public function run()
     {
-        $data = [
-            ['name' => 'school', 'code' => 'SH01', 'description' => 'In this section we will see how to use fake data in blade file without creating factory file. You can create fake data using fake() helper method. It is helpful to create quick prototyping a design and fake data.'],
-            ['name' => 'campany', 'code' => 'CAM01', 'description' => 'In this section we will see how to use fake data in blade file without creating factory file. You can create fake data using fake() helper method. It is helpful to create quick prototyping a design and fake data.'],
-            ['name' => 'organization', 'code' => 'ORG01', 'description' => 'In this section we will see how to use fake data in blade file without creating factory file. You can create fake data using fake() helper method. It is helpful to create quick prototyping a design and fake data.'],
-            ['name' => 'Printer', 'code' => 'P01', 'description' => 'In this section we will see how to use fake data in blade file without creating factory file. You can create fake data using fake() helper method. It is helpful to create quick prototyping a design and fake data.'],
+        $datas = [
+           [ 'name' => 'School'],
+           [ 'name' => 'Ministry of Education'],
+           [ 'name' => 'Ware Hourse'],
+           [ 'name' => 'Regional Bureau'],
+           [ 'name' => 'Zone Bureau'],
+           [ 'name' => 'Woreda Bureau'],
+           [ 'name' => 'Printer'],
         ];
-
-        foreach ($data as $key => $value) {
-            OrganizationType::create($value);
+        foreach ($datas as $data) {
+            OrganizationType::create($data);
         }
+        
     }
 }

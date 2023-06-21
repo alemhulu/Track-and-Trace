@@ -13,18 +13,31 @@ class Organization extends Model
 
     protected $fillable=[
         'name',
-        'website',
         'email',
+        'website',
         'logo',
         'telephone',
-        'mobile',
+        'bank',
+        'coordinate',
+        'coordinate',
+        'gps',
+        'year',
+        'old_code',
+        'new_code',
+        'facilities',
         'assigned_user_id',
+        'manager_name',
+        'phone',
+        'location',
+        'status',
+        'organization_type_id',
         'country_id',
         'region_id',
         'zone_id',
         'woreda_id',
-        'kebele_id',
-        'organization_type_id',
+        'sector_id',
+        'ownership_id',
+        'user_id',
      ];
 
      public function users()
@@ -32,10 +45,6 @@ class Organization extends Model
          return $this->hasMany(ModelsUser::class);
      }
 
-     public function type()
-     {
-         return $this->belongsTo(OrganizationType::class, 'organization_type_id');
-     }
 
      public function contact()
     {
@@ -61,4 +70,14 @@ class Organization extends Model
      {
          return $this->belongsTo(country::class, 'country_id');
      }  
+
+     public function ownership()
+     {
+         return $this->belongsTo(Ownership::class, 'region_id');
+     }   
+
+     public function organizationType()
+     {
+         return $this->belongsTo(OrganizationType::class, 'organization_type_id');
+     }   
 }

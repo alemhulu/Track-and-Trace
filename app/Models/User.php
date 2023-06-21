@@ -72,4 +72,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Organization::class, 'organization_id');
     }
+    public function packages()
+    {
+        return $this->hasMany(Package::class);
+    } 
 }

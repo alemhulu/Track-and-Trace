@@ -13,12 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('distribution_steps', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('distribution_id');
-            $table->foreignId('route_id');
-            $table->unsignedInteger('step');
-            $table->timestamps();
+        Schema::create('grade_subjects', function (Blueprint $table) {
+            $table->foreignId('grade_id')->nullable()->constrained();
+            $table->foreignId('subject_id')->nullable()->constrained();
         });
     }
 
@@ -29,6 +26,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('distribution_steps');
+        Schema::dropIfExists('grade_subjects');
     }
 };

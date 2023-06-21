@@ -15,6 +15,14 @@ return new class extends Migration
     {
         Schema::create('print_orders', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('order_organization_id');
+            $table->foreignId('book_id')->nullable()->constrained();
+            $table->foreignId('printer_organization_id')->default(1);
+            $table->unsignedBigInteger('no_of_books');
+            $table->unsignedBigInteger('no_of_packages');
+            $table->json('printed_books')->nullable();
+            $table->boolean('status');
+            
             $table->timestamps();
         });
     }

@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\GradeSubject;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
@@ -27,19 +28,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionSeeder::class,
             CountrySeeder::class,
-            RegionCitySeeder::class,
-            ZoneSubCitySeeder::class,
-            WoredaSeeder::class,
-            KebeleSeeder::class,
-            BookTypeSeeder::class,
-            BookSeeder::class,
             OrganizationTypeSeeder::class,
-            OrganizationSeeder::class,
-            RouteSeeder::class,
-            WareHouseSeeder::class,
-            DistributionSeeder::class,
             SubjectSeeder::class,
             GradeSeeder::class,
+            GradeSubjectSeeder::class,
         ]);
     }
 }

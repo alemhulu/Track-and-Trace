@@ -13,8 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('routes', function (Blueprint $table) {
+        Schema::create('packages', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('ware_house_id')->constrained();
+            $table->foreignId('book_id')->constrained();
+            $table->foreignId('user_id')->constrained();
+            $table->unsignedInteger('available')->default(0);
+            $table->unsignedInteger('sent')->default(0);
+            $table->unsignedInteger('balance')->default(0);
             $table->timestamps();
         });
     }
@@ -26,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('routes');
+        Schema::dropIfExists('packages');
     }
 };
