@@ -5,15 +5,7 @@
     "isEntry": true
   },
   "resources/css/app.css": {
-<<<<<<< HEAD
-<<<<<<< HEAD
-    "file": "assets/app.57d7f201.css",
-=======
-    "file": "assets/app.e46794ff.css",
->>>>>>> 86cfe87 (npm build)
-=======
-    "file": "assets/app.c3ccfc48.css",
->>>>>>> 77a4887 (npm build)
+    "file": "assets/app.e53ab1b2.css",
     "src": "resources/css/app.css",
     "isEntry": true
   }
