@@ -20,4 +20,20 @@ class PrintOrder extends Model
         'end_qrcode',
         'status',
     ];
+
+    public function orderOrganization()
+    {
+        return $this->belongsTo(Organization::class, 'order_organization_id');
+    }   
+    public function book()
+    {
+        return $this->belongsTo(Book::class, 'book_id');
+    }   
+
+    public function printOrganization()
+    {
+        return $this->belongsTo(Organization::class, 'printer_organization_id');
+    }   
+
+    
 }

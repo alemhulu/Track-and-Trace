@@ -16,4 +16,13 @@ class Track extends Model
         'end_time',
         'status',
     ];
+
+    public function distribution()
+    {
+        return $this->belongsTo(Distribution::class, 'distribution_id');
+    }   
+    public function book()
+    {
+        return $this->belongsTo(Book::class, 'book_id');
+    }   
 }

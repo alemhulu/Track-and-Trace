@@ -21,4 +21,17 @@ class Book extends Model
         'front_cover_location',
         'back_cover_location',
     ];
+
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class, 'grade_id');
+    }
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class, 'grade_id');
+    }
+    public function packages()
+    {
+        return $this->hasMany(Package::class);
+    } 
 }

@@ -20,8 +20,32 @@ class Distribution extends Model
        'step',
     ];
 
-    public function steps()
+    public function printer()
     {
-        return $this->hasMany(distribution::class);
+        return $this->belongsTo(Organization::class, 'printer_id');
     }
+    public function moe()
+    {
+        return $this->belongsTo(Organization::class, 'moe_id');
+    }
+    public function region()
+    {
+        return $this->belongsTo(Region::class, 'region_id');
+    }
+    public function zone()
+    {
+        return $this->belongsTo(Zone::class, 'zone_id');
+    }
+    public function woreda()
+    {
+        return $this->belongsTo(Woreda::class, 'woreda_id');
+    }
+    public function school()
+    {
+        return $this->belongsTo(Organization::class, 'school_id');
+    }
+    public function tracks()
+    {
+        return $this->hasMany(Track::class);
+    } 
 }

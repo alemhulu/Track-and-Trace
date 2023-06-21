@@ -5,16 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Subject extends Model
+class Ownership extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'name'
+        'name',
     ];
 
-    public function grades()
-     {
-         return $this->belongsToMany(Grade::class, 'grade_subjects');
-     }
+    public function organizations()
+    {
+        return $this->hasMany(Organization::class);
+    } 
 }

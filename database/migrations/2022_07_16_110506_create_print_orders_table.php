@@ -20,10 +20,7 @@ return new class extends Migration
             $table->foreignId('printer_organization_id')->default(1);
             $table->unsignedBigInteger('no_of_books');
             $table->unsignedBigInteger('no_of_packages');
-            $table->unsignedBigInteger('start_barcode');
-            $table->unsignedBigInteger('end_barcode');
-            $table->unsignedBigInteger('start_qrcode');
-            $table->unsignedBigInteger('end_qrcode');
+            $table->json('printed_books')->nullable();
             $table->boolean('status');
             
             $table->timestamps();

@@ -11,4 +11,9 @@ class Grade extends Model
     protected $fillable = [
         'name',
      ];
+
+     public function subjects()
+     {
+         return $this->belongsToMany(Subject::class, 'grade_subjects');
+     }
 }

@@ -45,10 +45,6 @@ class Organization extends Model
          return $this->hasMany(ModelsUser::class);
      }
 
-     public function type()
-     {
-         return $this->belongsTo(OrganizationType::class, 'organization_type_id');
-     }
 
      public function contact()
     {
@@ -74,4 +70,14 @@ class Organization extends Model
      {
          return $this->belongsTo(country::class, 'country_id');
      }  
+
+     public function ownership()
+     {
+         return $this->belongsTo(Ownership::class, 'region_id');
+     }   
+
+     public function organizationType()
+     {
+         return $this->belongsTo(OrganizationType::class, 'organization_type_id');
+     }   
 }
