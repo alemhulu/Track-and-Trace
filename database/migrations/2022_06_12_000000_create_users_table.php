@@ -30,7 +30,6 @@ return new class extends Migration
             $table->foreignId('region_id')->nullable()->constrained();
             $table->foreignId('zone_id')->nullable()->constrained();
             $table->foreignId('woreda_id')->nullable()->constrained();
-            $table->foreignId('organization_id')->nullable()->constrained();
             $table->timestamps();
         });
     }
