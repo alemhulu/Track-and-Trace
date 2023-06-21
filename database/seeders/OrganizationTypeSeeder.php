@@ -18,12 +18,12 @@ class OrganizationTypeSeeder extends Seeder
     {
         $datas = [
            [ 'name' => 'School'],
-           [ 'name' => 'Printer'],
-           [ 'name' => 'Ware Hourse'],
            [ 'name' => 'Ministry of Education'],
+           [ 'name' => 'Ware Hourse'],
            [ 'name' => 'Regional Bureau'],
            [ 'name' => 'Zone Bureau'],
-           [ 'name' => 'Woreda Bureau']
+           [ 'name' => 'Woreda Bureau'],
+           [ 'name' => 'Printer'],
         ];
         foreach ($datas as $data) {
             OrganizationType::create($data);
