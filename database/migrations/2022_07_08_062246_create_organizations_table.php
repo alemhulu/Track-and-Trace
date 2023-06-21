@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('organizations', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->string('website')->nullable();
             $table->string('logo')->nullable();
@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('new_code')->nullable();
             $table->json('facilities')->nullable();
 
-            $table->foreignId('assigned_user_id');
+            $table->foreignId('assigned_user_id')->nullable();
             $table->string('manager_name')->nullable();
             $table->string('phone')->nullable();
             
@@ -37,7 +37,7 @@ return new class extends Migration
             $table->boolean('status')->default(0)->nullable();
 
 
-            $table->foreignId('organization_type_id')->constrained();
+            $table->foreignId('organization_type_id')->nullable()->constrained();
             $table->foreignId('country_id')->default(1)->constrained();
             $table->foreignId('region_id')->nullable()->constrained();
             $table->foreignId('zone_id')->nullable()->nullable()->constrained();
