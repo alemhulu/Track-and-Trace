@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('tracks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('distribution_id')->constrained();
-            $table->foreignId('Book_id')->constrained();
+            $table->foreignId('book_id')->constrained();
             $table->json('trace');
             $table->string('start_time');
             $table->string('end_time');
