@@ -35,7 +35,7 @@ class SchoolCreate extends Command
         // DB::table('countries')->truncate();
         // Schema::enableForeignKeyConstraints();
 
-        Organization::truncate();
+
         $count=0;
         $collection= collect([]);
         $error=0;
@@ -57,6 +57,7 @@ class SchoolCreate extends Command
                             "woreda_id"=> $data[4],
                             "sector_id"=> $data[5],
                             "ownership_id"=> $data[6],
+                            "status"=> 1,
                     ]);    
                     WareHouse::create([
                         "branch"=>1,
@@ -67,8 +68,8 @@ class SchoolCreate extends Command
                         "woreda_id"=>$organization->woreda_id,
                     ]);
                     Distribution::create([
-                        "printer_id"=>1,
-                        "moe_id"=>2,
+                        "printer_id"=>10,
+                        "moe_id"=>1,
                         "region_id"=>$organization->region_id,
                         "zone_id"=>$organization->zone_id,
                         "woreda_id"=>$organization->woreda_id,
