@@ -16,17 +16,17 @@ class Country extends Model
 
     public function regions()
     {
-        return $this->hasMany(region::class);
+        return $this->hasMany(Region::class);
     }
 
     public function zone()
     {
-        return $this->hasMany(zone::class);
+        return $this->hasMany(Zone::class);
     }
 
     public function woreda()
     {
-        return $this->hasMany(woreda::class);
+        return $this->hasMany(Woreda::class);
     }
 
     public function organizations()

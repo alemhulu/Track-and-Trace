@@ -53,22 +53,22 @@ class Organization extends Model
 
      public function woreda()
      {
-         return $this->belongsTo(woreda::class, 'woreda_id');
+         return $this->belongsTo(Woreda::class, 'woreda_id');
      }   
  
      public function zone()
      {
-         return $this->belongsTo(zone::class, 'zone_id');
+         return $this->belongsTo(Zone::class, 'zone_id');
      }   
  
      public function region()
      {
-         return $this->belongsTo(region::class, 'region_id');
+         return $this->belongsTo(Region::class, 'region_id');
      }   
  
      public function country()
      {
-         return $this->belongsTo(country::class, 'country_id');
+         return $this->belongsTo(Country::class, 'country_id');
      }  
 
      public function ownership()

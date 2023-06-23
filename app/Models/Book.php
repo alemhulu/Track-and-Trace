@@ -32,6 +32,6 @@ class Book extends Model
     }
     public function packages()
     {
-        return $this->hasMany(Package::class);
+        return $this->hasMany(package::class);
     } 
 }

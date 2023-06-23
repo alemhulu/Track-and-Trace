@@ -45,6 +45,6 @@ class WareHouse extends Model
 
     public function user()
     {
-        return $this->belongsTo(user::class, 'assigned_user_id');
+        return $this->belongsTo(User::class, 'assigned_user_id');
     } 
 }

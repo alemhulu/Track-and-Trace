@@ -23,17 +23,17 @@ class Region extends Model
      */
     public function zones()
     {
-        return $this->hasMany(zone::class);
+        return $this->hasMany(Zone::class);
     }
 
     public function woreda()
     {
-        return $this->hasMany(woreda::class);
+        return $this->hasMany(Woreda::class);
     }
 
     public function country()
     {
-        return $this->belongsTo(country::class, 'country_id');
+        return $this->belongsTo(Country::class, 'country_id');
     }
 
     public function distributions()
