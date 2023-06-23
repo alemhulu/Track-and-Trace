@@ -143,20 +143,6 @@
                             </x-form.select>
                         </div>
                     </div>
-
-                    <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
-                        <x-jet-label value="Kebele" />
-                        <div class="mt-1 sm:mt-0 sm:col-span-2">
-                            <x-form.select wire:model="kebele_id" id="kebele_id" class="max-w-md">
-                                <option value="" selected>select</option>
-                                @forelse ( $kebeles as $kebele )
-                                <option value="{{ $kebele->id }}">{{ $kebele->name }}</option>
-                                @empty
-                                <option disabled>nothing to select !</option>
-                                @endforelse
-                            </x-form.select>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

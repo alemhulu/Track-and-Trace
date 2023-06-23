@@ -137,7 +137,7 @@ class AddOrganization extends Component
             $this->regions = Region::where('country_id', $this->country_id)->get();
             $this->zones = Zone::where('region_id', $this->region_id)->get();
             $this->woredas = Woreda::where('zone_id', $this->zone_id)->get();
-            $this->kebeles = Kebele::where('woreda_id', $this->woreda_id)->get();
+            // $this->kebeles = Kebele::where('woreda_id', $this->woreda_id)->get();
             $this->users;
             $this->user_id;   
             return view('livewire.oganization.add-organization')->extends('main.organization.index');

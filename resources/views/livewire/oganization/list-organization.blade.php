@@ -23,18 +23,20 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-organization.location country="{{ $record->country->name }}" region="{{ $record->region->name }}"
-                        zone="{{ $record->zone->name ?? '-------' }}" />
+                    <x-organization.location country="{{ $record->country->name ?? ''}}"
+                        region="{{ $record->region->name ?? ''}}" zone="{{ $record->zone->name ?? '-------' }}"
+                        woreda="{{ $record->woreda->name }}" />
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-organization.info h=12 image="{{ $record->contact->profile_photo_url }}"
-                        name="{{ $record->contact->name }}" email="{{ $record->contact->email }}"
+                    <x-organization.info h=12 image="{{ $record->contact->profile_photo_url ?? ''}}"
+                        name="{{ $record->contact->name ?? ''}}" email="{{ $record->contact->email ?? ''}}"
                         phone="{{ $record->contact->phone ?? '-------' }}" />
                 </td>
 
                 <td class=" px-5 py-2 whitespace-nowrap">
-                    <x-button class="py-1 text-blue-900 font-bold" btnType="info">{{ $record->type->name }}
+                    <x-button class="py-1 text-blue-900 font-bold" btnType="info">
+                        {{ $record->organizationType->name ?? ''}}
                     </x-button>
                 </td>
 

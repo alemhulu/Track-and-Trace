@@ -25,20 +25,9 @@ class DistributionSteps extends Component
 
     public function mount()
     {
-        $this->steps = Steps::all();
+        $this->steps = [];
     }
 
-    public function addStep()
-    {
-        $this->steps->push( new Steps() );
-    }
-
-    public function deleteStep($index)
-    {
-        $route = $this->steps[$index];
-        $this->steps->forget($index);
-        $route->delete();
-    }    
 
     public function save()
     {

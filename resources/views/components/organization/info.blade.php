@@ -15,7 +15,7 @@ $image = '/'.$image;
 
     <div class="">
         <div class=" text-sm font-semibold text-gray-600 dark:text-gray-200">
-            <div class="font-bold"> {{ $name }} </div>
+            <div class="font-bold"> {!! $name !!} </div>
             <div class="text-xs"> {{ $email }} </div>
             <div class="text-xs"> {{ $phone }} </div>
         </div>

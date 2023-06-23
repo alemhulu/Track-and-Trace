@@ -42,4 +42,9 @@ class WareHouse extends Model
     {
         return $this->hasMany(Package::class);
     } 
+
+    public function user()
+    {
+        return $this->belongsTo(user::class, 'assigned_user_id');
+    } 
 }
