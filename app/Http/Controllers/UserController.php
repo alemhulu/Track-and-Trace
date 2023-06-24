@@ -11,6 +11,8 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Laravel\Jetstream\Jetstream;
+use Milon\Barcode\DNS1D;
+use Milon\Barcode\DNS2D;
 
 class UserController extends Controller
 {
@@ -52,11 +54,23 @@ class UserController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
-            'roles' => 'required'
+            'roles' => 'required',
         ]);
 
         $input = $request->all();
         $input['password'] = Hash::make($input['password']);
+        // $barcode = new DNS2D();
+        // $barcodeImage = $barcode->getBarcodeSVG($input['name'], 'QRCODE');
+        // if (!\File::exists(public_path('barcodes'))) {
+        //     \File::makeDirectory(public_path('barcodes'), $mode = 0777, true, true);
+        // }
+
+        // $storagePath = public_path('barcodes/');
+        // $filename = $input['name'].'.svg';
+
+        // file_put_contents($storagePath . $filename, $barcodeImage);
+        // $input['profile_photo_path'] = '/barcodes/'.$filename;
+        // dd($filename);
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
 
