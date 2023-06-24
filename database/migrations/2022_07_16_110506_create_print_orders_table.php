@@ -16,13 +16,16 @@ return new class extends Migration
         Schema::create('print_orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('order_organization_id');
+            $table->foreignId('printer_organization_id');
             $table->foreignId('book_id')->nullable()->constrained();
-            $table->foreignId('printer_organization_id')->default(1);
-            $table->unsignedBigInteger('no_of_books');
-            $table->unsignedBigInteger('no_of_packages');
-            $table->json('printed_books')->nullable();
-            $table->boolean('status');
-            
+            $table->unsignedBigInteger('no_of_books')->nullable();
+            $table->unsignedBigInteger('no_of_packages')->nullable();
+            $table->json('Book_codes')->nullable();
+            $table->string('expected_print_time')->nullable();
+            $table->string('actual_print_time')->nullable();
+            $table->unsignedInteger('print_status');
+            $table->unsignedInteger('request_status');
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

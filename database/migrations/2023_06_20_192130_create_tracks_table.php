@@ -15,12 +15,21 @@ return new class extends Migration
     {
         Schema::create('tracks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('distribution_id')->constrained();
             $table->foreignId('book_id')->constrained();
-            $table->json('trace');
-            $table->string('start_time');
-            $table->string('end_time');
-            $table->boolean('status');
+            $table->json('sender_organization_id');
+            $table->unsignedBigInteger('no_of_books')->nullable();
+            $table->unsignedBigInteger('no_of_packages')->nullable();
+            $table->unsignedBigInteger('qrcode_start')->nullable();
+            $table->unsignedBigInteger('qrcode_end')->nullable();
+            $table->unsignedBigInteger('barcode_start')->nullable();
+            $table->unsignedBigInteger('barcode_end')->nullable();
+            $table->json('Book_codes')->nullable();
+            $table->string('expected_send_time')->nullable();
+            $table->string('actual_send_time')->nullable();
+            $table->string('expected_delivery_school_time')->nullable();
+            $table->string('actual_delivery_school_time')->nullable();
+            $table->unsignedInteger('delivery_status')->nullable();
+            $table->string('description')->nullable();
             $table->timestamps();
         });
     }

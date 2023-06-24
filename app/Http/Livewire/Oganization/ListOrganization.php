@@ -12,7 +12,7 @@ class ListOrganization extends Component
 
     public $search='';
     public $recordes=5;
-    public $column='name';
+    public $column='created_at';
     public $sortType='asc';
     protected $columns= ['name'];
 

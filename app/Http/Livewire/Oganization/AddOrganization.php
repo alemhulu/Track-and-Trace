@@ -8,6 +8,7 @@ use App\Models\Organization;
 use App\Models\OrganizationType;
 use App\Models\Region;
 use App\Models\User;
+use App\Models\WareHouse;
 use App\Models\Woreda;
 use App\Models\Zone;
 use Livewire\Component;
@@ -168,7 +169,15 @@ class AddOrganization extends Component
             }
             
             // dd($validatedData);
-            Organization::create($validatedData);
+            $organization=Organization::create($validatedData);
+            WareHouse::create([
+                "branch"=>1,
+                "organization_id"=>$organization->id,
+                "country_id"=>1,
+                "region_id"=>$organization->region_id,
+                "zone_id"=>$organization->zone_id,
+                "woreda_id"=>$organization->woreda_id,
+            ]);
         
             // $this->resetPage();
             $this->alertSuccess();
