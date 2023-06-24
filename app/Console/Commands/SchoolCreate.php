@@ -47,9 +47,13 @@ class SchoolCreate extends Command
             if (!$firstline) {
                 if($data[0]!=null && $data[1]!=null && $data[2]!=null)
                 {
-                    
+                    $name = trim(collect(explode(' ', $data[0]))->map(function ($segment) {
+                        return mb_substr($segment, 0, 1);
+                    })->join(' '));
+            
+                    $imageName = "https://ui-avatars.com/api/?name=".urlencode($name)."&color=7F9CF5&background=EBF4FF";
                     $organization=Organization::create([
-                            "organization_type_id" => 1,
+                            "organization_type_id" => 5,
                             "name"=> $data[0],
                             "new_code"=> $data[1],
                             "region_id"=> $data[2],
@@ -57,6 +61,7 @@ class SchoolCreate extends Command
                             "woreda_id"=> $data[4],
                             "sector_id"=> $data[5],
                             "ownership_id"=> $data[6],
+                            "logo"=>$imageName,
                             "status"=> 1,
                     ]);    
                     WareHouse::create([
@@ -66,15 +71,6 @@ class SchoolCreate extends Command
                         "region_id"=>$organization->region_id,
                         "zone_id"=>$organization->zone_id,
                         "woreda_id"=>$organization->woreda_id,
-                    ]);
-                    Distribution::create([
-                        "printer_id"=>10,
-                        "moe_id"=>1,
-                        "region_id"=>$organization->region_id,
-                        "zone_id"=>$organization->zone_id,
-                        "woreda_id"=>$organization->woreda_id,
-                        "school_id"=>$organization->id,
-                        "step"=>5
                     ]);
                     $this->line('#' . $count . '->  ' . ' ------------------------------------------------');
                         $count++;

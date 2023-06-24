@@ -17,12 +17,11 @@ class OrganizationTypeSeeder extends Seeder
     public function run()
     {
         $datas = [
-           [ 'name' => 'School'],
-           [ 'name' => 'Ministry of Education'],
-           [ 'name' => 'Ware Hourse'],
+           [ 'name' => 'Ministry'],
            [ 'name' => 'Regional Bureau'],
            [ 'name' => 'Zone Bureau'],
            [ 'name' => 'Woreda Bureau'],
+           [ 'name' => 'School'],
            [ 'name' => 'Printer'],
         ];
         foreach ($datas as $data) {
