@@ -55,14 +55,14 @@
                         <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                             <x-jet-label value="Edition" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
-                                <x-jet-input wire:model.defer="edition" type="text" name="edition" id="edition"
+                                <x-jet-input wire:model.defer="edition" type="number" name="edition" id="edition"
                                     class="max-w-xl" />
                             </div>
                         </div>
                         <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                             <x-jet-label value="Volume" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
-                                <x-jet-input wire:model.defer="volume" type="text" name="volume" id="volume"
+                                <x-jet-input wire:model.defer="volume" type="number" name="volume" id="volume"
                                     class="max-w-xl" />
                             </div>
                         </div>

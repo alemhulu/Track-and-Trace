@@ -12,10 +12,11 @@
         <x-slot name="tableRows">
             @php $i = 1; $record = 1;@endphp
             {{-- @forelse($books as $record) --}}
+
+            @foreach ($books as $book)
             <x-data-table.tr>
-                @foreach ($books as $book)
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">{{ $book->id }}</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">{{ $i++ }}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
@@ -42,9 +43,10 @@
                 <td class="px-5 py-2">
                     <x-action.table-button id="{{ $record }}" view="viewBook" edit="editBook" delete="deleteBook" />
                 </td>
-                @endforeach
-
             </x-data-table.tr>
+            @endforeach
+
+
 
 
             {{-- @empty --}}
