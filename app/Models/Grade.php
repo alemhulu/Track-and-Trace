@@ -16,4 +16,10 @@ class Grade extends Model
      {
          return $this->belongsToMany(Subject::class, 'grade_subjects');
      }
+
+     public function books()
+     {
+        return $this->hasMany(Book::class,'grade_id');
+     }
+
 }
