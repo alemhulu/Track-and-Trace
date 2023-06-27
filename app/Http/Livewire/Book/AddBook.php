@@ -46,10 +46,10 @@ class AddBook extends Component
         $this->validate();
        $data=[
         'grade_id'=>$this->grade_id,
-        'subject_id'=>$this->grade_id,
+        'subject_id'=>$this->subject_id,
         'book_type'=>$this->book_type,
-        'print_type'=>$this->book_type,
-        'paper_size'=>$this->book_type,
+        'print_type'=>$this->print_type,
+        'paper_size'=>$this->paper_type,
         'edition'=>$this->edition,
         'volume'=>$this->volume,
         'isbn'=>$this->isbn,
