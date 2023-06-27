@@ -33,7 +33,8 @@ class PrintOrder extends Model
     public function printOrganization()
     {
         return $this->belongsTo(Organization::class, 'printer_organization_id');
-    }   
+    }  
+
 
     
 }
