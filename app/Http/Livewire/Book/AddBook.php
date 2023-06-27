@@ -59,9 +59,9 @@ class AddBook extends Component
        $backCoverFileName=$this->back_cover->getClientOriginalName();
        $fileFileName=$this->file->getClientOriginalName();
 
-       $frontCoverFilePath = $this->front_cover->storeAs($book->id, $frontCoverFileName, 'public');
-       $BackCoverFilePath = $this->back_cover->storeAs($book->id, $backCoverFileName, 'public');
-       $fileFilePath = $this->file->storeAs($book->id, $fileFileName, 'public');
+       $frontCoverFilePath = $this->front_cover->storeAs('book/'.$book->id, $frontCoverFileName, 'public');
+       $BackCoverFilePath = $this->back_cover->storeAs('book/'.$book->id, $backCoverFileName, 'public');
+       $fileFilePath = $this->file->storeAs('book/'.$book->id, $fileFileName, 'public');
 
        $file['front_cover'] = $frontCoverFilePath;
        $file['back_cover'] = $BackCoverFilePath;

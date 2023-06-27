@@ -28,7 +28,7 @@ class Book extends Model
     }
     public function subject()
     {
-        return $this->belongsTo(Subject::class, 'grade_id');
+        return $this->belongsTo(Subject::class, 'subject_id');
     }
     public function packages()
     {

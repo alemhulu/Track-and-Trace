@@ -87,10 +87,11 @@
                             class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                             <x-jet-label value="Grade" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
-                                <x-form.select wire:model="user_id" id="user_id" class="max-w-md">
-                                    <option>select grade</option>
-                                    <option>Grade 10</option>
-                                    <option>Grade 12</option>
+                                <x-form.select wire:model="grade_id" id="user_id" class="max-w-md">
+                                    <option>Select Grade</option>
+                                    @foreach ($grades as $grade)
+                                    <option value="{{ $grade->id }}">{{ $grade->name }}</option>
+                                    @endforeach
                                 </x-form.select>
                             </div>
                         </div>
@@ -99,10 +100,11 @@
                             class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                             <x-jet-label value="Subject" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
-                                <x-form.select wire:model="user_id" id="user_id" class="max-w-md">
-                                    <option>select subject</option>
-                                    <option>Biology</option>
-                                    <option>English</option>
+                                <x-form.select wire:model="subject_id" id="user_id" class="max-w-md">
+                                    <option>Select Subject</option>
+                                    @foreach ($subjects as $subject)
+                                    <option value="{{ $subject->id }}">{{ $subject->name }}</option>
+                                    @endforeach
                                 </x-form.select>
                             </div>
                         </div>
@@ -113,19 +115,23 @@
                             <div class="mt-1 sm:mt-0 col-span-2 sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-5 ">
                                 <div>
                                     <x-jet-label value="Student Text Book" />
-                                    <x-form.select wire:model="user_id" id="user_id" class="mt-0 max-w-md">
-                                        <option>select subject</option>
-                                        <option>Biology</option>
-                                        <option>English</option>
+                                    <x-form.select wire:model="book_id" id="user_id" class="mt-0 max-w-md">
+                                        <option>Select Books</option>
+                                        @foreach ($books as $book)
+                                        <option value="{{ $book->id }}">
+                                            {{ $book->grade->name }}{{ $book->subject->name }}</option>
+                                        @endforeach
                                     </x-form.select>
                                 </div>
 
                                 <div>
                                     <x-jet-label value="Teacher Guide Books" />
-                                    <x-form.select wire:model="user_id" id="user_id" class="mt-0 max-w-md">
-                                        <option>select subject</option>
-                                        <option>Biology</option>
-                                        <option>English</option>
+                                    <x-form.select wire:model="book_id" id="user_id" class="mt-0 max-w-md">
+                                        <option>Select Books</option>
+                                        @foreach ($books as $book)
+                                        <option value="{{ $book->id }}">
+                                            {{ $book->grade->name }}{{ $book->subject->name }}</option>
+                                        @endforeach
                                     </x-form.select>
                                 </div>
 
