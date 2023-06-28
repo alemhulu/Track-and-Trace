@@ -6,7 +6,7 @@
   </x-slot>
 
   <div class="p-5 gap-5 grid grid-cols-3 bg-white my-5">
-    {!! DNS2D::getBarcodeSVG('0000010000001', 'PDF417', 2, 0.5, 1 , true)!!}
+    {!! DNS2D::getBarcodeSVG("G-9 Biology: 0000010000001", 'QRCODE')!!}
 
   </div>
 

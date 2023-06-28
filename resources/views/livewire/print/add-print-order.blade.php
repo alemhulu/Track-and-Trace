@@ -122,12 +122,12 @@
                                             max="10000000" placeholder="inter number of copies" />
                                     </div>
                                     <div>
-                                        <x-jet-label value="Number of Packages" />
+                                        <x-jet-label value="Books per Packages" />
                                         <x-jet-input wire:model="number_of_packages" type="number" @class(['max-w-md'])
                                             placeholder="Teacher guide books" max="10000000" />
                                     </div>
                                     <div>
-                                        <x-jet-label value="Books per Package" />
+                                        <x-jet-label value="Number Of Package" />
                                         <x-jet-input disabled type="number" @class(['max-w-md'])
                                             placeholder="Teacher guide books" max="10000000"
                                             value="{{ $bookPerPackage ?? 0}}" />
@@ -141,7 +141,7 @@
                             <div class="mt-1 sm:mt-0 sm:col-span-2 dark:text-gray-300">
                                 <span
                                     class="max-w-xl text-lg rounded-md border py-2 px-4 text-gray-600 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50 dark:shadow-gray-700 mr-2">{{ $bookPerPackage ??'0'}}
-                                </span> Packages
+                                </span> Books
                             </div>
                         </div>
 
@@ -179,27 +179,42 @@
                         <x-jet-label value="Package QR code" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
                             <div class="grid sm:grid-cols-2 gap-5">
-                                <div class="col-span-1">
-                                    <x-jet-label value="Start" />
-                                    <span
-                                        class=" flex sm:mt-1 text-lg rounded-md border py-2 px-4 text-gray-500 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50 dark:shadow-gray-700 h-10">
-                                        {{ $qrcode_start }}
-                                        {{-- <i class="absolute right-2 top-3  fi fi-rr-hastag"></i> --}}
-                                    </span>
+                                <div class="col-span-1 flex gap-5 items-center">
+                                    @if ( $qrcode_start)
+                                    <div class="border flex">
+                                        {!! DNS2D::getBarcodeSVG( 'Grade '.$grade->name.' '.$subject->name
+                                        ." \n ".$qrcode_start , 'QRCODE')!!}
+                                    </div>
+                                    @endif
+                                    <div class="w-full">
+                                        <x-jet-label value="Start" />
+                                        <span
+                                            class=" flex sm:mt-1 text-lg rounded-md border py-2 px-4 text-gray-500 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50 dark:shadow-gray-700 h-10">
+                                            {{ $qrcode_start }}
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <div class="col-span-1">
-                                    <x-jet-label value="End" />
-                                    <span
-                                        class="flex sm:mt-1 text-lg rounded-md border py-2 px-4 text-gray-500 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50 dark:shadow-gray-700 h-10">
-                                        {{ $qrcode_end}}
-                                    </span>
+                                <div class="col-span-1 flex gap-5 items-center">
+                                    @if ( $qrcode_end)
+                                    <div class="border flex">
+                                        {!! DNS2D::getBarcodeSVG( 'Grade '.$grade->name.' '.$subject->name
+                                        ." \n ".$qrcode_end , 'QRCODE')!!}
+                                    </div>
+                                    @endif
+                                    <div class="w-full">
+                                        <x-jet-label value="End" />
+                                        <span
+                                            class="flex sm:mt-1 text-lg rounded-md border py-2 px-4 text-gray-500 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50 dark:shadow-gray-700 h-10">
+                                            {{ $qrcode_end}}
+                                        </span>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <img class="w-22" src="{{ $path2 }}" alt="abebe">
-                    <img class="w-15" src="{{ $path }}" alt="test">
+
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start  sm:pt-3">
                         <x-jet-label value="Book Barcode" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
@@ -216,7 +231,7 @@
                                     <x-jet-label value="End" />
                                     <span
                                         class="flex sm:mt-1 text-lg rounded-md border py-2 px-4 text-gray-500 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50 dark:shadow-gray-700 h-10">
-                                        {{ $barcode_end}}
+                                        {{ $barcode_end }}
                                     </span>
                                 </div>
                             </div>
