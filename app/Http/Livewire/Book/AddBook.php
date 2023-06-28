@@ -49,7 +49,7 @@ class AddBook extends Component
         'subject_id'=>$this->subject_id,
         'book_type'=>$this->book_type,
         'print_type'=>$this->print_type,
-        'paper_size'=>$this->paper_type,
+        'paper_size'=>$this->paper_size,
         'edition'=>$this->edition,
         'volume'=>$this->volume,
         'isbn'=>$this->isbn,
