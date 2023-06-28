@@ -40,7 +40,7 @@
                 </div>
             </div>
 
-            <div class="space-x-2 mt-8 sm:mt-0">
+            <div class="space-x-2 mt-8 sm:mt-0 flex">
                 <a href="{{ route('packages.request') }}">
                     <x-button type="button" btnType="secondary">CANCEL</x-button>
                 </a>

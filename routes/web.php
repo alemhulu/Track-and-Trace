@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\DistributionController;
+use App\Http\Controllers\PrintOrderController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Http\Livewire\Book\AddBook;
@@ -64,6 +65,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/print-order', function () { return view('main.print-order.index'); })->name('print-order');
     Route::get('/print-order/order', AddPrintOrder::class)->name('print-order.order');
     Route::get('/print-order/list', ListPrintOrder::class)->name('print-order.list');
+    Route::get('/print-order/view/{id}', [PrintOrderController::class , 'show'])->name('print-order.view');
 
     // Book Packages routes 
     Route::get('/book-packages', BookPackageIndex::class)->name('book-packages');

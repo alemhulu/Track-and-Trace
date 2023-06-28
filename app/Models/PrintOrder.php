@@ -14,6 +14,7 @@ class PrintOrder extends Model
         'printer_organization_id',
         'no_of_books',
         'no_of_packages',
+        'Book_codes',
         'start_barcode',
         'end_barcode',
         'start_qrcode',
@@ -37,6 +38,9 @@ class PrintOrder extends Model
         return $this->belongsTo(Organization::class, 'printer_organization_id');
     }  
 
+    protected $casts=[
+        'Book_codes' => 'json',
+    ];
 
     
 }

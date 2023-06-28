@@ -6,6 +6,7 @@ use App\Models\User as ModelsUser;
 use App\View\Components\user;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as AuthUser;
 
 class Organization extends Model
 {
@@ -79,5 +80,10 @@ class Organization extends Model
      public function organizationType()
      {
          return $this->belongsTo(OrganizationType::class, 'organization_type_id');
+     }   
+
+     public function assignedUser()
+     {
+         return $this->belongsTo(AuthUser::class, 'assigned_user_id');
      }   
 }

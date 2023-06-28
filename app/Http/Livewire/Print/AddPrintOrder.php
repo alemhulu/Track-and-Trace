@@ -131,8 +131,8 @@ class AddPrintOrder extends Component
        $Book_codes = [];
        for ($q=0; $q < $this->number_of_packages ; $q++) { 
         $barcode = new DNS2D();
-        $qrcodesImage = $barcode->getBarcodeSVG('G-'. $this->grade->name.' '. $this->subject->name. ': '. $this->qrcode_start, 'QRCODE');
         $this->qrcode_start = str_pad($this->qrcode_start,13,'0',STR_PAD_LEFT);
+        $qrcodesImage = $barcode->getBarcodeSVG('G-'. $this->grade->name.' '. $this->subject->name. ': '. $this->qrcode_start, 'QRCODE');
         $qr = $this->qrcode_start.'.svg';
         Storage::disk('public')->put('printOrders/'.$printBatch->id.'/'.($q+1).'/'.$this->qrcode_start.'.svg', $qrcodesImage);
         $this->qrcode_start ++;
@@ -140,8 +140,8 @@ class AddPrintOrder extends Component
         $barcodes = [];
         for ($b=0; $b < $this->bookPerPackage; $b++) { 
             $qrcodes = new DNS1D();
-            $barcodeImage = $qrcodes->getBarcodeSVG($this->barcode_start, 'C39', 1, 50);
             $this->barcode_start = str_pad($this->barcode_start,13,'0',STR_PAD_LEFT);
+            $barcodeImage = $qrcodes->getBarcodeSVG($this->barcode_start, 'C39', 1, 50);
             $barcodes[]=$this->barcode_start.'.svg';
             Storage::disk('public')->put('printOrders/'.$printBatch->id.'/'.($q+1).'/barcods/'.$this->barcode_start.'.svg', $barcodeImage);
             $this->barcode_start ++;
