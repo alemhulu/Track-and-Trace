@@ -8,6 +8,7 @@ use App\Models\Organization;
 use App\Models\OrganizationType;
 use App\Models\PrintOrder;
 use App\Models\Subject;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Milon\Barcode\DNS1D;
@@ -31,14 +32,15 @@ class AddPrintOrder extends Component
         'qrcode_start' => 'required',
         'qrcode_end' => 'required',
         'number_of_copies' => 'required',
-        'number_of_packages' => 'required',
+        'number_of_packages' => 'required|numeric|min:1',
         'expected_print_date' => 'required',
+        'organization_id' => 'required'
     ];
 
     public function mount()
     {
         $this->grades=Grade::all();
-        $this->organizationTypes=OrganizationType::all();
+        $this->organizationTypes=OrganizationType::where('name', 'Printer')->get();
 
     }
     public function render()
@@ -106,7 +108,7 @@ class AddPrintOrder extends Component
     }
 
     public function addPrintOrder(){
-      
+      $this->validate();
        $data=[
         'grade_id'=>$this->grade_id,
         'subject_id'=>$this->grade_id,
@@ -115,38 +117,48 @@ class AddPrintOrder extends Component
         'barcode_end' => $this->barcode_end,
         'qrcode_start' => $this->qrcode_start,
         'qrcode_end' => $this->qrcode_end,
-        'number_of_copies' => $this->number_of_copies,
-        'number_of_packages' => $this->number_of_packages,
-        'expected_print_date' => $this->expected_print_date,
+        'no_of_books' => $this->number_of_copies,
+        'no_of_packages' => $this->number_of_packages,
+        'order_organization_id' => 1,
+        'printer_organization_id' => $this->organization_id,
+        'expected_print_time' => $this->expected_print_date,
+        'print_status' =>0,
+        'request_status' => 0,
        ];
-      
-       if (!\File::exists(public_path('barcodes'))) {
-        \File::makeDirectory(public_path('barcodes'), $mode = 0777, true, true);
-    }
+       $printBatch=PrintOrder::create($data);
+     
+       $Book_codes = [];
+       for ($q=0; $q < $this->number_of_packages ; $q++) { 
         $barcode = new DNS2D();
-        $barcodeImage = $barcode->getBarcodeSVG($this->qrcode_start, 'QRCODE');
+        $qr = $this->qrcode_start.'.svg';
+        $qrcodesImage = $barcode->getBarcodeSVG($this->qrcode_start, 'QRCODE');
+        Storage::disk('public')->put('printOrders/'.$printBatch->id.'/'.($q+1).'/'.$this->qrcode_start++.'.svg', $qrcodesImage);
 
-        $storagePath = public_path('barcodes/');
-        $filename = $this->barcode_start.'.svg';
-
-        file_put_contents($storagePath . $filename, $barcodeImage);
-
-       $this->path='/barcodes/'.$filename;
-
-       if (!\File::exists(public_path('qrcodes'))) {
-        \File::makeDirectory(public_path('qrcodes'), $mode = 0777, true, true);
+        $barcodes = [];
+        for ($b=0; $b < $this->bookPerPackage; $b++) { 
+            $qrcodes = new DNS1D();
+            $barcodeImage = $qrcodes->getBarcodeSVG($this->barcode_start, 'C39', 1, 50);
+            $barcodes[]=$this->barcode_start.'.svg';
+            $this->barcode_start ++;
+            $this->barcode_start = str_pad($this->barcode_start,13,'0',STR_PAD_LEFT);
+            Storage::disk('public')->put('printOrders/'.$printBatch->id.'/'.($q+1).'/barcods/'.$this->barcode_start.'.svg', $barcodeImage);
+            
+           }
+           
+           $Book_codes[$q+1] = 
+                                        [
+                                        'barcodes' => $barcodes , 
+                                        'QR' => $qr
+                                        ];
     }
-        $qrcodes = new DNS1D();
-        $qrcodesImage = $qrcodes->getBarcodeSVG($this->barcode_start, 'C39');
 
-        $storagePath = public_path('qrcodes/');
-        $filename2 = $this->qrcode_start.'.svg';
+    $printBatch['Book_codes'] =$Book_codes;    
+    $printBatch->save();
+    // dd( $Book_codes );
 
-        file_put_contents($storagePath . $filename, $qrcodesImage);
-
-       $this->path2='/qrcodes/'.$filename2;
-
-       $this->alertSuccess();
+    $this->alertSuccess();
+    sleep(1);
+    return redirect()->route('print-order.list');
     }
 
     public function alertError( $name ) {
