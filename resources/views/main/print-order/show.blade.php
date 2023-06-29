@@ -133,9 +133,10 @@
                                         volume="{{ $order->book->volume ?? '----' }}"
                                         edition="{{ $order->book->edition }}"
                                         booktype="{{ $order->book->book_type ?  'Teacher Guide' : 'Student Text Book'}}" />
-                                    <div class="grid grid-cols-4 p-5 border">
+                                    <div class="grid grid-cols-3 p-5 border">
                                         @foreach ($order->Book_codes[$key]['barcodes'] as $barcode)
-                                        <div class="flex items-center justify-center border p-4 border-dashed">
+                                        <div
+                                            class="flex items-center justify-center border p-4 border-dashed border-gray-500">
                                             <img src="/storage/printOrders/{{ $order->id }}/{{ $key }}/barcods/{{ $barcode }}"
                                                 alt="" srcset="">
                                         </div>

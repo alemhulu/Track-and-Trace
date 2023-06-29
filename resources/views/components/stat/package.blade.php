@@ -6,12 +6,12 @@
 
             @if ($Qrcode == '')
             <div
-                class="w-16 bg-blue-100 dark:bg-blue-700 flex items-center justify-center text-2xl text-blue-700 dark:text-blue-100 rounded-l-lg ">
+                class="w-32 bg-blue-100 dark:bg-blue-700 flex items-center justify-center text-2xl text-blue-700 dark:text-blue-100 rounded-l-lg ">
                 <i class="text-4xl flex fi fi-rr-box p-2 font-semibold"></i>
             </div>
             @else
-            <div class="flex items-center p-1 bg-blue-200 rounded-l-md border">
-                <img src="{{ $Qrcode }}" alt="" srcset="">
+            <div class="flex flex-shrink-0 items-center p-1 bg-blue-200 rounded-l-md border">
+                <img src="{{ $Qrcode }}" alt="" srcset="" class="w-32 h-32">
             </div>
             @endif
 
