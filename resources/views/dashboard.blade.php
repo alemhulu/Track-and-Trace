@@ -1,31 +1,32 @@
 <x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+  <x-slot name="header">
+    <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
+      {{ __('Dashboard') }}
+    </h2>
+  </x-slot>
 
-    <div class="mb-8">
-        <div class="w-auto">
-            <div class=" overflow-hidden shadow-xl sm:rounded-lg dark:bg-gray-800">
-                <section>
-                    <div class=" rounded-lg grid grid-cols-6 gap-5">
-                        <div class="col-span-6 lg:col-span-4 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900"
-                            id="chart">
-                        </div>
-                        <div class="col-span-6 lg:col-span-2 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900"
-                            id="chart3">
-                        </div>
-                        <div class="col-span-6 md:col-span-3 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900"
-                            id="chart1">
-                        </div>
-                        <div class="col-span-6 md:col-span-3 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900"
-                            id="chart2">
-                        </div>
-                    </div>
-                </section>
+  <div class="p-5 gap-5 grid grid-cols-3 bg-white my-5">
+    {!! DNS2D::getBarcodeSVG("G-9 Biology: 0000010000001", 'QRCODE')!!}
 
-                {{-- <section class="rounded-lg">
+  </div>
+
+  <div class="mb-8">
+    <div class="w-auto">
+      <div class=" overflow-hidden shadow-xl sm:rounded-lg dark:bg-gray-800">
+        <section>
+          <div class=" rounded-lg grid grid-cols-6 gap-5">
+            <div class="col-span-6 lg:col-span-4 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900" id="chart">
+            </div>
+            <div class="col-span-6 lg:col-span-2 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900" id="chart3">
+            </div>
+            <div class="col-span-6 md:col-span-3 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900" id="chart1">
+            </div>
+            <div class="col-span-6 md:col-span-3 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900" id="chart2">
+            </div>
+          </div>
+        </section>
+
+        {{-- <section class="rounded-lg">
                     <div class=" px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
                         <div class="mt-4">
                             <p class="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-400">Print Orders
@@ -142,15 +143,15 @@
                         </div>
                     </div>
                 </section> --}}
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
 
 
 </x-app-layout>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-    var options = {
+  var options = {
         colors: ['#688cff', '#005bfc', '#0617db'],
           series: [ { name: 'Printed', data: [3550, 4100, 3690, 2226, 4445, 7748, 5290, 5553, 8941] },
                         { name: 'Distributed', data: [3050, 4001, 2236, 2600, 4000, 3008, 4452, 2253, 4991] },

@@ -34,4 +34,8 @@ class Book extends Model
     {
         return $this->hasMany(package::class);
     } 
+    public function printOrder()
+    {
+        return $this->hasMany(PrintOrder::class);
+    } 
 }

@@ -1,4 +1,4 @@
-@aware(['id' => '', 'view', 'edit', 'delete', 'add', 'text'=>'Add'])
+@aware(['id' => '', 'view', 'edit', 'delete', 'add', 'text'=>'Add' , 'link'=>false])
 
 @php
 $btn = "flex justify-center items-center px-2 py-1.5 transition
@@ -30,6 +30,40 @@ focus:bg-red-400";
 @endphp
 
 <div class="flex  items-center text-xs">
+    @if ($link)
+    {{-- @isset($add)
+    <a wire:click="{{ $add }}()">
+    <div class="{{$btn }}">
+        <i class="fi fi-rr-plus flex dark:text-gray-300"></i>
+        {{ $text }}
+    </div>
+    </a>
+    @endisset --}}
+
+    @isset($view)
+    <a href="{{ $view }}">
+        <div class="{{$info }}">
+            <i class="fi fi-rr-eye flex dark:text-gray-300"></i>
+        </div>
+    </a>
+    @endisset
+
+    {{-- @isset($edit)
+    <a href="#{{ $edit }}" wire:click="{{ $edit }}({{$id}})">
+    <div class="{{ $warning }}">
+        <i class="fi fi-rr-edit flex dark:text-gray-300"></i>
+    </div>
+    </a>
+    @endisset --}}
+
+    {{-- @isset($delete)
+    <a href="#{{ $delete }}" x-on:Click="deleteId = {{ $id }}" wire:click="deleteId({{ $id }})">
+    <div class="{{ $danger }}"">
+            <i class=" fi fi-rr-trash flex dark:text-gray-300"></i>
+    </div>
+    </a>
+    @endisset --}}
+    @else
     @isset($add)
     <a wire:click="{{ $add }}()">
         <div class="{{$btn }}">
@@ -62,4 +96,6 @@ focus:bg-red-400";
         </div>
     </a>
     @endisset
+    @endif
+
 </div>
