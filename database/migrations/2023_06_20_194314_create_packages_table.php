@@ -13,22 +13,29 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('tracks', function (Blueprint $table) {
+        Schema::create('packages', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('book_id')->constrained();
-            $table->json('sender_organization_id');
+            $table->foreignId('ware_house_id')->constrained();
+            $table->foreignId('print_order_id')->constrained();
+            $table->foreignId('sender_organization_id')->nullable();
+            $table->foreignId('receiver_organization_id')->nullable();
+            $table->unsignedInteger('step')->nullable();
+            $table->json('Book_codes')->nullable();
+            $table->unsignedInteger('received')->default(0);
+            $table->unsignedInteger('sent')->default(0);
+            $table->unsignedInteger('balance')->default(0);
             $table->unsignedBigInteger('no_of_books')->nullable();
-            $table->unsignedBigInteger('no_of_packages')->nullable();
+            $table->unsignedBigInteger('books_per_package')->nullable();
             $table->unsignedBigInteger('qrcode_start')->nullable();
             $table->unsignedBigInteger('qrcode_end')->nullable();
             $table->unsignedBigInteger('barcode_start')->nullable();
             $table->unsignedBigInteger('barcode_end')->nullable();
-            $table->json('Book_codes')->nullable();
             $table->string('expected_send_time')->nullable();
             $table->string('actual_send_time')->nullable();
             $table->string('expected_delivery_school_time')->nullable();
             $table->string('actual_delivery_school_time')->nullable();
-            $table->unsignedInteger('delivery_status')->nullable();
+            $table->boolean('request_status')->nullable();
+            $table->boolean('delivery_status')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
         });
@@ -41,6 +48,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tracks');
+        Schema::dropIfExists('packages');
     }
 };
