@@ -21,7 +21,7 @@ class AddPrintOrder extends Component
     use WithFileUploads;
     //variables
     public $grades=[], $subjects=[],$books=[], $book_codes=[[]],$organizations=[];
-    public $grade_id, $subject_id,$book_id, $grade, $subject,$barcode_start, $barcode_end,$qrcode_start, $qrcode_end, $number_of_copies,$number_of_packages, $expected_print_date, $actual_print_date,$organizationTypes,$organization_id,$organization_type_id,$bookPerPackage,$prefix,$sufix,$path,$path2;
+    public $grade_id, $subject_id,$book_id, $grade, $subject,$barcode_start, $barcode_end,$qrcode_start, $qrcode_end, $number_of_copies, $expected_print_date, $actual_print_date,$organization_id,$book_per_package,$prefix,$sufix,$path,$path2,$no_of_packages;
 
     protected $rules = [
         'grade_id' => 'required',
@@ -32,7 +32,7 @@ class AddPrintOrder extends Component
         'qrcode_start' => 'required',
         'qrcode_end' => 'required',
         'number_of_copies' => 'required',
-        'number_of_packages' => 'required|numeric|min:1',
+        'no_of_packages' => 'required|numeric|min:1',
         'expected_print_date' => 'required',
         'organization_id' => 'required'
     ];
@@ -40,7 +40,7 @@ class AddPrintOrder extends Component
     public function mount()
     {
         $this->grades=Grade::all();
-        $this->organizationTypes=OrganizationType::where('name', 'Printer')->get();
+        $this->organizations=Organization::where('organization_type_id', '6')->get();
 
     }
     public function render()
@@ -94,22 +94,23 @@ class AddPrintOrder extends Component
     }
     public function updatedNumberOfCopies()
     {
+        
         $this->barcode_end=$this->prefix.str_pad($this->number_of_copies,7,'0',STR_PAD_LEFT);
-        if($this->number_of_packages){
-            $this->bookPerPackage=$this->number_of_copies/$this->number_of_packages;
+        if($this->book_per_package){
+            $this->no_of_packages=$this->number_of_copies/$this->book_per_package;
         }
     }
 
-    public function updatedNumberOfPackages()
+    public function updatedBookPerPackage()
     {
-        if($this->number_of_packages){
-            $this->bookPerPackage=$this->number_of_copies/$this->number_of_packages;
-            $this->qrcode_end=$this->prefix.str_pad($this->number_of_packages,7,'0',STR_PAD_LEFT);
+        if($this->book_per_package){
+            $this->no_of_packages=$this->number_of_copies/$this->book_per_package;
+            $this->qrcode_end=$this->prefix.str_pad($this->no_of_packages,7,'0',STR_PAD_LEFT);
         }
     }
 
     public function addPrintOrder(){
-      $this->validate();
+    //   $this->validate();
        $data=[
         'grade_id'=>$this->grade_id,
         'subject_id'=>$this->grade_id,
@@ -119,7 +120,8 @@ class AddPrintOrder extends Component
         'qrcode_start' => $this->qrcode_start,
         'qrcode_end' => $this->qrcode_end,
         'no_of_books' => $this->number_of_copies,
-        'no_of_packages' => $this->number_of_packages,
+        'book_per_package'=>$this->book_per_package,
+        'no_of_packages' => $this->no_of_packages,
         'order_organization_id' => 1,
         'printer_organization_id' => $this->organization_id,
         'expected_print_time' => $this->expected_print_date,
@@ -127,9 +129,8 @@ class AddPrintOrder extends Component
         'request_status' => 0,
        ];
        $printBatch=PrintOrder::create($data);
-     
        $Book_codes = [];
-       for ($q=0; $q < $this->number_of_packages ; $q++) { 
+       for ($q=0; $q < $this->no_of_packages ; $q++) { 
         $barcode = new DNS2D();
         $this->qrcode_start = str_pad($this->qrcode_start,13,'0',STR_PAD_LEFT);
         $qrcodesImage = $barcode->getBarcodeSVG('G-'. $this->grade->name.' '. $this->subject->name. ': '. $this->qrcode_start, 'QRCODE');
@@ -138,7 +139,7 @@ class AddPrintOrder extends Component
         $this->qrcode_start ++;
 
         $barcodes = [];
-        for ($b=0; $b < $this->bookPerPackage; $b++) { 
+        for ($b=0; $b < $this->book_per_package; $b++) { 
             $qrcodes = new DNS1D();
             $this->barcode_start = str_pad($this->barcode_start,13,'0',STR_PAD_LEFT);
             $barcodeImage = $qrcodes->getBarcodeSVG($this->barcode_start, 'C39', 1, 50);
@@ -149,7 +150,6 @@ class AddPrintOrder extends Component
            
            $Book_codes[$q+1] = [ 'barcodes' => $barcodes, 'QR' => $qr ];
     }
-
     $printBatch['Book_codes'] =$Book_codes;    
     $printBatch->save();
     // dd( $Book_codes );

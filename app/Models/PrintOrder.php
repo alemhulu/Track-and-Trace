@@ -21,7 +21,12 @@ class PrintOrder extends Model
         'end_qrcode',
         'print_status',
         'request_status',
-        'expected_print_time'
+        'expected_print_time',
+        'barcode_start',
+        'barcode_end',
+        'qrcode_start',
+        'qrcode_end',
+        'book_per_package'
     ];
 
     public function orderOrganization()
