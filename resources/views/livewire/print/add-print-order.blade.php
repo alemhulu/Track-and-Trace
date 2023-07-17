@@ -82,21 +82,7 @@
                         </p>
                     </div>
                     <div class="space-y-6 sm:space-y-5">
-                        <div
-                            class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                            <x-jet-label value="Organazation Type" />
-                            <div class="mt-1 sm:mt-0 sm:col-span-2">
-                                <x-form.select wire:model="organization_type_id" id="organization_type_id"
-                                    class="max-w-md">
-                                    <option>Select Organization Type</option>
-                                    @foreach ($organizationTypes as $type)
-                                    <option value="{{ $type->id }}">{{ $type->name }}</option>
-                                    @endforeach
 
-
-                                </x-form.select>
-                            </div>
-                        </div>
                         <div
                             class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
                             <x-jet-label value="Organazation" />
@@ -123,14 +109,14 @@
                                     </div>
                                     <div>
                                         <x-jet-label value="Books per Packages" />
-                                        <x-jet-input wire:model="number_of_packages" type="number" @class(['max-w-md'])
+                                        <x-jet-input wire:model="book_per_package" type="number" @class(['max-w-md'])
                                             placeholder="Teacher guide books" max="10000000" />
                                     </div>
                                     <div>
                                         <x-jet-label value="Number Of Package" />
                                         <x-jet-input disabled type="number" @class(['max-w-md'])
                                             placeholder="Teacher guide books" max="10000000"
-                                            value="{{ $bookPerPackage ?? 0}}" />
+                                            value="{{ $no_of_packages ?? 0}}" />
                                     </div>
                                 </div>
                             </div>
@@ -140,7 +126,7 @@
                             <x-jet-label value="Teacher's Gide Books" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2 dark:text-gray-300">
                                 <span
-                                    class="max-w-xl text-lg rounded-md border py-2 px-4 text-gray-600 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50 dark:shadow-gray-700 mr-2">{{ $bookPerPackage ??'0'}}
+                                    class="max-w-xl text-lg rounded-md border py-2 px-4 text-gray-600 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50 dark:shadow-gray-700 mr-2">{{ $no_of_packages ??'0'}}
                                 </span> Books
                             </div>
                         </div>

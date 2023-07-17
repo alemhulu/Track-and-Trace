@@ -24,6 +24,7 @@ use App\Http\Livewire\Oganization\ListOrganization;
 use App\Http\Livewire\Oganization\OrganizationType;
 use App\Http\Livewire\Print\AddPrintOrder;
 use App\Http\Livewire\Print\ListPrintOrder;
+use App\Http\Livewire\PrintRequest;
 use App\Http\Livewire\Route\AddRoute;
 use App\Http\Livewire\Route\ListRoute;
 use Illuminate\Support\Facades\Route;
@@ -65,7 +66,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/print-order', function () { return view('main.print-order.index'); })->name('print-order');
     Route::get('/print-order/order', AddPrintOrder::class)->name('print-order.order');
     Route::get('/print-order/list', ListPrintOrder::class)->name('print-order.list');
-    Route::get('/print-order/view/{id}', [PrintOrderController::class , 'show'])->name('print-order.view');
+    Route::get('/print-order/view/{id}', PrintRequest::class)->name('print-order.view');
 
     // Book Packages routes 
     Route::get('/book-packages', BookPackageIndex::class)->name('book-packages');

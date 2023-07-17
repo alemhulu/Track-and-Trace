@@ -62,6 +62,7 @@
                 <x-data-table.empty colspan=6 />
                 @endforelse
             </x-slot>
+            {{$orders->links()}}
         </x-form.table>
     </div>
 </div>
