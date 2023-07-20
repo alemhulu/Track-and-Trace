@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\Book;
 use App\Models\Organization;
 use App\Models\Package;
 use App\Models\PrintOrder;
@@ -26,6 +27,7 @@ class PrintRequest extends Component
         if($status==2)
         {
             $warehouse=WareHouse::where('organization_id',$this->order->printer_organization_id)->first();
+            $book=Book::findOrFail($this->order->book_id);
             $data=[
                 'ware_house_id' => $warehouse->id,
                 'print_order_id'=>$this->order->id,
@@ -43,6 +45,8 @@ class PrintRequest extends Component
                 'barcode_start'=>$this->order->barcode_start,
                 'barcode_end'=>$this->order->barcode_end,
                 'request_status'=>0,
+                'subject_id'=>$book->subject->id,
+                'grade_id'=>$book->grade->id,
             ];
             
             $printBatch=Package::create($data);

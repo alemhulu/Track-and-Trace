@@ -22,4 +22,13 @@ class Subject extends Model
      {
         return $this->hasMany(Book::class);
      }
+     public function subjects()
+     {
+        return $this->hasMany(package::class);
+     }
+
+     public function pakages()
+     {
+        return $this->hasMany(package::class, 'subject_id');
+     }
 }
