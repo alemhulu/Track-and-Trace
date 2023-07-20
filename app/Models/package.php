@@ -31,6 +31,8 @@ class Package extends Model
        'request_status',
        'delivery_status',
        'description',
+       'subject_id',
+       'grade_id'
     ];
 
     protected $casts=[
@@ -48,5 +50,13 @@ class Package extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }  
+    public function subject()
+    {
+        return $this->belongsTo(Subject::class);
+    }  
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class);
     }  
 }
