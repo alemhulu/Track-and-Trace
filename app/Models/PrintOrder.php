@@ -35,7 +35,7 @@ class PrintOrder extends Model
     }   
     public function book()
     {
-        return $this->belongsTo(Book::class, 'book_id');
+        return $this->belongsTo(Book::class, 'book_id')->select('id','grade_id','subject_id','isbn','volume','edition','front_cover_location');
     }   
 
     public function printOrganization()
