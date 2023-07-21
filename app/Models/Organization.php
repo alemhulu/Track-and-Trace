@@ -84,6 +84,6 @@ class Organization extends Model
 
      public function assignedUser()
      {
-         return $this->belongsTo(AuthUser::class, 'assigned_user_id');
+         return $this->belongsTo(AuthUser::class, 'assigned_user_id')->select('id','name','email','phone','profile_photo_path');
      }   
 }
