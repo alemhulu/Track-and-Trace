@@ -74,7 +74,7 @@ use Carbon\Carbon;
                 <x-data-table.th scope="col"> {{__('Books') }}</x-data-table.th>
                 <x-data-table.th scope="col"> {{__('Check All') }}</x-data-table.th>
                 <x-data-table.th scope="col">
-                    <x-button type="button" btnType="success">Send</x-button>
+                    <x-button type="button" btnType="success">Send All</x-button>
                 </x-data-table.th>
             </x-slot>
             <x-slot name="tableRows">
@@ -100,6 +100,9 @@ use Carbon\Carbon;
 
                     <td class="px-5 py-2 whitespace-nowrap">
                         <x-form.toggle />
+                    </td>
+                    <td class="px-5 py-2 whitespace-nowrap">
+                        <x-button type="button" btnType="success" class="py-0 px=0">Send</x-button>
                     </td>
                 </x-data-table.tr>
                 @endforeach
