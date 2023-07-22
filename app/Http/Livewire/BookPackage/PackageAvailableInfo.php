@@ -29,10 +29,6 @@ class PackageAvailableInfo extends Component
    public function mount($id)
    {
        $this->package=Package::where('id',$id)->with('printOrder.book','organization','organization.assignedUser','subject')->get()->toArray()[0];
-    // dd($this->package);
-    // $this->packages=Package::with('printOrder')->get()->groupBy('subject_id')->toArray();
-    // $this->packages=Package::with('printOrder.book','organization','organization.assignedUser','subject')->inRandomOrder()->get()->groupBy('print_order_id')->toArray();
-    // dd($this->packages);
        $this->recordes=5;
        $this->column='';
    }

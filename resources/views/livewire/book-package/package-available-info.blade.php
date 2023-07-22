@@ -77,7 +77,6 @@ use Carbon\Carbon;
                     <x-button type="button" btnType="success">Send</x-button>
                 </x-data-table.th>
             </x-slot>
-            @dump($package['Book_codes'])
             <x-slot name="tableRows">
                 @php $i = 1; $record = count($package['Book_codes']);
                 $start =5;
