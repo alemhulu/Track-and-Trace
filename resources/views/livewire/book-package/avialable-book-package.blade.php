@@ -100,7 +100,7 @@ use Carbon\Carbon;
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" />
+                    <x-action.table-button id="{{ $package['0']['id'] }}" view="viewAvailableInfo" />
                 </td>
             </x-data-table.tr>
             @endforeach

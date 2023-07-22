@@ -36,4 +36,9 @@ class AvialableBookPackage extends Component
     {
         return view('livewire.book-package.avialable-book-package')->extends('main.book-package.index');
     }
+
+    public function viewAvailableInfo($id)
+    {
+        return redirect()->route('packages.available.info',compact('id'));
+    }
 }
