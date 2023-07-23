@@ -44,7 +44,7 @@ class PrintRequest extends Component
                 'qrcode_end'=>$this->order->qrcode_end,
                 'barcode_start'=>$this->order->barcode_start,
                 'barcode_end'=>$this->order->barcode_end,
-                'request_status'=>0,
+                'request_status'=>2,
                 'subject_id'=>$book->subject->id,
                 'grade_id'=>$book->grade->id,
             ];
