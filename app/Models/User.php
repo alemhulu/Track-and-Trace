@@ -69,9 +69,10 @@ class User extends Authenticatable
         'profile_photo_url',
     ];
 
+    // On the user table change user_id to organization_id
     public function organization()
     {
-        return $this->belongsTo(Organization::class, 'organization_id');
+        return $this->belongsTo(Organization::class,'organization_id');
     }
     public function packages()
     {

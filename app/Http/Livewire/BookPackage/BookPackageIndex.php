@@ -5,6 +5,8 @@ namespace App\Http\Livewire\BookPackage;
 use Illuminate\Support\Facades\DB;
 use App\Models\package;
 use App\Models\Subject;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -34,10 +36,20 @@ class BookPackageIndex extends Component
     //    dd($this->subjects[11]);
        $this->recordes=5;
        $this->column='';
-       $this->total=package::sum('no_of_books');
-       $this->sent=package::sum('sent');
-       $this->received=package::sum('received');
-       $this->available=$this->total+$this->received-$this->sent;
+       $user=User::where('id',Auth::user()->id)->with('organization')->first();
+       if($user->organization->id==1)
+       {
+            $this->total=package::sum('no_of_books');
+            $this->sent=package::sum('sent');
+            $this->received=package::sum('received');
+            $this->available=$this->total+$this->received-$this->sent;
+       }else {
+        $this->total=package::where('receiver_organization_id',$user->organization->id)->sum('no_of_books');
+        $this->sent=package::where('receiver_organization_id',$user->organization->id)->sum('sent');
+        $this->received=package::where('receiver_organization_id',$user->organization->id)->sum('received');
+        $this->available=$this->total+$this->received-$this->sent;
+       }
+       
    }
     public function render()
     {
