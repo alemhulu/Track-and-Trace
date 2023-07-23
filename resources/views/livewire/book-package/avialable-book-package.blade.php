@@ -55,6 +55,7 @@ use Carbon\Carbon;
             </x-data-table.tr> --}}
 
             @foreach ($packages as $package)
+            @if($package['0']['request_status']!=4)
             <x-data-table.tr>
                 <td class="px-5 py-2 ">
                     <div class="text-lg text-gray-500 dark:text-gray-100 font-bold">{{ $i++ }}</div>
@@ -96,13 +97,17 @@ use Carbon\Carbon;
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="info" class="">Stored</x-button>
+                    <x-button
+                        btnType="{{ $package['0']['request_status'] == 0 ? 'warning' : ($package['0']['request_status'] == 1 ? 'primary' : ( $package['0']['request_status'] == 2 ?  'success' : ($package['0']['request_status'] == 3 ?  'info' : 'danger')) )}}">
+                        {{ $package['0']['request_status'] == 0 ? 'Requested' : ($package['0']['request_status'] == 1 ? 'Accepted' : ( $package['0']['request_status'] == 2 ?  'Stored' :  ($package['0']['request_status'] == 3 ?  'Sending' : 'Sent')) )}}
+                    </x-button>
                 </td>
 
                 <td class="px-5 py-2">
                     <x-action.table-button id="{{ $package['0']['id'] }}" view="viewAvailableInfo" />
                 </td>
             </x-data-table.tr>
+            @endif
             @endforeach
 
             {{-- @empty --}}

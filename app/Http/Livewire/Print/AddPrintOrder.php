@@ -148,7 +148,7 @@ class AddPrintOrder extends Component
             $this->barcode_start ++;
            }
            
-           $Book_codes[$q+1] = [ 'barcodes' => $barcodes, 'QR' => $qr ];
+           $Book_codes[$q+1] = [ 'barcodes' => $barcodes, 'QR' => $qr , 'status'=>1 ];
     }
     $printBatch['Book_codes'] =$Book_codes;    
     $printBatch->save();

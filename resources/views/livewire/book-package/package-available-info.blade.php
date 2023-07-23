@@ -37,7 +37,10 @@ use Carbon\Carbon;
 
             <div class="">
                 <x-jet-label class="text-gray-400" value="Status"></x-jet-label>
-                <x-button btnType="warning" class="animate-pulse hover:animate-none">Pending</x-button>
+                <x-button class="animate-pulse hover:animate-none"
+                    btnType="{{ $package['request_status'] == 0 ? 'warning' : ($package['request_status'] == 1 ? 'primary' : ( $package['request_status'] == 2 ?  'success' : ($package['request_status'] == 3 ?  'info' : 'danger')) )}}">
+                    {{ $package['request_status'] == 0 ? 'Requested' : ($package['request_status'] == 1 ? 'Accepted' : ( $package['request_status'] == 2 ?  'Stored' :  ($package['request_status'] == 3 ?  'Sending' : 'Sent')) )}}
+                </x-button>
             </div>
         </div>
 
@@ -55,11 +58,8 @@ use Carbon\Carbon;
                 <a href="{{ route('packages.request') }}">
                     <x-button type="button" btnType="secondary">CANCEL</x-button>
                 </a>
-                <a href="#confirmModal">
-                    <x-button type="button" btnType="danger">REJECT</x-button>
-                </a>
                 <a href="#receivingForm">
-                    <x-button type="button" btnType="success">ACCEPT</x-button>
+                    <x-button type="button" btnType="success">Send Packages</x-button>
                 </a>
             </div>
         </div>
@@ -73,9 +73,6 @@ use Carbon\Carbon;
                 <x-data-table.th scope="col"> {{__('Package') }}</x-data-table.th>
                 <x-data-table.th scope="col"> {{__('Books') }}</x-data-table.th>
                 <x-data-table.th scope="col"> {{__('Check All') }}</x-data-table.th>
-                <x-data-table.th scope="col">
-                    <x-button type="button" btnType="success">Send All</x-button>
-                </x-data-table.th>
             </x-slot>
             <x-slot name="tableRows">
                 @php $i = 1; $record = count($package['Book_codes']);
@@ -83,6 +80,7 @@ use Carbon\Carbon;
                 @endphp
                 {{-- @forelse($books as $record) --}}
                 @foreach ($package['Book_codes'] as $index=>$code)
+                @if($code['status']==1)
                 <x-data-table.tr>
                     <td class="px-5 py-2 ">
                         <div class="text-lg text-gray-500 dark:text-gray-100 font-bold">{{ $i++ }}</div>
@@ -101,10 +99,8 @@ use Carbon\Carbon;
                     <td class="px-5 py-2 whitespace-nowrap">
                         <x-form.toggle />
                     </td>
-                    <td class="px-5 py-2 whitespace-nowrap">
-                        <x-button type="button" btnType="success" class="py-0 px=0">Send</x-button>
-                    </td>
                 </x-data-table.tr>
+                @endif
                 @endforeach
 
                 {{-- @empty --}}
