@@ -2,9 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Country;
 use App\Models\Grade;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class GradeSeeder extends Seeder
@@ -17,21 +15,22 @@ class GradeSeeder extends Seeder
     public function run()
     {
         $datas = [
-            ['name'=>'1'],
-            ['name'=>'2'],
-            ['name'=>'3'],
-            ['name'=>'4'],
-            ['name'=>'5'],
-            ['name'=>'6'],
-            ['name'=>'7'],
-            ['name'=>'8'],
-            ['name'=>'9'],
-            ['name'=>'10'],
-            ['name'=>'11'],
-            ['name'=>'12'],
+            ['name' => '1'],
+            ['name' => '2'],
+            ['name' => '3'],
+            ['name' => '4'],
+            ['name' => '5'],
+            ['name' => '6'],
+            ['name' => '7'],
+            ['name' => '8'],
+            ['name' => '9'],
+            ['name' => '10'],
+            ['name' => '11'],
+            ['name' => '12'],
         ];
-        foreach($datas as $data){
-            Grade::create($data);
+
+        foreach ($datas as $data) {
+            Grade::firstOrCreate(['name' => $data['name']]);
         }
     }
 }

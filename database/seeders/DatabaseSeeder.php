@@ -2,12 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\GradeSubject;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
-use Spatie\Permission\PermissionRegistrar;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,20 +13,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
         $this->call([
-            PermissionSeeder::class,
-            CountrySeeder::class,
-            OrganizationTypeSeeder::class,
-            SubjectSeeder::class,
-            GradeSeeder::class,
-            GradeSubjectSeeder::class,
+            \Database\Seeders\PermissionSeeder::class,
+            \Database\Seeders\CountrySeeder::class,
+            \Database\Seeders\RegionSeeder::class,
+            \Database\Seeders\ZoneSeeder::class,
+            \Database\Seeders\WoredaSeeder::class,
+            \Database\Seeders\OrganizationTypeSeeder::class,
+            \Database\Seeders\OwnershipSeeder::class,
+            \Database\Seeders\SubjectSeeder::class,
+            \Database\Seeders\GradeSeeder::class,
+            \Database\Seeders\GradeSubjectSeeder::class,
+            \Database\Seeders\UserSeeder::class,
+            \Database\Seeders\SectorSeeder::class,
+            \Database\Seeders\OrganizationSeeder::class,
+            \Database\Seeders\WareHouseSeeder::class,
+            \Database\Seeders\BookSeeder::class,
+            \Database\Seeders\PrintOrderSeeder::class,
+            \Database\Seeders\PackageSeeder::class,
+            \Database\Seeders\DeliverySeeder::class,
+            \Database\Seeders\DistributionRouteSeeder::class,
+            \Database\Seeders\DistributionSeeder::class,
+            \Database\Seeders\DistributionStepSeeder::class,
         ]);
     }
 }

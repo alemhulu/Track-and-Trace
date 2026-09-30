@@ -3,10 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Country;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Schema;
 
 class CountrySeeder extends Seeder
 {
@@ -17,26 +14,44 @@ class CountrySeeder extends Seeder
      */
     public function run()
     {
-        Schema::disableForeignKeyConstraints();
-        // DB::table('countries')->truncate();
-        // Schema::enableForeignKeyConstraints();
+        $csvPath = public_path('/data/country.csv');
+        if (file_exists($csvPath) && ($csvFile = fopen($csvPath, 'r')) !== false) {
+            $firstline = true;
+            while (($data = fgetcsv($csvFile, 2000, ',')) !== false) {
+                if ($firstline) {
+                    $firstline = false;
+                    continue;
+                }
 
-        Country::truncate();
-  
-        $csvFile = fopen(public_path("/data/country.csv"), "r");
-  
-        $firstline = true;
-        while (($data = fgetcsv($csvFile, 2000, ",")) !== FALSE) {
-            if (!$firstline) {
-                Country::create([
-                    "name" => $data['0'],
-                    "code" => $data['1']
-                ]);    
+                $name = trim((string) ($data[0] ?? ''));
+                $code = trim((string) ($data[1] ?? ''));
+
+                if ($name === '') {
+                    continue;
+                }
+
+                Country::updateOrCreate(
+                    ['name' => $name],
+                    ['code' => $code !== '' ? $code : null]
+                );
             }
-            $firstline = false;
+
+            fclose($csvFile);
+            return;
         }
-   
-        fclose($csvFile);
+
+        $fallbackCountries = [
+            ['name' => 'Ethiopia', 'code' => 'ET'],
+            ['name' => 'Kenya', 'code' => 'KE'],
+            ['name' => 'Uganda', 'code' => 'UG'],
+            ['name' => 'Rwanda', 'code' => 'RW'],
+        ];
+
+        foreach ($fallbackCountries as $country) {
+            Country::updateOrCreate(
+                ['name' => $country['name']],
+                ['code' => $country['code']]
+            );
+        }
     }
 }
-
