@@ -8,6 +8,7 @@ use App\Models\Organization;
 use App\Models\PrintOrder;
 use App\Models\Subject;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Milon\Barcode\DNS1D;
@@ -38,7 +39,13 @@ class AddPrintOrder extends Component
     public function mount()
     {
         $this->grades = Grade::all();
-        $this->organizations = Organization::where('organization_type_id', '6')->get();
+        $actor = auth()->user();
+        $this->organizations = Organization::query()
+            ->when($actor, function ($query) use ($actor) {
+                $query->accessibleBy($actor);
+            })
+            ->where('organization_type_id', '6')
+            ->get();
     }
     public function render()
     {
@@ -85,7 +92,13 @@ class AddPrintOrder extends Component
 
     public function updatedOrganizationTypeId()
     {
-        $this->organizations = Organization::where('organization_type_id', $this->organization_type_id)->get();
+        $actor = auth()->user();
+        $this->organizations = Organization::query()
+            ->when($actor, function ($query) use ($actor) {
+                $query->accessibleBy($actor);
+            })
+            ->where('organization_type_id', $this->organization_type_id)
+            ->get();
     }
     public function updatedNumberOfCopies()
     {
@@ -107,6 +120,28 @@ class AddPrintOrder extends Component
     public function addPrintOrder()
     {
         $this->validate();
+        $actor = auth()->user();
+        if ($actor && Gate::denies('create', PrintOrder::class)) {
+            abort(403, 'You are not authorized to create print orders.');
+        }
+
+        if ($actor) {
+            $printerOrganization = Organization::query()
+                ->accessibleBy($actor)
+                ->where('organization_type_id', '6')
+                ->where('id', $this->organization_id)
+                ->first();
+
+            if (! $printerOrganization) {
+                $this->addError('organization_id', 'Selected printer organization is outside your access scope.');
+                return;
+            }
+        }
+
+        $requestOrganizationId = $actor && ! empty($actor->organization_id)
+            ? $actor->organization_id
+            : 1;
+
         $data = [
             'grade_id' => $this->grade_id,
             'subject_id' => $this->subject_id,
@@ -118,7 +153,7 @@ class AddPrintOrder extends Component
             'no_of_books' => $this->number_of_copies,
             'book_per_package' => $this->book_per_package,
             'no_of_packages' => $this->no_of_packages,
-            'order_organization_id' => 1,
+            'order_organization_id' => $requestOrganizationId,
             'printer_organization_id' => $this->organization_id,
             'expected_print_time' => $this->expected_print_date,
             'print_status' => 0,

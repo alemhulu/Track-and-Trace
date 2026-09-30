@@ -8,60 +8,83 @@ use Illuminate\Database\Eloquent\Model;
 class Package extends Model
 {
     use HasFactory;
-    protected $fillable=[
-       'ware_house_id',
-       'print_order_id',
-       'sender_organization_id',
-       'receiver_organization_id',
-       'step',
-       'Book_codes',
-       'received',
-       'sent',
-       'balance',
-       'no_of_books',
-       'books_per_package',
-       'qrcode_start',
-       'qrcode_end',
-       'barcode_start',
-       'barcode_end',
-       'expected_send_time',
-       'actual_send_time',
-       'expected_delivery_school_time',
-       'actual_delivery_school_time',
-       'request_status',
-       'delivery_status',
-       'description',
-       'subject_id',
-       'grade_id'
+    protected $fillable = [
+        'ware_house_id',
+        'print_order_id',
+        'sender_organization_id',
+        'receiver_organization_id',
+        'step',
+        'Book_codes',
+        'received',
+        'sent',
+        'balance',
+        'no_of_books',
+        'books_per_package',
+        'qrcode_start',
+        'qrcode_end',
+        'barcode_start',
+        'barcode_end',
+        'expected_send_time',
+        'actual_send_time',
+        'expected_delivery_school_time',
+        'actual_delivery_school_time',
+        'request_status',
+        'delivery_status',
+        'description',
+        'subject_id',
+        'grade_id'
     ];
 
-    protected $casts=[
+    protected $casts = [
         'Book_codes' => 'json',
     ];
 
     public function wareHouse()
     {
         return $this->belongsTo(WareHouse::class, 'ware_house_id');
-    }   
+    }
 
     public function user()
     {
         return $this->belongsTo(User::class, 'assigned_user_id');
-    }  
+    }
     public function subject()
     {
-        return $this->belongsTo(Subject::class)->select('id','name');
-    }  
+        return $this->belongsTo(Subject::class)->select('id', 'name');
+    }
     public function grade()
     {
         return $this->belongsTo(Grade::class);
-    }  
+    }
     public function printOrder()
     {
-        return $this->belongsTo(PrintOrder::class,'print_order_id')->select('id','book_id','qrcode_start','qrcode_end','no_of_packages');
+        return $this->belongsTo(PrintOrder::class, 'print_order_id')->select('id', 'book_id', 'qrcode_start', 'qrcode_end', 'no_of_packages');
     }
     public function organization()
     {
-        return $this->belongsTo(Organization::class,'sender_organization_id')->select('id','name','email','assigned_user_id','logo','telephone');
+        return $this->belongsTo(Organization::class, 'sender_organization_id')->select('id', 'name', 'email', 'assigned_user_id', 'logo', 'telephone');
+    }
+
+    public function scopeAccessibleBy($query, ?User $actor)
+    {
+        if (! $actor) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($actor->hasNationalAccess()) {
+            return $query;
+        }
+
+        return $query->where(function ($packageQuery) use ($actor) {
+            $packageQuery->whereHas('wareHouse', function ($warehouseQuery) use ($actor) {
+                $warehouseQuery->accessibleBy($actor);
+            });
+
+            if (! empty($actor->organization_id)) {
+                $packageQuery
+                    ->orWhere('receiver_organization_id', $actor->organization_id)
+                    ->orWhere('sender_organization_id', $actor->organization_id);
+            }
+        });
     }
 }

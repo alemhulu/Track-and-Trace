@@ -21,6 +21,8 @@
                     <x-data-table.th scope="col">#</x-data-table.th>
                     <x-data-table.th scope="col"> {{__('Name') }}</x-data-table.th>
                     <x-data-table.th scope="col"> {{__('Email') }}</x-data-table.th>
+                    <x-data-table.th scope="col"> {{__('Access') }}</x-data-table.th>
+                    <x-data-table.th scope="col"> {{__('Location') }}</x-data-table.th>
                     <x-data-table.th scope="col"> {{__('Roles') }}</x-data-table.th>
                     <x-data-table.th scope="col" class="sr-only">{{__('Action') }}</x-data-table.th>
                 </x-slot>
@@ -38,6 +40,32 @@
 
                         <x-data-table.td>
                             <div class="text-sm text-gray-700 dark:text-gray-100 font-semibold">{{ $user->email }}</div>
+                        </x-data-table.td>
+
+                        <x-data-table.td>
+                            <span class="px-2 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold">
+                                {{ ucfirst($user->effectiveAccessLevel()) }}
+                            </span>
+                        </x-data-table.td>
+
+                        <x-data-table.td>
+                            <div class="text-xs text-gray-700 dark:text-gray-100 leading-5">
+                                @if($user->organization)
+                                <div>{{ $user->organization->name }}</div>
+                                @endif
+                                @if($user->region)
+                                <div>{{ $user->region->name }}</div>
+                                @endif
+                                @if($user->zone)
+                                <div>{{ $user->zone->name }}</div>
+                                @endif
+                                @if($user->woreda)
+                                <div>{{ $user->woreda->name }}</div>
+                                @endif
+                                @if(!$user->organization && !$user->region && !$user->zone && !$user->woreda)
+                                <div class="text-gray-400">All Locations</div>
+                                @endif
+                            </div>
                         </x-data-table.td>
 
                         <x-data-table.td>
@@ -59,7 +87,7 @@
                         </x-data-table.td>
                     </x-data-table.tr>
                     @empty
-                    <x-data-table.empty colspan=4 />
+                    <x-data-table.empty colspan=6 />
                     @endforelse
                 </x-slot>
 

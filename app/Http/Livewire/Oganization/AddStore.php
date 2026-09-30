@@ -5,6 +5,7 @@ namespace App\Http\Livewire\Oganization;
 use App\Models\Organization;
 use App\Models\User;
 use App\Models\WareHouse;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class AddStore extends Component
@@ -16,13 +17,30 @@ class AddStore extends Component
 
     public function mount()
     {
-        $this->organizations = Organization::query()->orderBy('name')->get();
+        $actor = Auth::user();
+        if (! $actor) {
+            $this->organizations = collect();
+            $this->stores = [];
+            return;
+        }
+
+        $this->organizations = Organization::query()->accessibleBy($actor)->orderBy('name')->get();
         $this->loadStores();
     }
 
     protected function loadStores()
     {
-        $this->stores = WareHouse::with(['organization', 'user'])->orderByDesc('id')->get();
+        $actor = Auth::user();
+        if (! $actor) {
+            $this->stores = [];
+            return;
+        }
+
+        $this->stores = WareHouse::query()
+            ->accessibleBy($actor)
+            ->with(['organization', 'user'])
+            ->orderByDesc('id')
+            ->get();
     }
 
     // Search User To Select  START--------------------------------
@@ -39,7 +57,14 @@ class AddStore extends Component
 
     public function setUserId($id)
     {
-        $user = User::find($id);
+        $actor = Auth::user();
+        if (! $actor) {
+            $this->user = null;
+            $this->user_id = null;
+            return;
+        }
+
+        $user = User::query()->accessibleBy($actor)->find($id);
 
         if (! $user) {
             $this->user = null;
@@ -65,7 +90,14 @@ class AddStore extends Component
 
     public function selectUser()
     {
-        $user = User::find($this->user_id);
+        $actor = Auth::user();
+        if (! $actor) {
+            $this->user = null;
+            $this->userName = 'Authentication required';
+            return;
+        }
+
+        $user = User::query()->accessibleBy($actor)->find($this->user_id);
 
         if (! $user) {
             $this->user = null;
@@ -82,7 +114,13 @@ class AddStore extends Component
             return [];
         }
 
+        $actor = Auth::user();
+        if (! $actor) {
+            return [];
+        }
+
         return User::query()
+            ->accessibleBy($actor)
             ->where(function ($searchQuery) use ($query) {
                 $searchQuery->where('name', 'like', "%{$query}%")
                     ->orWhere('email', 'like', "%{$query}%")
@@ -110,12 +148,40 @@ class AddStore extends Component
 
     public function addStore()
     {
+        $actor = Auth::user();
+        if (! $actor) {
+            return $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Authentication required.'
+            ]);
+        }
+
         $this->validate();
+
+        $organization = Organization::query()->accessibleBy($actor)->find($this->organizaton_id);
+        if (! $organization) {
+            return $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Selected organization is outside your scope.'
+            ]);
+        }
+
+        $assignedUser = User::query()->accessibleBy($actor)->find($this->user_id);
+        if (! $assignedUser) {
+            return $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Selected user is outside your scope.'
+            ]);
+        }
 
         WareHouse::create([
             'branch' => $this->store_id ?: 1,
-            'organization_id' => $this->organizaton_id,
-            'assigned_user_id' => $this->user_id,
+            'organization_id' => $organization->id,
+            'assigned_user_id' => $assignedUser->id,
+            'country_id' => $organization->country_id,
+            'region_id' => $organization->region_id,
+            'zone_id' => $organization->zone_id,
+            'woreda_id' => $organization->woreda_id,
         ]);
 
         $this->loadStores();

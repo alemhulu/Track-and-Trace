@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Trace;
 
 use App\Models\Distribution;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -38,11 +39,17 @@ class TraceBookDistribution extends Component
 
     public function showDistribution($id)
     {
-        $distribution = Distribution::find($id);
+        $distributionQuery = Distribution::query();
+        $actor = Auth::user();
+        if ($actor) {
+            $distributionQuery->accessibleBy($actor);
+        }
+
+        $distribution = $distributionQuery->find($id);
         if (! $distribution) {
             return $this->dispatchBrowserEvent('alert', [
                 'type' => 'error',
-                'message' => 'Distribution not found.'
+                'message' => 'Distribution not found or outside your scope.'
             ]);
         }
 
@@ -57,6 +64,11 @@ class TraceBookDistribution extends Component
                 $query->where('name', 'like', '%' . $this->search . '%');
             })
             ->latest();
+
+        $actor = Auth::user();
+        if ($actor) {
+            $query->accessibleBy($actor);
+        }
 
         $canFilterByPackage = Schema::hasTable('packages')
             && Schema::hasColumn('packages', 'grade_id')

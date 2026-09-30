@@ -27,7 +27,17 @@ class PrintOrderController extends Controller
 
     public function show( $printOrder)
     {
-        $order = PrintOrder::findOrFail($printOrder);
+        $actor = auth()->user();
+        $query = PrintOrder::query();
+
+        if ($actor) {
+            $query->accessibleBy($actor);
+        }
+
+        $order = $query->findOrFail($printOrder);
+        if ($actor) {
+            $this->authorize('view', $order);
+        }
         return view('main.print-order.show', compact('order'));
     }
 

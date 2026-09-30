@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\Oganization;
 
 use App\Models\Country;
-use App\Models\Kebele;
 use App\Models\Organization;
 use App\Models\OrganizationType;
 use App\Models\Region;
@@ -11,6 +10,8 @@ use App\Models\User;
 use App\Models\WareHouse;
 use App\Models\Woreda;
 use App\Models\Zone;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -77,7 +78,13 @@ class AddOrganization extends Component
             return [];
         }
 
+        $actor = Auth::user();
+        if (! $actor) {
+            return [];
+        }
+
         return User::query()
+            ->accessibleBy($actor)
             ->where(function ($searchQuery) use ($query) {
                 $searchQuery->where('name', 'like', "%{$query}%")
                     ->orWhere('email', 'like', "%{$query}%")
@@ -131,9 +138,7 @@ class AddOrganization extends Component
 
     public function mount()
     {
-        $this->countries = Country::all();
-        $this->regions = Region::all();
-        $this->organizationTypes = OrganizationType::all();
+        $this->hydrateScopedLookups();
     }
 
     public function resetFields()
@@ -164,11 +169,7 @@ class AddOrganization extends Component
 
     public function render()
     {
-        $this->organizationTypes = OrganizationType::all();
-        $this->countries = Country::all();
-        $this->regions = Region::where('country_id', $this->country_id)->get();
-        $this->zones = Zone::where('region_id', $this->region_id)->get();
-        $this->woredas = Woreda::where('zone_id', $this->zone_id)->get();
+        $this->hydrateScopedLookups();
         // $this->kebeles = Kebele::where('woreda_id', $this->woreda_id)->get();
         $this->users;
         $this->user_id;
@@ -177,7 +178,40 @@ class AddOrganization extends Component
 
     public function addOrganization()
     {
-        $this->validate();
+        $actor = Auth::user();
+        if (! $actor) {
+            return $this->alertError('Authentication required');
+        }
+        if (Gate::denies('create', Organization::class)) {
+            abort(403, 'You are not authorized to create organizations.');
+        }
+        if (Gate::denies('create', WareHouse::class)) {
+            abort(403, 'You are not authorized to create warehouses.');
+        }
+
+        if (! $actor->hasNationalAccess()) {
+            if (! empty($actor->country_id) && (int) $this->country_id !== (int) $actor->country_id) {
+                return $this->alertError('You can only create organization in your country');
+            }
+
+            if (! empty($actor->region_id) && (int) $this->region_id !== (int) $actor->region_id) {
+                return $this->alertError('You can only create organization in your region');
+            }
+
+            if (! empty($actor->zone_id) && (int) $this->zone_id !== (int) $actor->zone_id) {
+                return $this->alertError('You can only create organization in your zone');
+            }
+
+            if (! empty($actor->woreda_id) && (int) $this->woreda_id !== (int) $actor->woreda_id) {
+                return $this->alertError('You can only create organization in your woreda');
+            }
+        }
+
+        $assignableUser = User::query()->accessibleBy($actor)->find($this->assigned_user_id);
+        if (! $assignableUser) {
+            return $this->alertError('Assigned user is outside your scope');
+        }
+
         if ($this->zone_id == "") {
             $this->zone_id = null;
         }
@@ -188,7 +222,7 @@ class AddOrganization extends Component
             $this->kebele_id = null;
         }
 
-        $validatedData = $this->validate($this->rules);
+        $validatedData = $this->validate();
 
         if ($this->logo == "") {
             $name = trim(collect(explode(' ', $this->name))->map(function ($segment) {
@@ -209,7 +243,7 @@ class AddOrganization extends Component
         WareHouse::create([
             "branch" => 1,
             "organization_id" => $organization->id,
-            "country_id" => 1,
+            "country_id" => $organization->country_id,
             "region_id" => $organization->region_id,
             "zone_id" => $organization->zone_id,
             "woreda_id" => $organization->woreda_id,
@@ -225,7 +259,7 @@ class AddOrganization extends Component
     {
         $this->dispatchBrowserEvent(
             'alert',
-            ['type' => 'error',  'message' => $name . ' Required!']
+            ['type' => 'error',  'message' => $name]
         );
     }
 
@@ -245,5 +279,66 @@ class AddOrganization extends Component
             'alert',
             ['type' => 'success',  'message' => 'OrganizationType Deleted Successfully!']
         );
+    }
+
+    private function hydrateScopedLookups(): void
+    {
+        $actor = Auth::user();
+
+        if (! $actor) {
+            $this->organizationTypes = collect();
+            $this->countries = collect();
+            $this->regions = collect();
+            $this->zones = collect();
+            $this->woredas = collect();
+            return;
+        }
+
+        $countries = Country::query();
+        $regions = Region::query();
+        $zones = Zone::query();
+        $woredas = Woreda::query();
+
+        if (! $actor->hasNationalAccess()) {
+            if (! empty($actor->country_id)) {
+                $countries->where('id', $actor->country_id);
+                $regions->where('country_id', $actor->country_id);
+                $zones->where('country_id', $actor->country_id);
+                $woredas->where('country_id', $actor->country_id);
+            }
+
+            if (! empty($actor->region_id)) {
+                $regions->where('id', $actor->region_id);
+                $zones->where('region_id', $actor->region_id);
+                $woredas->where('region_id', $actor->region_id);
+            }
+
+            if (! empty($actor->zone_id)) {
+                $zones->where('id', $actor->zone_id);
+                $woredas->where('zone_id', $actor->zone_id);
+            }
+
+            if (! empty($actor->woreda_id)) {
+                $woredas->where('id', $actor->woreda_id);
+            }
+        }
+
+        $this->organizationTypes = OrganizationType::all();
+        $this->countries = $countries->orderBy('name')->get();
+
+        if (! empty($this->country_id)) {
+            $regions->where('country_id', $this->country_id);
+        }
+        $this->regions = $regions->orderBy('name')->get();
+
+        if (! empty($this->region_id)) {
+            $zones->where('region_id', $this->region_id);
+        }
+        $this->zones = $zones->orderBy('name')->get();
+
+        if (! empty($this->zone_id)) {
+            $woredas->where('zone_id', $this->zone_id);
+        }
+        $this->woredas = $woredas->orderBy('name')->get();
     }
 }

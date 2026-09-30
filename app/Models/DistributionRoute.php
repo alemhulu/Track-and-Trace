@@ -30,4 +30,25 @@ class DistributionRoute extends Model
     {
         return $this->belongsTo(WareHouse::class, 'to_ware_house_id');
     }
+
+    public function scopeAccessibleBy($query, ?User $actor)
+    {
+        if (! $actor) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($actor->hasNationalAccess()) {
+            return $query;
+        }
+
+        return $query->where(function ($routeQuery) use ($actor) {
+            $routeQuery
+                ->whereHas('fromWarehouse', function ($warehouseQuery) use ($actor) {
+                    $warehouseQuery->accessibleBy($actor);
+                })
+                ->orWhereHas('toWarehouse', function ($warehouseQuery) use ($actor) {
+                    $warehouseQuery->accessibleBy($actor);
+                });
+        });
+    }
 }

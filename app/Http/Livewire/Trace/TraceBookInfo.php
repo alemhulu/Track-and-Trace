@@ -7,6 +7,8 @@ use App\Models\Grade;
 use App\Models\Package;
 use App\Models\PrintOrder;
 use App\Models\Subject;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 
@@ -23,6 +25,8 @@ class TraceBookInfo extends Component
 
     public function render()
     {
+        $actor = Auth::user();
+
         $gradeName = 'All Grades';
         if ($this->gradeId) {
             $gradeName = optional(Grade::find($this->gradeId))->name ?? 'All Grades';
@@ -63,6 +67,10 @@ class TraceBookInfo extends Component
         $hasPackagesTable = Schema::hasTable('packages');
         $packageQuery = $hasPackagesTable ? Package::query() : null;
 
+        if ($packageQuery && $actor) {
+            $packageQuery->accessibleBy($actor);
+        }
+
         $canFilterByPackage = $hasPackagesTable
             && Schema::hasColumn('packages', 'grade_id')
             && Schema::hasColumn('packages', 'subject_id');
@@ -79,6 +87,18 @@ class TraceBookInfo extends Component
 
         $hasPrintOrdersTable = Schema::hasTable('print_orders');
         $printOrderQuery = $hasPrintOrdersTable ? PrintOrder::query() : null;
+
+        if ($printOrderQuery && $actor instanceof User && ! $actor->hasNationalAccess()) {
+            $printOrderQuery->where(function ($query) use ($actor) {
+                $query
+                    ->whereHas('orderOrganization', function ($organizationQuery) use ($actor) {
+                        $organizationQuery->accessibleBy($actor);
+                    })
+                    ->orWhereHas('printOrganization', function ($organizationQuery) use ($actor) {
+                        $organizationQuery->accessibleBy($actor);
+                    });
+            });
+        }
 
         $canFilterPrintOrderByBook = $hasPrintOrdersTable
             && Schema::hasColumn('print_orders', 'book_id')

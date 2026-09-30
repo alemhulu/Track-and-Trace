@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Route;
 
 use App\Models\DistributionRoute;
 use App\Models\WareHouse;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
 
@@ -35,7 +36,14 @@ class AddRoute extends Component
 
     public function mount()
     {
-        $this->warehouses = WareHouse::with('organization')->orderBy('id')->get();
+        $actor = Auth::user();
+
+        $warehouseQuery = WareHouse::query()->with('organization')->orderBy('id');
+        if ($actor) {
+            $warehouseQuery->accessibleBy($actor);
+        }
+
+        $this->warehouses = $warehouseQuery->get();
 
         $editId = request()->query('edit');
         if ($editId) {
@@ -45,7 +53,14 @@ class AddRoute extends Component
 
     public function loadRouteForEdit($id)
     {
-        $route = DistributionRoute::find($id);
+        $actor = Auth::user();
+
+        $routeQuery = DistributionRoute::query();
+        if ($actor) {
+            $routeQuery->accessibleBy($actor);
+        }
+
+        $route = $routeQuery->find($id);
         if (! $route) {
             return;
         }
@@ -60,18 +75,42 @@ class AddRoute extends Component
 
     public function addRoute()
     {
+        $actor = Auth::user();
+
         $this->validate();
+
+        $fromWarehouseQuery = WareHouse::query();
+        $toWarehouseQuery = WareHouse::query();
+        if ($actor) {
+            $fromWarehouseQuery->accessibleBy($actor);
+            $toWarehouseQuery->accessibleBy($actor);
+        }
+
+        $fromWarehouse = $fromWarehouseQuery->find($this->from_warehouse);
+        $toWarehouse = $toWarehouseQuery->find($this->to_warehouse);
+
+        if (! $fromWarehouse || ! $toWarehouse) {
+            return $this->dispatchBrowserEvent('alert', [
+                'type' => 'error',
+                'message' => 'Selected warehouse is outside your scope.'
+            ]);
+        }
 
         $payload = [
             'name' => $this->name,
             'description' => $this->description,
-            'from_ware_house_id' => $this->from_warehouse,
-            'to_ware_house_id' => $this->to_warehouse,
+            'from_ware_house_id' => $fromWarehouse->id,
+            'to_ware_house_id' => $toWarehouse->id,
             'is_active' => (bool) $this->is_active,
         ];
 
         if ($this->editingRouteId) {
-            $route = DistributionRoute::find($this->editingRouteId);
+            $routeQuery = DistributionRoute::query();
+            if ($actor) {
+                $routeQuery->accessibleBy($actor);
+            }
+
+            $route = $routeQuery->find($this->editingRouteId);
             if (! $route) {
                 return $this->dispatchBrowserEvent('alert', [
                     'type' => 'error',

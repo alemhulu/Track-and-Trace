@@ -1,4 +1,15 @@
-@props(['grade' => '1', 'received' => '00', 'sent' => '00', 'available' => '00'])
+@props(['grade' => '1', 'received' => '00', 'sent' => '00', 'available' => '00', 'status' => 'Pending', 'statusType' =>
+'secondary'])
+@php
+$statusClasses = [
+'secondary' => 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200',
+'danger' => 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
+'info' => 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
+'warning' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
+'success' => 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
+'primary' => 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
+][$statusType ?? 'secondary'];
+@endphp
 <div {{ $attributes->merge([ 'class' => '']) }}>
     <div class="flex flex-col px-4text-center border border-blue-200 rounded-lg">
         <div class="grid grid-cols-2">
@@ -28,6 +39,14 @@
                     <x-jet-label class="text-xs text-gray-400 dark:text-gray-200" value="Package Available" />
                     <span class="text-xl font-bold text-blue-600 dark:text-blue-200 leading-none tracking-wider">
                         {{ $available }}</span>
+                </div>
+
+                <div class="text-left pt-2">
+                    <x-jet-label class="text-xs text-gray-400 dark:text-gray-200" value="Package Status" />
+                    <span
+                        class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize {{ $statusClasses }}">
+                        {{ $status }}
+                    </span>
                 </div>
             </div>
         </div>

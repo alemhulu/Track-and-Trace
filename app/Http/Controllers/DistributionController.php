@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Distribution;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class DistributionController extends Controller
 {
@@ -46,6 +47,13 @@ class DistributionController extends Controller
      */
     public function show(Distribution $distribution)
     {
+        $actor = Auth::user();
+        if ($actor) {
+            $allowed = Distribution::query()->accessibleBy($actor)->whereKey($distribution->id)->exists();
+            abort_unless($allowed, 403);
+            $this->authorize('view', $distribution);
+        }
+
         $distribution->load([
             'steps.route.fromWarehouse.organization',
             'steps.route.toWarehouse.organization',

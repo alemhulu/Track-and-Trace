@@ -51,5 +51,30 @@ class PrintOrder extends Model
         'Book_codes' => 'json',
     ];
 
-    
+    public function scopeAccessibleBy($query, ?User $actor)
+    {
+        if (! $actor) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($actor->hasNationalAccess()) {
+            return $query;
+        }
+
+        return $query->where(function ($printOrderQuery) use ($actor) {
+            $printOrderQuery
+                ->whereHas('orderOrganization', function ($organizationQuery) use ($actor) {
+                    $organizationQuery->accessibleBy($actor);
+                })
+                ->orWhereHas('printOrganization', function ($organizationQuery) use ($actor) {
+                    $organizationQuery->accessibleBy($actor);
+                });
+
+            if (! empty($actor->organization_id)) {
+                $printOrderQuery
+                    ->orWhere('order_organization_id', $actor->organization_id)
+                    ->orWhere('printer_organization_id', $actor->organization_id);
+            }
+        });
+    }
 }

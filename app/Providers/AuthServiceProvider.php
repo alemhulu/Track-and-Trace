@@ -2,9 +2,20 @@
 
 namespace App\Providers;
 
+use App\Models\Distribution;
+use App\Models\DistributionRoute;
+use App\Models\Organization;
+use App\Models\Package;
+use App\Models\PrintOrder;
+use App\Models\WareHouse;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
-use App\Models\User;
+use App\Policies\DistributionPolicy;
+use App\Policies\DistributionRoutePolicy;
+use App\Policies\OrganizationPolicy;
+use App\Policies\PackagePolicy;
+use App\Policies\PrintOrderPolicy;
+use App\Policies\WareHousePolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -14,7 +25,12 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        // 'App\Models\Model' => 'App\Policies\ModelPolicy',
+        Distribution::class => DistributionPolicy::class,
+        DistributionRoute::class => DistributionRoutePolicy::class,
+        Organization::class => OrganizationPolicy::class,
+        Package::class => PackagePolicy::class,
+        PrintOrder::class => PrintOrderPolicy::class,
+        WareHouse::class => WareHousePolicy::class,
     ];
 
     /**

@@ -6,6 +6,7 @@ use App\Models\Book;
 use App\Models\Package;
 use App\Models\PrintOrder;
 use App\Models\WareHouse;
+use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class PrintRequest extends Component
@@ -13,7 +14,17 @@ class PrintRequest extends Component
     public $order, $clearid;
     public function mount($id)
     {
-        $this->order = PrintOrder::findOrFail($id);
+        $actor = auth()->user();
+        $query = PrintOrder::query();
+
+        if ($actor) {
+            $query->accessibleBy($actor);
+        }
+
+        $this->order = $query->findOrFail($id);
+        if ($actor && Gate::denies('view', $this->order)) {
+            abort(403, 'You are not authorized to view this print request.');
+        }
     }
     public function render()
     {
@@ -21,6 +32,14 @@ class PrintRequest extends Component
     }
     public function status($status)
     {
+        $actor = auth()->user();
+        if ($actor && ! PrintOrder::query()->accessibleBy($actor)->whereKey($this->order->id)->exists()) {
+            abort(403, 'You are not authorized to modify this print request.');
+        }
+        if ($actor && Gate::denies('update', $this->order)) {
+            abort(403, 'You are not authorized to modify this print request.');
+        }
+
         $this->order->request_status = $status;
         $this->order->save();
         if ($status == 2) {

@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Distribution;
 
 use App\Models\Distribution;
 use App\Models\DistributionRoute;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -35,10 +36,17 @@ class AddDistribution extends Component
 
     public function mount()
     {
-        $this->routes = DistributionRoute::with(['fromWarehouse.organization', 'toWarehouse.organization'])
+        $actor = Auth::user();
+        $routesQuery = DistributionRoute::query()
+            ->with(['fromWarehouse.organization', 'toWarehouse.organization'])
             ->where('is_active', true)
-            ->orderBy('name')
-            ->get();
+            ->orderBy('name');
+
+        if ($actor) {
+            $routesQuery->accessibleBy($actor);
+        }
+
+        $this->routes = $routesQuery->get();
 
         $editId = request()->query('edit');
         if ($editId) {
@@ -50,9 +58,17 @@ class AddDistribution extends Component
 
     public function loadDistributionForEdit($id)
     {
-        $distribution = Distribution::with(['steps' => function ($query) {
+        $actor = Auth::user();
+
+        $distributionQuery = Distribution::with(['steps' => function ($query) {
             $query->orderBy('step_order');
-        }])->find($id);
+        }]);
+
+        if ($actor) {
+            $distributionQuery->accessibleBy($actor);
+        }
+
+        $distribution = $distributionQuery->find($id);
 
         if (! $distribution) {
             $this->addStep();
@@ -93,11 +109,29 @@ class AddDistribution extends Component
 
     public function save()
     {
+        $actor = Auth::user();
         $validated = $this->validate();
+
+        $routeIds = collect($validated['steps'])->pluck('route_id')->filter()->unique()->values();
+        $routeScopeQuery = DistributionRoute::query()->whereIn('id', $routeIds);
+        if ($actor) {
+            $routeScopeQuery->accessibleBy($actor);
+        }
+
+        $allowedRouteIds = $routeScopeQuery->pluck('id');
+
+        if ($allowedRouteIds->count() !== $routeIds->count()) {
+            return $this->alertError('One or more selected routes are outside your scope.');
+        }
 
         $editableDistribution = null;
         if ($this->editingDistributionId) {
-            $editableDistribution = Distribution::find($this->editingDistributionId);
+            $distributionQuery = Distribution::query();
+            if ($actor) {
+                $distributionQuery->accessibleBy($actor);
+            }
+
+            $editableDistribution = $distributionQuery->find($this->editingDistributionId);
             if (! $editableDistribution) {
                 return $this->alertError('Distribution not found for update.');
             }

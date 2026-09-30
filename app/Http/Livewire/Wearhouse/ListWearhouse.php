@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Wearhouse;
 
 use App\Models\Package;
 use App\Models\WareHouse;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -22,16 +23,38 @@ class ListWearhouse extends Component
 
     protected function refreshStats()
     {
-        $this->totalWarehouses = WareHouse::count();
-        $this->totalStores = WareHouse::distinct('branch')->count('branch');
-        $this->totalBooksInStores = (int) Package::sum('balance');
+        $actor = Auth::user();
+        if (! $actor) {
+            $this->totalWarehouses = 0;
+            $this->totalStores = 0;
+            $this->totalBooksInStores = 0;
+            return;
+        }
+
+        $warehouseQuery = WareHouse::query()->accessibleBy($actor);
+
+        $this->totalWarehouses = (clone $warehouseQuery)->count();
+        $this->totalStores = (clone $warehouseQuery)->distinct('branch')->count('branch');
+
+        $this->totalBooksInStores = (int) Package::query()
+            ->whereHas('warehouse', function ($query) use ($actor) {
+                $query->accessibleBy($actor);
+            })
+            ->sum('balance');
     }
 
     public function render()
     {
         $this->refreshStats();
 
-        $wearehouses = WareHouse::with(['organization.organizationType', 'user'])
+        $actor = Auth::user();
+        if (! $actor) {
+            return view('livewire.wearhouse.list-wearhouse', ['wearehouses' => WareHouse::query()->whereRaw('1 = 0')->paginate(10)]);
+        }
+
+        $wearehouses = WareHouse::query()
+            ->accessibleBy($actor)
+            ->with(['organization.organizationType', 'user'])
             ->withCount('packages')
             ->paginate(10);
 
@@ -40,9 +63,14 @@ class ListWearhouse extends Component
 
     public function viewWarehouse($id)
     {
-        $warehouse = WareHouse::find($id);
+        $actor = Auth::user();
+        if (! $actor) {
+            return $this->alertError('Authentication required');
+        }
+
+        $warehouse = WareHouse::query()->accessibleBy($actor)->find($id);
         if (! $warehouse) {
-            return $this->alertError('Warehouse not found');
+            return $this->alertError('Warehouse not found or outside your scope');
         }
 
         $this->dispatchBrowserEvent('alert', [
@@ -53,9 +81,14 @@ class ListWearhouse extends Component
 
     public function editWarehouse($id)
     {
-        $warehouse = WareHouse::find($id);
+        $actor = Auth::user();
+        if (! $actor) {
+            return $this->alertError('Authentication required');
+        }
+
+        $warehouse = WareHouse::query()->accessibleBy($actor)->find($id);
         if (! $warehouse) {
-            return $this->alertError('Warehouse not found');
+            return $this->alertError('Warehouse not found or outside your scope');
         }
 
         $this->dispatchBrowserEvent('alert', [
@@ -66,9 +99,14 @@ class ListWearhouse extends Component
 
     public function deleteId($id)
     {
-        $warehouse = WareHouse::find($id);
+        $actor = Auth::user();
+        if (! $actor) {
+            return $this->alertError('Authentication required');
+        }
+
+        $warehouse = WareHouse::query()->accessibleBy($actor)->find($id);
         if (! $warehouse) {
-            return $this->alertError('Warehouse not found');
+            return $this->alertError('Warehouse not found or outside your scope');
         }
 
         if ($warehouse->packages()->exists()) {

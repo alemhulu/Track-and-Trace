@@ -4,6 +4,7 @@ namespace App\Http\Livewire\Route;
 
 use App\Models\DistributionStep;
 use App\Models\DistributionRoute;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -15,9 +16,16 @@ class ListRoute extends Component
 
     public function viewRoute($id)
     {
-        $route = DistributionRoute::find($id);
+        $actor = Auth::user();
+
+        $routeQuery = DistributionRoute::query();
+        if ($actor) {
+            $routeQuery->accessibleBy($actor);
+        }
+
+        $route = $routeQuery->find($id);
         if (! $route) {
-            return $this->alertError('Route not found');
+            return $this->alertError('Route not found or outside your scope');
         }
 
         return redirect()->route('route.view', ['id' => $route->id]);
@@ -25,9 +33,16 @@ class ListRoute extends Component
 
     public function editRoute($id)
     {
-        $route = DistributionRoute::find($id);
+        $actor = Auth::user();
+
+        $routeQuery = DistributionRoute::query();
+        if ($actor) {
+            $routeQuery->accessibleBy($actor);
+        }
+
+        $route = $routeQuery->find($id);
         if (! $route) {
-            return $this->alertError('Route not found');
+            return $this->alertError('Route not found or outside your scope');
         }
 
         return redirect()->route('route.add', ['edit' => $route->id]);
@@ -35,9 +50,16 @@ class ListRoute extends Component
 
     public function deleteId($id)
     {
-        $route = DistributionRoute::find($id);
+        $actor = Auth::user();
+
+        $routeQuery = DistributionRoute::query();
+        if ($actor) {
+            $routeQuery->accessibleBy($actor);
+        }
+
+        $route = $routeQuery->find($id);
         if (! $route) {
-            return $this->alertError('Route not found');
+            return $this->alertError('Route not found or outside your scope');
         }
 
         if (DistributionStep::where('route_id', $route->id)->exists()) {
@@ -62,7 +84,14 @@ class ListRoute extends Component
 
     public function render()
     {
-        $routes = DistributionRoute::with(['fromWarehouse.organization', 'toWarehouse.organization'])
+        $actor = Auth::user();
+
+        $routesQuery = DistributionRoute::query();
+        if ($actor) {
+            $routesQuery->accessibleBy($actor);
+        }
+
+        $routes = $routesQuery->with(['fromWarehouse.organization', 'toWarehouse.organization'])
             ->latest()
             ->paginate(10);
 
