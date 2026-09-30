@@ -7,6 +7,111 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Track and Trace Notes
+
+### Database Seed Profiles
+
+The application supports two seed profiles through the `SEED_PROFILE` environment variable:
+
+- `demo` (default): Seeds reference data and full demo domain data.
+- `minimal`: Seeds reference data and one minimal connected domain graph for faster local setup.
+
+Common commands:
+
+```bash
+# Default profile (demo)
+php artisan migrate:fresh --seed
+
+# Minimal profile
+SEED_PROFILE=minimal php artisan migrate:fresh --seed
+
+# Explicit demo profile
+SEED_PROFILE=demo php artisan migrate:fresh --seed
+```
+
+Notes:
+
+- Reference seeders always run in both profiles (permissions, locations, organization types, ownership, grade and subject references).
+- Profile switching only changes the domain-level data volume and shape.
+
+### Factory Usage In Feature Tests
+
+Core factories were added for the logistics flow to reduce manual setup in tests:
+
+- `OrganizationFactory`
+- `WareHouseFactory`
+- `BookFactory`
+- `PrintOrderFactory`
+- `PackageFactory`
+- `DistributionRouteFactory`
+- `DistributionFactory`
+- `DistributionStepFactory`
+
+Example: create a package graph aligned to a warehouse and grade/subject filters.
+
+```php
+use App\Models\Book;
+use App\Models\Grade;
+use App\Models\Package;
+use App\Models\PrintOrder;
+use App\Models\Subject;
+use App\Models\WareHouse;
+
+$grade = Grade::factory()->create();
+$subject = Subject::factory()->create();
+$warehouse = WareHouse::factory()->create();
+
+$book = Book::factory()->create([
+	'grade_id' => $grade->id,
+	'subject_id' => $subject->id,
+]);
+
+$printOrder = PrintOrder::factory()->create([
+	'book_id' => $book->id,
+	'order_organization_id' => $warehouse->organization_id,
+	'printer_organization_id' => $warehouse->organization_id,
+	'no_of_books' => 120,
+	'no_of_packages' => 12,
+]);
+
+$package = Package::factory()->create([
+	'ware_house_id' => $warehouse->id,
+	'print_order_id' => $printOrder->id,
+	'sender_organization_id' => $warehouse->organization_id,
+	'receiver_organization_id' => $warehouse->organization_id,
+	'grade_id' => $grade->id,
+	'subject_id' => $subject->id,
+	'no_of_books' => 120,
+	'books_per_package' => 10,
+	'balance' => 120,
+]);
+```
+
+Example: create route and distribution step wiring.
+
+```php
+use App\Models\Distribution;
+use App\Models\DistributionRoute;
+use App\Models\DistributionStep;
+use App\Models\WareHouse;
+
+$fromWarehouse = WareHouse::factory()->create();
+$toWarehouse = WareHouse::factory()->create();
+
+$route = DistributionRoute::factory()->create([
+	'from_ware_house_id' => $fromWarehouse->id,
+	'to_ware_house_id' => $toWarehouse->id,
+]);
+
+$distribution = Distribution::factory()->create();
+
+$step = DistributionStep::factory()->create([
+	'distribution_id' => $distribution->id,
+	'route_id' => $route->id,
+	'step_order' => 1,
+]);
+```
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

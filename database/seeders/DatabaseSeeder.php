@@ -13,7 +13,26 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call([
+        $profile = strtolower((string) ($_ENV['SEED_PROFILE'] ?? $_SERVER['SEED_PROFILE'] ?? 'demo'));
+
+        $this->call($this->referenceSeeders());
+
+        if ($profile === 'minimal') {
+            $this->call([
+                \Database\Seeders\MinimalDomainSeeder::class,
+            ]);
+            return;
+        }
+
+        $this->call($this->demoDomainSeeders());
+    }
+
+    /**
+     * @return array<int, class-string<Seeder>>
+     */
+    private function referenceSeeders(): array
+    {
+        return [
             \Database\Seeders\PermissionSeeder::class,
             \Database\Seeders\CountrySeeder::class,
             \Database\Seeders\RegionSeeder::class,
@@ -24,6 +43,15 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\SubjectSeeder::class,
             \Database\Seeders\GradeSeeder::class,
             \Database\Seeders\GradeSubjectSeeder::class,
+        ];
+    }
+
+    /**
+     * @return array<int, class-string<Seeder>>
+     */
+    private function demoDomainSeeders(): array
+    {
+        return [
             \Database\Seeders\UserSeeder::class,
             \Database\Seeders\SectorSeeder::class,
             \Database\Seeders\OrganizationSeeder::class,
@@ -35,6 +63,6 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\DistributionRouteSeeder::class,
             \Database\Seeders\DistributionSeeder::class,
             \Database\Seeders\DistributionStepSeeder::class,
-        ]);
+        ];
     }
 }
