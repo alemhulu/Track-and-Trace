@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Book extends Model
 {
     use HasFactory;
-    protected $fillable=[
+    protected $fillable = [
         'grade_id',
         'subject_id',
         'isbn',
@@ -32,10 +32,10 @@ class Book extends Model
     }
     public function packages()
     {
-        return $this->hasMany(package::class);
-    } 
+        return $this->hasMany(Package::class);
+    }
     public function printOrder()
     {
         return $this->hasMany(PrintOrder::class);
-    } 
+    }
 }

@@ -17,60 +17,48 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
-        
         // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-         // User permissions
-         Permission::create(['name' => 'user-list']);
-         Permission::create(['name' => 'user-create']);
-         Permission::create(['name' => 'user-edit']);
-         Permission::create(['name' => 'user-delete']);
+        $permissionNames = [
+            'user-list',
+            'user-create',
+            'user-edit',
+            'user-delete',
+            'view-user',
+            'org-list',
+            'org-create',
+            'org-edit',
+            'org-update',
+            'org-delete',
+            'org-publish',
+            'org-unpublish',
+            'role-list',
+            'view-role',
+            'role-create',
+            'role-edit',
+            'role-delete',
+            'location-list',
+            'location-create',
+            'location-edit',
+            'location-delete',
+            'book-list',
+            'book-show',
+            'book-edit',
+            'book-update',
+            'book-delete',
+            'view-logs',
+        ];
 
-        // org permissions
-        Permission::create(['name' => 'org-list']);
-        Permission::create(['name' => 'org-create']);
-        Permission::create(['name' => 'org-edit']);
-        Permission::create(['name' => 'org-update']);
-        Permission::create(['name' => 'org-delete']);
+        foreach ($permissionNames as $permissionName) {
+            Permission::firstOrCreate(['name' => $permissionName]);
+        }
 
-        Permission::create(['name' => 'org-publish']);
-        Permission::create(['name' => 'org-unpublish']);
-
-        // Role permissions
-        Permission::create(['name' => 'role-list']);
-        Permission::create(['name' => 'role-create']);
-        Permission::create(['name' => 'role-edit']);
-        Permission::create(['name' => 'role-delete']);
-
-        // Settings permissions
-        Permission::create(['name' => 'location-list']);
-        Permission::create(['name' => 'location-create']);
-        Permission::create(['name' => 'location-edit']);
-        Permission::create(['name' => 'location-delete']);
-
-            // Contact messages permissions
-        Permission::create(['name' => 'book-list']);
-        Permission::create(['name' => 'book-show']);
-        Permission::create(['name' => 'book-edit']);
-        Permission::create(['name' => 'book-update']);    
-        Permission::create(['name' => 'book-delete']);
-
-        // Log viewer permissions
-        Permission::create(['name' => 'view-logs']);
-            
-        // create roles and assign existing permissions
         $role1 = Role::create(['name' => 'Org-Manager']);
-        $role1->givePermissionTo('book-list');
-        $role1->givePermissionTo('book-show');
-        $role1->givePermissionTo('org-edit');
-        $role1->givePermissionTo('org-update');
+        $role1->givePermissionTo(['book-list', 'book-show', 'org-edit', 'org-update', 'view-user']);
 
         $role2 = Role::create(['name' => 'Admin']);
-        $role2->givePermissionTo('role-list');
-        $role2->givePermissionTo('role-create');
-        $role2->givePermissionTo('role-edit');
-        $role2->givePermissionTo('role-delete');
+        $role2->givePermissionTo(['role-list', 'role-create', 'role-edit', 'role-delete', 'view-role', 'user-list', 'user-create', 'user-edit', 'user-delete']);
 
         $role3 = Role::create(['name' => 'Super-Admin']);
         // gets all permissions via Gate::before rule; see AuthServiceProvider
@@ -80,7 +68,7 @@ class PermissionSeeder extends Seeder
         $user = \App\Models\User::factory()->create([
             'name' => 'Super Admin',
             'email' => 'superadmin@gmail.com',
-            'password'=>bcrypt('test1234'),
+            'password' => bcrypt('test1234'),
         ]);
         $user->assignRole($role3);
 
@@ -88,7 +76,7 @@ class PermissionSeeder extends Seeder
         $user = \App\Models\User::factory()->create([
             'name' => 'Organization Manager',
             'email' => 'test@gmail.com',
-            'password'=>bcrypt('test1234'),
+            'password' => bcrypt('test1234'),
         ]);
         $user->assignRole($role1);
 
@@ -96,7 +84,7 @@ class PermissionSeeder extends Seeder
         $user = \App\Models\User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@gmail.com',
-            'password'=>bcrypt('test1234'),
+            'password' => bcrypt('test1234'),
         ]);
         $user->assignRole($role2);
     }

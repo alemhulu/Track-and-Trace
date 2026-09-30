@@ -1,8 +1,8 @@
 <div>
     <x-stat.section name="Warehouse Info" col=3>
-        <x-stat.list value="700" text="Total Warehouse"></x-stat.list>
-        <x-stat.list value="2.4K" text="Total Stores"></x-stat.list>
-        <x-stat.list value="2.1M" text="Total Books In Stores"></x-stat.list>
+        <x-stat.list value="{{ number_format($totalWarehouses) }}" text="Total Warehouse"></x-stat.list>
+        <x-stat.list value="{{ number_format($totalStores) }}" text="Total Stores"></x-stat.list>
+        <x-stat.list value="{{ number_format($totalBooksInStores) }}" text="Total Books In Stores"></x-stat.list>
     </x-stat.section>
 
     <x-form.table title="Wearhouse List">
@@ -24,8 +24,8 @@
                     <div
                         class=" bg-sky-800 flex flex-col text-md font-semibold text-gray-100 dark:text-gray-200 rounded-lg border p-2">
                         <span class="font-bold flex w-full justify-between">Store <span
-                                class="text-xs rounded bg-blue-500 px-2 flex items-center">{{ $record->organization->organizationType->name }}</span></span>
-                        <span class="text-gray-200 text-xs"> {{ $record->organization->name }}</span>
+                                class="text-xs rounded bg-blue-500 px-2 flex items-center">{{ optional(optional($record->organization)->organizationType)->name ?? 'N/A' }}</span></span>
+                        <span class="text-gray-200 text-xs">{{ optional($record->organization)->name ?? 'N/A' }}</span>
                     </div>
                 </td>
 
@@ -36,9 +36,9 @@
                 </td> --}}
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-organization.info image="logom.png" name="{{ $record->organization->name }}"
-                        email="{{ $record->organization->email ?? 'emial: ---' }}"
-                        phone="{{ $record->organization->phone ?? 'phone: ---' }}" />
+                    <x-organization.info image="logom.png" name="{{ optional($record->organization)->name ?? 'N/A' }}"
+                        email="{{ optional($record->organization)->email ?? 'email: ---' }}"
+                        phone="{{ optional($record->organization)->phone ?? 'phone: ---' }}" />
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
@@ -51,11 +51,13 @@
                 </td> --}}
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-lg text-gray-500 font-semibold dark:text-gray-300">000</div>
+                    <div class="text-lg text-gray-500 font-semibold dark:text-gray-300">
+                        {{ number_format($record->packages_count) }}</div>
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" edit="editBook" delete="deleteBook" />
+                    <x-action.table-button id="{{ $record->id }}" view="viewWarehouse" edit="editWarehouse"
+                        delete="deleteWarehouse" />
                 </td>
             </x-data-table.tr>
             @empty

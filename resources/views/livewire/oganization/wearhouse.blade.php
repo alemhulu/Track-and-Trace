@@ -5,21 +5,17 @@
                 <x-jet-label for="organizaton_id" value=" {{__('Organization')}}" />
                 <x-form.select wire:model="organizaton_id" id="organizaton_id">
                     <option value=""> {{__('select') }}</option>
-                    {{-- @foreach ($organizations as $organization)
+                    @foreach ($organizations as $organization)
                     <option value="{{ $organization->id }}">{{ $organization->name }}</option>
-                    @endforeach --}}
+                    @endforeach
                 </x-form.select>
                 <x-jet-input-error for="organizaton_id" alert="Select organization" />
             </div>
 
             <div>
                 <x-jet-label for="warehouse_id" value=" {{__('Warehouse')}}" />
-                <x-form.select wire:model="warehouse_id" id="warehouse_id">
-                    <option value=""> {{__('select') }}</option>
-                    {{-- @foreach ($warehouses as $warehouse)
-                    <option value="{{ $warehouse->id }}">{{ $warehouse->name }}</option>
-                    @endforeach --}}
-                </x-form.select>
+                <x-jet-input type="number" wire:model.defer="warehouse_id" id="warehouse_id" min="1"
+                    placeholder="Enter branch number" class="block w-full" />
                 <x-jet-input-error for="warehouse_id" alert="Select Warehouse" />
             </div>
 
@@ -27,11 +23,11 @@
                 <x-jet-label for="user_id" value=" {{__('Assign user')}}" />
                 <x-form.select wire:model="user_id" id="user_id">
                     <option value=""> {{__('select user')}}</option>
-                    {{-- @foreach ($oganizations as $oganization)
-                    <option value="{{ $oganization->id }}">{{ $oganization->name }}</option>
-                    @endforeach --}}
+                    @foreach ($users as $user)
+                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                    @endforeach
                 </x-form.select>
-                <x-jet-input-error for="organizaton_id" alert="Select Oganization" />
+                <x-jet-input-error for="user_id" alert="Select user" />
             </div>
 
             <div>
@@ -44,7 +40,7 @@
                 <x-jet-label for="description" value="{{ __('Description') }}" />
                 <x-form.textarea name="description" wire:model.defer="description" placeholder="Type Description"
                     row=3 />
-                <x-jet-input-error for="de" alert="Store Description" />
+                <x-jet-input-error for="description" alert="Store Description" />
             </div>
         </x-form.card>
     </aside>
@@ -68,22 +64,27 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100 font-semibold">{{$record->name}}</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">
-                        {{$record->decription == 1 ? 'City' : 'Region'}}
+                    <div class="text-sm text-gray-700 dark:text-gray-100 font-semibold">{{ __('Branch') }}
+                        {{$record->branch}}
                     </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-organization.contact name="Abebe Kebede" email="abe@kebede.com" phone="0987654312" />
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
+                        {{ __('Branch') }} {{$record->branch}}
+                    </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-organization.info image="logom.png" name="Ministry of Education" email="mail@ministry.com"
-                        phone="0987654321" />
+                    <x-organization.contact name="{{ optional($record->user)->name ?? 'N/A' }}"
+                        email="{{ optional($record->user)->email ?? 'N/A' }}"
+                        phone="{{ optional($record->user)->phone ?? 'N/A' }}" />
+                </td>
+
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <x-organization.info image="logom.png" name="{{ optional($record->organization)->name ?? 'N/A' }}"
+                        email="{{ optional($record->organization)->email ?? 'N/A' }}"
+                        phone="{{ optional($record->organization)->phone ?? 'N/A' }}" />
                 </td>
 
                 <td class="px-5 py-2">

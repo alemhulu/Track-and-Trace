@@ -3,17 +3,15 @@
         <x-side-navigation.link href="/dashboard" icon="fi-rr-dashboard" name="Dashboard"
             :active="request()->routeIs('dashboard')" />
 
-        @can('view-user')
-
+        @canany(['view-user', 'user-list'])
         <x-side-navigation.link href="{{ route('users.index') }}" icon="fi-rr-user" name="Users"
             :active="request()->routeIs('users.*')" />
+        @endcanany
 
-        @endcan
-
-        @can('view-role')
+        @canany(['view-role', 'role-list'])
         <x-side-navigation.link href="{{ route('roles.index') }}" icon="fi-rr-key" name="Roles"
             :active="request()->routeIs('roles.*')" />
-        @endcan
+        @endcanany
         <x-side-navigation.link href="/location" icon="fi-rr-map-marker-home" name="Location"
             :active="(request()->routeIs('location') | request()->routeIs('location.*'))" />
 
