@@ -11,161 +11,59 @@
         </x-slot>
 
         <x-slot name="tableRows">
-            @php $i = 1; $record = 1;@endphp
-            {{-- @forelse($books as $record) --}}
+            @forelse($distributions as $record)
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">1</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
+                        {{ $distributions->firstItem() + $loop->index }}
+                    </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold dark:text-gray-300">Dist-MoE-To-Addis-Yeka-School-1
-                    </div>
+                    <div class="text-sm text-gray-600 font-semibold dark:text-gray-300">{{ $record->name }}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
                     <div class="text-sm text-gray-700 dark:text-gray-100">
                         <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
-                            <span class="text-sm text-blue-50 font-bold">4</span>
+                            <span class="text-sm text-blue-50 font-bold">{{ $record->steps_count }}</span>
                         </div>
                     </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-500 dark:text-gray-300">40 Packages
+                    <div class="text-sm text-gray-500 dark:text-gray-300">
+                        {{ number_format((int) ($record->tracked_packages_total ?? 0)) }} Packages
                     </div>
                 </td>
 
                 <td class="px-5 py-2 flex-wrap">
-                    <div class="text-sm text-gray-500 dark:text-gray-300">513 Books</div>
+                    <div class="text-sm text-gray-500 dark:text-gray-300">
+                        {{ number_format((int) ($record->tracked_books_total ?? 0)) }} Books
+                    </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
+                    @if($record->is_active)
                     <x-button btnType="success" class="py-1 relative pl-6 pr-2 font-bold">
-                        <i class="fi fi-rr-checkbox flex inset-0 top-1 left-1 absolute text-base"></i>100 %
+                        <i class="fi fi-rr-checkbox flex inset-0 top-1 left-1 absolute text-base"></i>Active
                     </x-button>
-                </td>
-
-                <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="showDistribution" />
-                </td>
-            </x-data-table.tr>
-
-            <x-data-table.tr>
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">2</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold dark:text-gray-300">Dist-MoE-To-Addis-Yeka-School-1
-                    </div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">
-                        <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
-                            <span class="text-sm text-blue-50 font-bold">4</span>
-                        </div>
-                    </div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-500 dark:text-gray-300">40 Packages
-                    </div>
-                </td>
-
-                <td class="px-5 py-2 flex-wrap">
-                    <div class="text-sm text-gray-500 dark:text-gray-300">513 Books</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="success" class="py-1 relative pl-6 pr-2 font-bold">
-                        <i class="fi fi-rr-shield-exclamation flex inset-0 top-1 left-1 absolute text-base"></i>94 %
-                    </x-button>
-                </td>
-
-                <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="showDistribution" />
-                </td>
-            </x-data-table.tr>
-
-            <x-data-table.tr>
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">3</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold dark:text-gray-300">Minilik High School Distribution
-                        Steps</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">
-                        <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
-                            <span class="text-sm text-blue-50 font-bold">4</span>
-                        </div>
-                    </div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-500 dark:text-gray-300">40 Packages
-                    </div>
-                </td>
-
-                <td class="px-5 py-2 flex-wrap">
-                    <div class="text-sm text-gray-500 dark:text-gray-300">513 Books</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="warning" class="py-1 relative pl-6 pr-2 font-bold">
-                        <i class="fi fi-rr-shield-exclamation flex inset-0 top-1 left-1 absolute text-base"></i>70 %
-                    </x-button>
-                </td>
-
-                <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="showDistribution" />
-                </td>
-            </x-data-table.tr>
-
-            <x-data-table.tr>
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">4</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-600 font-semibold dark:text-gray-300">Bishoftu Priparatory School Book
-                        Distribution</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">
-                        <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
-                            <span class="text-sm text-blue-50 font-bold">6</span>
-                        </div>
-                    </div>
-                </td>
-
-                <td class="px-5 py-2 flex-wrap">
-                    <div class="text-sm text-gray-500 dark:text-gray-300">123 Packages</div>
-                </td>
-
-                <td class="px-5 py-2 flex-wrap">
-                    <div class="text-sm text-gray-500 dark:text-gray-300">5,043 Books</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
+                    @else
                     <x-button btnType="danger" class="py-1 relative pl-6 pr-2 font-bold">
-                        <i class="fi fi-rr-shield-exclamation flex inset-0 top-1 left-1 absolute text-base"></i>40 %
+                        <i class="fi fi-rr-cross-circle flex inset-0 top-1 left-1 absolute text-base"></i>InActive
                     </x-button>
+                    @endif
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="showDistribution" />
+                    <x-action.table-button id="{{ $record->id }}" view="showDistribution" />
                 </td>
             </x-data-table.tr>
-            {{-- @empty --}}
-            {{-- <x-data-table.empty colspan=6 /> --}}
-            {{-- @endforelse --}}
+            @empty
+            <x-data-table.empty colspan=7 />
+            @endforelse
         </x-slot>
+
+        {{ $distributions->links() }}
     </x-form.table>
 </div>

@@ -46,7 +46,11 @@ class DistributionController extends Controller
      */
     public function show(Distribution $distribution)
     {
-        // return $distribution;
+        $distribution->load([
+            'steps.route.fromWarehouse.organization',
+            'steps.route.toWarehouse.organization',
+        ]);
+
         return view('main.trace.distribution-detail', compact('distribution'));
     }
 

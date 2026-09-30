@@ -10,90 +10,48 @@
         </x-slot>
 
         <x-slot name="tableRows">
-            @php $i = 1; $record = 1;@endphp
-            {{-- @forelse($books as $record) --}}
+            @php $i = 1; @endphp
+            @forelse($routes as $record)
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">1</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">{{ $i++ }}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">Frist Route from Region</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">{{ $record->name }}</div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse 1</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
+                        Branch {{ optional($record->fromWarehouse)->branch ?? 'N/A' }}
+                        - {{ optional(optional($record->fromWarehouse)->organization)->name ?? 'N/A' }}
+                    </div>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse 2</div>
+                    <div class="text-sm text-gray-700 dark:text-gray-100">
+                        Branch {{ optional($record->toWarehouse)->branch ?? 'N/A' }}
+                        - {{ optional(optional($record->toWarehouse)->organization)->name ?? 'N/A' }}
+                    </div>
                 </td>
 
-
                 <td class="px-5 py-2 whitespace-nowrap">
+                    @if($record->is_active)
                     <x-button btnType="success" class="py-1">Active</x-button>
-                </td>
-
-                <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" edit="editBook" delete="deleteBook" />
-                </td>
-            </x-data-table.tr>
-
-            <x-data-table.tr>
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">2</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">New Route</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse B</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse A</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="success" class="py-1">Active</x-button>
-                </td>
-
-                <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" edit="editBook" delete="deleteBook" />
-                </td>
-            </x-data-table.tr>
-
-            <x-data-table.tr>
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">3</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">Unknown Route</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse A</div>
-                </td>
-
-                <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-700 dark:text-gray-100">WareHouse C</div>
-                </td>
-
-
-                <td class="px-5 py-2 whitespace-nowrap">
+                    @else
                     <x-button btnType="danger" class="py-1">InActive</x-button>
+                    @endif
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record }}" view="viewBook" edit="editBook" delete="deleteBook" />
+                    <x-action.table-button id="{{ $record->id }}" view="viewRoute" edit="editRoute" delete="deleteId" />
                 </td>
             </x-data-table.tr>
-            {{-- @empty --}}
-            {{-- <x-data-table.empty colspan=6 /> --}}
-            {{-- @endforelse --}}
+            @empty
+            <x-data-table.empty colspan=6 />
+            @endforelse
         </x-slot>
+
+        {{ $routes->links() }}
     </x-form.table>
 </div>

@@ -1,3 +1,5 @@
+@props(['distribution'])
+
 <div>
     <section class="bg-white dark:bg-gray-800 rounded-lg">
         <div class="mb-2">
@@ -10,62 +12,59 @@
         </div>
 
         <div class="md:px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3 lg:border border-dashed rounded-md">
-            <div class="">
-                <dl class="grid grid-cols-1 gap-5 md:grid-cols-7 space-y-4 lg:space-y-0">
-                    <div class="flex flex-col md:col-span-3 lg:col-span-2 space-y-2 justify-center">
+            <div>
+                <dl class="grid grid-cols-1 gap-5 md:grid-cols-3">
+                    <div class="flex flex-col space-y-2 justify-center">
                         <div>
                             <x-jet-label value="Name" />
                             <div class="sm:mt-0 sm:col-span-2 text-gray-500 dark:text-gray-300">
-                                Name of the distribution
+                                {{ $distribution->name }}
                             </div>
                         </div>
 
                         <div>
-                            <x-jet-label value="Package" />
+                            <x-jet-label value="Created" />
                             <div class="sm:mt-0 sm:col-span-2 text-gray-500 dark:text-gray-300">
-                                50 Packages
+                                {{ optional($distribution->created_at)->format('Y-m-d H:i') ?? 'N/A' }}
                             </div>
                         </div>
 
                         <div>
                             <x-jet-label value="Steps" />
                             <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
-                                <span class="text-sm text-blue-50 font-bold">4</span>
+                                <span class="text-sm text-blue-50 font-bold">{{ $distribution->steps->count() }}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="flex flex-col md:col-span-4 lg:col-span-2 justify-center">
+                    <div class="flex flex-col justify-center">
                         <div>
-                            <x-jet-label value="Discription" />
+                            <x-jet-label value="Description" />
                             <div
                                 class="w-full h-auto md:p-3 md:border border-gray-100 rounded-md text-gray-500 dark:text-gray-300 text-left">
-                                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Perspiciatis enim, eaque,
-                                voluptatibus quo officiis molestias, ipsa quae natus iure incidunt beatae error impedit
-                                quod!
+                                {{ $distribution->description ?: 'No description provided.' }}
                             </div>
                         </div>
                     </div>
 
-                    <div
-                        class="flex flex-col md:col-span-4  lg:col-span-2 lg:px-4 text-left  rounded-lg lg:items-center justify-center">
-                        <x-book.book-info image="/biology-grade-10.jpg" grade="Grade 10" subject="Biology"
-                            type="Student Text Book" edition="1st Edition 2013" ISBN="4820715" />
-                    </div>
-
-                    <div
-                        class="flex flex-col lg:px-4 md:col-span-3 lg:col-span-1  rounded-lg lg:items-center lg:justify-center">
+                    <div class="flex flex-col rounded-lg md:items-center md:justify-center">
                         <div>
                             <x-jet-label value="Status" />
                             <div class="sm:mt-0 sm:col-span-2 text-gray-500">
+                                @if($distribution->is_active)
                                 <x-button btnType="success" class="py-1 relative pl-6 pr-2 font-bold">
                                     <i class="fi fi-rr-checkbox flex inset-0 top-1 left-1 absolute text-base"></i>
-                                    100 %
+                                    Active
                                 </x-button>
+                                @else
+                                <x-button btnType="danger" class="py-1 relative pl-6 pr-2 font-bold">
+                                    <i class="fi fi-rr-cross-circle flex inset-0 top-1 left-1 absolute text-base"></i>
+                                    InActive
+                                </x-button>
+                                @endif
                             </div>
                         </div>
                     </div>
-
                 </dl>
             </div>
         </div>

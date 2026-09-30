@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\DistributionStep;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -10,14 +11,20 @@ class Distribution extends Model
     use HasFactory;
 
     protected $fillable = [
-       'is_active',
-       'printer_id',
-       'moe_id',
-       'region_id',
-       'zone_id',
-       'woreda_id',
-       'school_id',
-       'step',
+        'name',
+        'description',
+        'is_active',
+        'printer_id',
+        'moe_id',
+        'region_id',
+        'zone_id',
+        'woreda_id',
+        'school_id',
+        'step',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     public function printer()
@@ -47,5 +54,10 @@ class Distribution extends Model
     public function tracks()
     {
         return $this->hasMany(Track::class);
-    } 
+    }
+
+    public function steps()
+    {
+        return $this->hasMany(DistributionStep::class)->orderBy('step_order');
+    }
 }
