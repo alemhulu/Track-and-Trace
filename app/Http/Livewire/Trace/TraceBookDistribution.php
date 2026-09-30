@@ -12,8 +12,26 @@ class TraceBookDistribution extends Component
     use WithPagination;
 
     public $search = '';
+    public $gradeId = null;
+    public $subjectId = null;
+
+    public function mount($gradeId = null, $subjectId = null)
+    {
+        $this->gradeId = $gradeId ?: null;
+        $this->subjectId = $subjectId ?: null;
+    }
 
     public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedGradeId()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSubjectId()
     {
         $this->resetPage();
     }
@@ -39,6 +57,39 @@ class TraceBookDistribution extends Component
                 $query->where('name', 'like', '%' . $this->search . '%');
             })
             ->latest();
+
+        $canFilterByPackage = Schema::hasTable('packages')
+            && Schema::hasColumn('packages', 'grade_id')
+            && Schema::hasColumn('packages', 'subject_id');
+
+        if (($this->gradeId || $this->subjectId) && $canFilterByPackage) {
+            $gradeId = $this->gradeId;
+            $subjectId = $this->subjectId;
+
+            $query->whereHas('steps.route', function ($routeQuery) use ($gradeId, $subjectId) {
+                $routeQuery->where(function ($warehouseQuery) use ($gradeId, $subjectId) {
+                    $warehouseQuery
+                        ->whereHas('fromWarehouse.packages', function ($packageQuery) use ($gradeId, $subjectId) {
+                            $packageQuery
+                                ->when($gradeId, function ($gradeQuery) use ($gradeId) {
+                                    $gradeQuery->where('grade_id', $gradeId);
+                                })
+                                ->when($subjectId, function ($subjectQuery) use ($subjectId) {
+                                    $subjectQuery->where('subject_id', $subjectId);
+                                });
+                        })
+                        ->orWhereHas('toWarehouse.packages', function ($packageQuery) use ($gradeId, $subjectId) {
+                            $packageQuery
+                                ->when($gradeId, function ($gradeQuery) use ($gradeId) {
+                                    $gradeQuery->where('grade_id', $gradeId);
+                                })
+                                ->when($subjectId, function ($subjectQuery) use ($subjectId) {
+                                    $subjectQuery->where('subject_id', $subjectId);
+                                });
+                        });
+                });
+            });
+        }
 
         // Some environments keep these counters in tracks, others do not.
         if (Schema::hasTable('tracks')) {

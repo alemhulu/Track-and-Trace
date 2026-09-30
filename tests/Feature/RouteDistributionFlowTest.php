@@ -7,10 +7,16 @@ use App\Http\Livewire\Distribution\ListDistribution;
 use App\Http\Livewire\Route\AddRoute;
 use App\Http\Livewire\Route\ListRoute;
 use App\Http\Livewire\Trace\TraceBookDistribution;
+use App\Http\Livewire\Trace\TraceBookInfo;
+use App\Models\Book;
 use App\Models\Country;
 use App\Models\Distribution;
 use App\Models\DistributionRoute;
+use App\Models\Grade;
 use App\Models\Organization;
+use App\Models\Package;
+use App\Models\PrintOrder;
+use App\Models\Subject;
 use App\Models\User;
 use App\Models\WareHouse;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -206,6 +212,86 @@ class RouteDistributionFlowTest extends TestCase
             ->assertSee('0 Books');
     }
 
+    public function test_trace_distribution_component_filters_by_grade_and_subject(): void
+    {
+        $gradeMatch = Grade::create(['name' => 'Grade Filter Match']);
+        $gradeOther = Grade::create(['name' => 'Grade Filter Other']);
+        $subjectMatch = Subject::create(['name' => 'Subject Filter Match']);
+        $subjectOther = Subject::create(['name' => 'Subject Filter Other']);
+
+        $warehouseA = $this->createWarehouse('Filter Org A', 611);
+        $warehouseB = $this->createWarehouse('Filter Org B', 612);
+        $warehouseC = $this->createWarehouse('Filter Org C', 613);
+        $warehouseD = $this->createWarehouse('Filter Org D', 614);
+
+        $matchRoute = $this->createRoute('Filter Route Match', $warehouseA, $warehouseB);
+        $otherRoute = $this->createRoute('Filter Route Other', $warehouseC, $warehouseD);
+
+        $matchDistribution = Distribution::create([
+            'name' => 'Distribution Filter Match',
+            'description' => 'Distribution for filter match',
+            'is_active' => true,
+        ]);
+
+        $otherDistribution = Distribution::create([
+            'name' => 'Distribution Filter Other',
+            'description' => 'Distribution for filter mismatch',
+            'is_active' => true,
+        ]);
+
+        $matchDistribution->steps()->create([
+            'route_id' => $matchRoute->id,
+            'step_order' => 1,
+        ]);
+
+        $otherDistribution->steps()->create([
+            'route_id' => $otherRoute->id,
+            'step_order' => 1,
+        ]);
+
+        $this->createPackageForWarehouseAndFilters($warehouseA, $gradeMatch, $subjectMatch);
+        $this->createPackageForWarehouseAndFilters($warehouseC, $gradeOther, $subjectOther);
+
+        Livewire::test(TraceBookDistribution::class, [
+            'gradeId' => $gradeMatch->id,
+            'subjectId' => $subjectMatch->id,
+        ])
+            ->assertSee('Distribution Filter Match')
+            ->assertDontSee('Distribution Filter Other');
+    }
+
+    public function test_trace_book_info_component_filters_summary_by_grade_and_subject(): void
+    {
+        $gradeMatch = Grade::create(['name' => 'Grade Info Match']);
+        $gradeOther = Grade::create(['name' => 'Grade Info Other']);
+        $subjectMatch = Subject::create(['name' => 'Subject Info Match']);
+        $subjectOther = Subject::create(['name' => 'Subject Info Other']);
+
+        $warehouseMatch = $this->createWarehouse('Info Filter Org A', 701);
+        $warehouseOther = $this->createWarehouse('Info Filter Org B', 702);
+
+        $matchPackage = $this->createPackageForWarehouseAndFilters($warehouseMatch, $gradeMatch, $subjectMatch);
+        $matchPackage->update([
+            'no_of_books' => 999,
+        ]);
+
+        $otherPackage = $this->createPackageForWarehouseAndFilters($warehouseOther, $gradeOther, $subjectOther);
+        $otherPackage->update([
+            'no_of_books' => 300,
+            'balance' => 300,
+        ]);
+
+        Livewire::test(TraceBookInfo::class, [
+            'gradeId' => $gradeMatch->id,
+            'subjectId' => $subjectMatch->id,
+        ])
+            ->assertSee('Grade Info Match')
+            ->assertSee('Subject Info Match')
+            ->assertSee('120')
+            ->assertDontSee('999')
+            ->assertDontSee('420');
+    }
+
     private function createWarehouse(string $organizationName, int $branch): WareHouse
     {
         $country = Country::firstOrCreate([
@@ -234,6 +320,36 @@ class RouteDistributionFlowTest extends TestCase
             'from_ware_house_id' => $fromWarehouse->id,
             'to_ware_house_id' => $toWarehouse->id,
             'is_active' => true,
+        ]);
+    }
+
+    private function createPackageForWarehouseAndFilters(WareHouse $warehouse, Grade $grade, Subject $subject): Package
+    {
+        $book = Book::create([
+            'grade_id' => $grade->id,
+            'subject_id' => $subject->id,
+        ]);
+
+        $printOrder = PrintOrder::create([
+            'order_organization_id' => $warehouse->organization_id,
+            'printer_organization_id' => $warehouse->organization_id,
+            'book_id' => $book->id,
+            'no_of_books' => 120,
+            'no_of_packages' => 12,
+            'print_status' => 1,
+            'request_status' => 1,
+        ]);
+
+        return Package::create([
+            'ware_house_id' => $warehouse->id,
+            'print_order_id' => $printOrder->id,
+            'sender_organization_id' => $warehouse->organization_id,
+            'receiver_organization_id' => $warehouse->organization_id,
+            'subject_id' => $subject->id,
+            'grade_id' => $grade->id,
+            'no_of_books' => 120,
+            'books_per_package' => 10,
+            'balance' => 120,
         ]);
     }
 }

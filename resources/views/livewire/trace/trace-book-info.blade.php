@@ -4,7 +4,7 @@
             <h3 class=" text-lg leading-6 font-medium text-gray-900">
                 Book
             </h3>
-            <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-300 dark:text-gray-400">
+            <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-300">
                 Book Information and Status
             </p>
         </div>
@@ -12,8 +12,8 @@
             <div class="mt-4">
                 <dl class="grid grid-cols-1 gap-5 sm:grid-cols-5">
                     <div class="flex flex-col">
-                        <x-book.book-info image="/biology-grade-10.jpg" grade="Grade 10" subject="Biology"
-                            type="Student Text Book" edition="1st Edition 2013" ISBN="4820715" />
+                        <x-book.book-info :image="$image" :grade="$gradeName" :subject="$subjectName" :type="$type"
+                            :edition="$edition" :ISBN="$isbn" />
                     </div>
 
                     <div
@@ -23,7 +23,7 @@
                         </dt>
 
                         <dd class="text-4xl font-extrabold text-blue-500 md:text-5xl">
-                            6,582
+                            {{ number_format($totalPrinted) }}
                         </dd>
                     </div>
 
@@ -34,7 +34,7 @@
                         </dt>
 
                         <dd class="text-4xl font-extrabold text-blue-500 md:text-5xl">
-                            6,453
+                            {{ number_format($totalDistributed) }}
                         </dd>
                     </div>
 
@@ -44,7 +44,8 @@
                             Total In Stock
                         </dt>
 
-                        <dd class="text-4xl font-extrabold text-blue-500 md:text-5xl">305</dd>
+                        <dd class="text-4xl font-extrabold text-blue-500 md:text-5xl">{{ number_format($totalInStock) }}
+                        </dd>
                     </div>
 
                     <div
@@ -53,7 +54,8 @@
                             Total On Student Hand
                         </dt>
 
-                        <dd class="text-4xl font-extrabold text-blue-500 md:text-5xl">6,277</dd>
+                        <dd class="text-4xl font-extrabold text-blue-500 md:text-5xl">
+                            {{ number_format($totalOnStudentHand) }}</dd>
                     </div>
                 </dl>
             </div>
