@@ -1,5 +1,48 @@
 <div>
     <div>
+        <div class="mb-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">From Date</label>
+                <input type="date" wire:model="createdFrom"
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">To Date</label>
+                <input type="date" wire:model="createdTo"
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">Status</label>
+                <select wire:model="statusFilter"
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+                    <option value="">All Statuses</option>
+                    <option value="0">Requested</option>
+                    <option value="1">Accepted</option>
+                    <option value="2">Printed</option>
+                    <option value="3">Sent</option>
+                    <option value="4">Rejected</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">Order By Created At</label>
+                <select wire:model="sortType"
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+                    <option value="desc">Newest First</option>
+                    <option value="asc">Oldest First</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">Rows Per Page</label>
+                <select wire:model="recordes"
+                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select>
+            </div>
+        </div>
+
         <x-form.table title="Organizations List">
             <x-slot name="tableHeaders">
                 <x-data-table.th scope="col">#</x-data-table.th>
@@ -15,7 +58,7 @@
                 @forelse($orders as $key=>$record)
                 <x-data-table.tr>
                     <td class="px-5 py-2 whitespace-nowrap">
-                        <div class="text-sm text-gray-700 dark:text-gray-100">{{ $key +1 }}</div>
+                        <div class="text-sm text-gray-700 dark:text-gray-100">{{ $orders->firstItem() + $key }}</div>
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">

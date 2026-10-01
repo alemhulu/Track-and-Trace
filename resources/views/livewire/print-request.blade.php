@@ -1,13 +1,13 @@
 <div>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
             {{ __('Print Order Detail') }}
         </h2>
     </x-slot>
     <div>
         <x-form.card title="Packages Request Info" buttons="">
 
-            <div class="flex flex-auto lg:justify-between flex-wrap space-x-2 gap-x-5 items-center">
+            <div class="flex flex-wrap items-center flex-auto space-x-2 lg:justify-between gap-x-5">
                 <div class="">
                     <x-jet-label class="text-gray-400" value="Book"></x-jet-label>
                     <x-book.book-info image="{{ $order->book->front_cover_location }}"
@@ -16,7 +16,7 @@
                         edition="{{ $order->book->edition }}st Edition {{ $order->book->created_at->format('Y') }}"
                         ISBN="{{ $order->book->isbn }}" />
                 </div>
-                <div class="flex-grow max-w-xs flex-initial">
+                <div class="flex-initial flex-grow max-w-xs">
                     <x-jet-label class="text-gray-400" value="Packages Info"></x-jet-label>
                     <x-stat.package-info batch="PB{{ $order->created_at->format('Y') }}{{ $order->id }}"
                         quantity="{{ $order->no_of_packages }}" range="" />
@@ -46,16 +46,16 @@
                 </div>
             </div>
 
-            <div class="flex justify-between flex-wrap ml-2">
+            <div class="flex flex-wrap justify-between ml-2">
                 <div class="sm:pb-4">
                     <x-jet-label class="text-gray-400" value="Request Date"></x-jet-label>
                     <div class="flex items-center gap-2 text-gray-600 dark:text-gray-300">
                         <i class="flex text-2xl fi fi-rr-time-check"></i>
-                        <span class="text-md font-semibold "> {{ $order->created_at->format('M d, Y') }}</span>
+                        <span class="font-semibold text-md "> {{ $order->created_at->format('M d, Y') }}</span>
                     </div>
                 </div>
 
-                <div class="space-x-2 mt-8 sm:mt-0 flex">
+                <div class="flex mt-8 space-x-2 sm:mt-0">
                     <a href="{{ route('print-order.list') }}">
                         <x-button type="button" btnType="secondary">CANCEL</x-button>
                     </a>
@@ -96,27 +96,30 @@
                 </x-slot>
 
                 <x-slot name="tableRows">
-                    @forelse($order->Book_codes as $key=>$record)
+                    @forelse($packages as $packageKey => $record)
                     @php
-                        $package = is_array($record) ? $record : [];
-                        $qrFile = data_get($package, 'QR') ?? data_get($package, 'qr') ?? data_get($package, 'barcodes.0');
-                        $barcodes = collect(data_get($package, 'barcodes', []))->filter()->values();
-                        $booksPerPackage = max((int) ($order->no_of_packages ? $order->no_of_books / $order->no_of_packages : 0), 1);
-                        $endIndex = min($booksPerPackage - 1, max($barcodes->count() - 1, 0));
-                        $firstBarcode = $barcodes->get(0);
-                        $lastBarcode = $barcodes->get($endIndex);
-                        $qrNumber = $qrFile ? intval(Str::substr($qrFile, 0, -4)) : null;
-                        $rangeStart = $firstBarcode ? intval(Str::substr($firstBarcode, 0, -4)) : 'N/A';
-                        $rangeEnd = $lastBarcode ? intval(Str::substr($lastBarcode, 0, -4)) : 'N/A';
+                    $package = is_array($record) ? $record : [];
+                    $qrFile = data_get($package, 'QR') ?? data_get($package, 'qr') ?? data_get($package, 'barcodes.0');
+                    $barcodes = collect(data_get($package, 'barcodes', []))->filter()->values();
+                    $booksPerPackage = max((int) ($order->no_of_packages ? $order->no_of_books / $order->no_of_packages
+                    : 0), 1);
+                    $endIndex = min($booksPerPackage - 1, max($barcodes->count() - 1, 0));
+                    $firstBarcode = $barcodes->get(0);
+                    $lastBarcode = $barcodes->get($endIndex);
+                    $qrNumber = $qrFile ? intval(Str::substr($qrFile, 0, -4)) : null;
+                    $rangeStart = $firstBarcode ? intval(Str::substr($firstBarcode, 0, -4)) : 'N/A';
+                    $rangeEnd = $lastBarcode ? intval(Str::substr($lastBarcode, 0, -4)) : 'N/A';
                     @endphp
                     <x-data-table.tr>
                         <td class="px-5 py-2 ">
-                            <div class="text-lg text-gray-500 dark:text-gray-100 font-bold">{{ $key }}</div>
+                            <div class="text-lg font-bold text-gray-500 dark:text-gray-100">
+                                {{ $packages->firstItem() + $loop->index }}
+                            </div>
                         </td>
 
                         <td class="px-5 py-2 whitespace-nowrap">
                             <x-stat.package batch="PB{{ $order->created_at->format('Y') }}{{ $order->id }}" qr=""
-                                Qrcode="{{ $qrFile ? "/storage/printOrders/{$order->id}/{$key}/{$qrFile}" : '' }}" />
+                                Qrcode="{{ $qrFile ? '/storage/printOrders/'.$order->id.'/'.$packageKey.'/'.$qrFile : '' }}" />
                         </td>
 
                         <td class="px-5 py-2 whitespace-nowrap">
@@ -133,42 +136,44 @@
                         </td> --}}
 
                         <td class="px-5 py-2">
-                            <x-action.table-button id="{{ $order->id}}" view="#Booksbarcode{{ $key }}" link />
-                            <x-data-table.modal name="Booksbarcode{{ $key }}" maxWidth="7xl" :buttons="false">
+                            <x-action.table-button id="{{ $order->id}}" view="#Booksbarcode{{ $packageKey }}" link />
+                            <x-data-table.modal name="Booksbarcode{{ $packageKey }}" maxWidth="7xl" :buttons="false">
                                 <x-slot name="title">
                                     Books In Package {{ $qrNumber ?? 'N/A' }}
                                 </x-slot>
                                 <x-slot name="body">
                                     <x-stat.package batch="PB{{ $order->created_at->format('Y') }}{{ $order->id }}"
                                         qr="{{ $qrNumber ?? '' }}"
-                                        Qrcode="{{ $qrFile ? "/storage/printOrders/{$order->id}/{$key}/{$qrFile}" : '' }}"
+                                        Qrcode="{{ $qrFile ? '/storage/printOrders/'.$order->id.'/'.$packageKey.'/'.$qrFile : '' }}"
                                         grade="{{ $order->book->grade->name }}"
-                                        subject="{{ $order->book->subject->name }}" isbn="{{ $order->book->isbn }}"
+                                        subject="{{ $order->book->subject->name }}"
+                                        isbn="{{ $order->book->isbn }}"
                                         volume="{{ $order->book->volume ?? '----' }}"
                                         edition="{{ $order->book->edition }}"
-                                        booktype="{{ $order->book->book_type ?  'Teacher Guide' : 'Student Text Book'}}" />
-                                    <div class="grid grid-cols-3 p-5 border">
+                                        booktype="{{ $order->book->book_type ? 'Teacher Guide' : 'Student Text Book' }}" />
+
+                                    <div class="grid grid-cols-1 gap-2 p-5 overflow-y-scroll max-h-[60vh] border md:grid-cols-2 xl:grid-cols-3">
                                         @foreach ($barcodes as $barcode)
                                         <div
-                                            class="flex items-center justify-center border p-4 border-dashed border-gray-500">
-                                            <img src="/storage/printOrders/{{ $order->id }}/{{ $key }}/barcods/{{ $barcode }}"
+                                            class="flex items-center justify-center p-4 border border-gray-500 border-dashed">
+                                            <img src="/storage/printOrders/{{ $order->id }}/{{ $packageKey }}/barcods/{{ $barcode }}"
                                                 alt="" srcset="">
                                         </div>
                                         @endforeach
                                     </div>
-
                                 </x-slot>
                             </x-data-table.modal>
-
                         </td>
                     </x-data-table.tr>
                     @empty
                     <x-data-table.empty colspan=6 />
                     @endforelse
                 </x-slot>
+
+                <div class="px-4 py-3">
+                    {{ $packages->links() }}
+                </div>
             </x-form.table>
         </div>
-
-
     </div>
 </div>

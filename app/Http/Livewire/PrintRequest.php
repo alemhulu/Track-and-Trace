@@ -7,11 +7,16 @@ use App\Models\Package;
 use App\Models\PrintOrder;
 use App\Models\WareHouse;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Livewire\Component;
+use Livewire\WithPagination;
 
 class PrintRequest extends Component
 {
+    use WithPagination;
+
     public $order, $clearid;
+    public $packagesPerPage = 5;
     public function mount($id)
     {
         $actor = auth()->user();
@@ -28,7 +33,22 @@ class PrintRequest extends Component
     }
     public function render()
     {
-        return view('livewire.print-request');
+        $packageCodes = collect($this->order->Book_codes ?? []);
+        $currentPage = LengthAwarePaginator::resolveCurrentPage('packagesPage');
+        $paginatedPackages = new LengthAwarePaginator(
+            $packageCodes->forPage($currentPage, $this->packagesPerPage),
+            $packageCodes->count(),
+            $this->packagesPerPage,
+            $currentPage,
+            [
+                'path' => request()->url(),
+                'pageName' => 'packagesPage',
+            ]
+        );
+
+        return view('livewire.print-request', [
+            'packages' => $paginatedPackages,
+        ]);
     }
     public function status($status)
     {

@@ -21,6 +21,7 @@ class ListBook extends Component
         ['books'=>Book::query()
         ->with(['grade', 'subject'])
         ->withCount('printOrder')
+        ->withSum('printOrder', 'no_of_books')
         ->when($this->column,function($q,$column){
             return $q->orderBy($this->column,$this->sortType);
         })->paginate($this->recordes)
