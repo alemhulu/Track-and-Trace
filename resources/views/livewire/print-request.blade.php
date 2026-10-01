@@ -97,6 +97,18 @@
 
                 <x-slot name="tableRows">
                     @forelse($order->Book_codes as $key=>$record)
+                    @php
+                        $package = is_array($record) ? $record : [];
+                        $qrFile = data_get($package, 'QR') ?? data_get($package, 'qr') ?? data_get($package, 'barcodes.0');
+                        $barcodes = collect(data_get($package, 'barcodes', []))->filter()->values();
+                        $booksPerPackage = max((int) ($order->no_of_packages ? $order->no_of_books / $order->no_of_packages : 0), 1);
+                        $endIndex = min($booksPerPackage - 1, max($barcodes->count() - 1, 0));
+                        $firstBarcode = $barcodes->get(0);
+                        $lastBarcode = $barcodes->get($endIndex);
+                        $qrNumber = $qrFile ? intval(Str::substr($qrFile, 0, -4)) : null;
+                        $rangeStart = $firstBarcode ? intval(Str::substr($firstBarcode, 0, -4)) : 'N/A';
+                        $rangeEnd = $lastBarcode ? intval(Str::substr($lastBarcode, 0, -4)) : 'N/A';
+                    @endphp
                     <x-data-table.tr>
                         <td class="px-5 py-2 ">
                             <div class="text-lg text-gray-500 dark:text-gray-100 font-bold">{{ $key }}</div>
@@ -104,14 +116,12 @@
 
                         <td class="px-5 py-2 whitespace-nowrap">
                             <x-stat.package batch="PB{{ $order->created_at->format('Y') }}{{ $order->id }}" qr=""
-                                Qrcode="/storage/printOrders/{{ $order->id }}/{{ $key }}/{{ $order->Book_codes[$key]['QR'] }}" />
+                                Qrcode="{{ $qrFile ? "/storage/printOrders/{$order->id}/{$key}/{$qrFile}" : '' }}" />
                         </td>
 
                         <td class="px-5 py-2 whitespace-nowrap">
                             <x-stat.book-info grade="Grade {{ $order->book->grade->name }}" quantity="41"
-                                range="
-                                {{ intval(Str::substr($order->Book_codes[$key]['barcodes'][0], 0, -4))
-                                }}- {{ intval(Str::substr($order->Book_codes[$key]['barcodes'][$order->no_of_books/$order->no_of_packages-1], 0, -4)) }}" />
+                                range="{{ $rangeStart }}-{{ $rangeEnd }}" />
                         </td>
 
                         {{-- <td class="px-5 py-2 whitespace-nowrap">
@@ -126,19 +136,19 @@
                             <x-action.table-button id="{{ $order->id}}" view="#Booksbarcode{{ $key }}" link />
                             <x-data-table.modal name="Booksbarcode{{ $key }}" maxWidth="7xl" :buttons="false">
                                 <x-slot name="title">
-                                    Books In Package {{ intval(Str::substr($order->Book_codes[$key]['QR'], 0, -4)) }}
+                                    Books In Package {{ $qrNumber ?? 'N/A' }}
                                 </x-slot>
                                 <x-slot name="body">
                                     <x-stat.package batch="PB{{ $order->created_at->format('Y') }}{{ $order->id }}"
-                                        qr="{{ intval(Str::substr($order->Book_codes[$key]['QR'], 0, -4)) }}"
-                                        Qrcode="/storage/printOrders/{{ $order->id }}/{{ $key }}/{{ $order->Book_codes[$key]['QR'] }}"
+                                        qr="{{ $qrNumber ?? '' }}"
+                                        Qrcode="{{ $qrFile ? "/storage/printOrders/{$order->id}/{$key}/{$qrFile}" : '' }}"
                                         grade="{{ $order->book->grade->name }}"
                                         subject="{{ $order->book->subject->name }}" isbn="{{ $order->book->isbn }}"
                                         volume="{{ $order->book->volume ?? '----' }}"
                                         edition="{{ $order->book->edition }}"
                                         booktype="{{ $order->book->book_type ?  'Teacher Guide' : 'Student Text Book'}}" />
                                     <div class="grid grid-cols-3 p-5 border">
-                                        @foreach ($order->Book_codes[$key]['barcodes'] as $barcode)
+                                        @foreach ($barcodes as $barcode)
                                         <div
                                             class="flex items-center justify-center border p-4 border-dashed border-gray-500">
                                             <img src="/storage/printOrders/{{ $order->id }}/{{ $key }}/barcods/{{ $barcode }}"

@@ -1,6 +1,7 @@
-@props(['title'])
+@props(['title', 'sticky' => false])
 {{-- Vertical Navigation Menu --}}
-<aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-3 bg-white dark:bg-gray-800 sm:rounded-md">
+<aside
+    class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-3 bg-white dark:bg-gray-800 sm:rounded-md {{ $sticky ? 'lg:sticky lg:top-24 self-start' : '' }}">
     <div class="border-b border-gray-200 mb-2 py-1 sm:px-4">
         <div class="flex justify-between items-center flex-wrap py-1">
             <header class="flex-shrink-0">

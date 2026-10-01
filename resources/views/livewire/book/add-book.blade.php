@@ -1,5 +1,6 @@
 <div>
-    <x-form.card function="addBook" title="Add New Book">
+    <x-form.card function="addBook" title="{{ $editingBookId ? 'Edit Book' : 'Add New Book' }}"
+        submitLabel="{{ $editingBookId ? 'Update' : 'Add' }}">
         <form class=" space-y-8 divide-y divide-gray-200">
             <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
                 <div>
@@ -46,8 +47,12 @@
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
                                 <x-form.select wire:model="book_type" id="bookType_id" class="max-w-md">
                                     <option>Select Book type</option>
+                                    @forelse ($bookTypes as $type)
+                                    <option value="{{ $type->code !== null && $type->code !== '' ? $type->code : $type->name }}">{{ $type->name }}</option>
+                                    @empty
                                     <option value="0">Student Text Book</option>
                                     <option value="1">Teacher Guide</option>
+                                    @endforelse
                                 </x-form.select>
                             </div>
                         </div>
@@ -93,8 +98,12 @@
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
                             <x-form.select wire:model.defer="print_type" id="printType_id" class="max-w-md">
                                 <option>print type</option>
+                                @forelse ($printTypes as $type)
+                                <option value="{{ $type->code !== null && $type->code !== '' ? $type->code : $type->name }}">{{ $type->name }}</option>
+                                @empty
                                 <option value="1">Color Print (RGB)</option>
                                 <option value="0">Black and White Print</option>
+                                @endforelse
                             </x-form.select>
                         </div>
                     </div>
@@ -104,8 +113,12 @@
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
                             <x-form.select wire:model.defer="paper_size" id="paperSize_id" class="max-w-md">
                                 <option selected>Select Paper Size</option>
+                                @forelse ($paperSizes as $size)
+                                <option value="{{ $size->code !== null && $size->code !== '' ? $size->code : $size->name }}">{{ $size->name }}</option>
+                                @empty
                                 <option value="A4">A4</option>
-                                <option Vaule="A5">A5</option>
+                                <option value="A5">A5</option>
+                                @endforelse
                             </x-form.select>
                         </div>
                     </div>
@@ -131,6 +144,12 @@
                             file:bg-blue-50 file:text-blue-700
                             hover:file:bg-blue-100 file:focus:ring-0 file:focus:border-lime-200 "
                                 accept="document/pdf" />
+                            @if ($editingBookId && $existingFileLocation)
+                            <a href="{{ $existingFileLocation }}" target="_blank"
+                                class="inline-block mt-2 text-sm text-blue-600 underline">
+                                Open current file
+                            </a>
+                            @endif
                         </div>
                     </div>
 
@@ -141,6 +160,9 @@
                                 <div class="flex flex-col lg:flex-row lg:space-x-5 items-center">
                                     @if ($front_cover)
                                     <img src="{{ $front_cover->temporaryUrl() }}" alt="" srcset=""
+                                        class="h-48 w-32 border-dashed border-gray-200 rounded bg-cover">
+                                    @elseif($existingFrontCoverLocation)
+                                    <img src="{{ $existingFrontCoverLocation }}" alt="" srcset=""
                                         class="h-48 w-32 border-dashed border-gray-200 rounded bg-cover">
                                     @else
                                     <img src="" alt="" srcset=""
@@ -156,6 +178,9 @@
                                 <div class="flex flex-col lg:flex-row lg:space-x-5 items-center">
                                     @if ($back_cover)
                                     <img src="{{ $back_cover->temporaryUrl() }}" alt="" srcset=""
+                                        class="h-48 w-32 border-dashed border-gray-200 rounded bg-cover">
+                                    @elseif($existingBackCoverLocation)
+                                    <img src="{{ $existingBackCoverLocation }}" alt="" srcset=""
                                         class="h-48 w-32 border-dashed border-gray-200 rounded bg-cover">
                                     @else
                                     <img src="" alt="" srcset=""

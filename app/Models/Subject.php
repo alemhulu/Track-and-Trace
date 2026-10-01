@@ -10,7 +10,9 @@ class Subject extends Model
    use HasFactory;
 
    protected $fillable = [
-      'name'
+      'name',
+      'code',
+      'description',
    ];
 
    public function grades()
@@ -28,6 +30,11 @@ class Subject extends Model
    }
 
    public function pakages()
+   {
+      return $this->hasMany(Package::class, 'subject_id');
+   }
+
+   public function packages()
    {
       return $this->hasMany(Package::class, 'subject_id');
    }

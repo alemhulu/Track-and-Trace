@@ -42,6 +42,9 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\OwnershipSeeder::class,
             \Database\Seeders\SubjectSeeder::class,
             \Database\Seeders\GradeSeeder::class,
+            \Database\Seeders\BookTypeSeeder::class,
+            \Database\Seeders\PrintTypeSeeder::class,
+            \Database\Seeders\PaperSizeSeeder::class,
             \Database\Seeders\GradeSubjectSeeder::class,
         ];
     }

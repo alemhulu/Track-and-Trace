@@ -1,7 +1,7 @@
 <div>
-    {{-- Stop trying to control. --}}
-    <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white dark:bg-gray-800 sm:rounded-md">
-        <x-form.card function="addSubject" title="Add New Subject">
+    <aside class="px-5 py-6 bg-white sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 dark:bg-gray-800 sm:rounded-md">
+        <x-form.card function="addSubject" title="{{ $editingSubjectId ? 'Edit Subject' : 'Add New Subject' }}"
+            submitLabel="{{ $editingSubjectId ? 'Update' : 'Add' }}">
             <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
                 <x-jet-input type="text" wire:model.defer="name" placeholder="Subject Name" />
@@ -10,17 +10,19 @@
             <div>
                 <x-jet-label for="code" value="{{ __('Code') }}" />
                 <x-jet-input type="text" wire:model.defer="code" placeholder="Type Code" />
+                <x-jet-input-error for="code" alert="Subject Code" />
             </div>
 
             <div>
                 <x-jet-label for="description" value="{{ __('Description') }}" />
                 <x-form.textarea name="description" wire:model.defer="description" placeholder="Type Description"
                     row="3" />
+                <x-jet-input-error for="description" alert="Subject Description" />
             </div>
         </x-form.card>
     </aside>
 
-    <x-form.table title="Grade List">
+    <x-form.table title="Subject List">
         <x-slot name="tableHeaders">
             <x-data-table.th scope="col">#</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Name') }}</x-data-table.th>
@@ -52,7 +54,9 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <div class="text-sm text-gray-900 dark:text-gray-100">{{$record->grade}}</div>
+                    <div class="text-sm text-gray-900 dark:text-gray-100">
+                        {{ $record->grades->pluck('name')->join(', ') ?: '---' }}
+                    </div>
                 </td>
 
                 <td class="px-5 py-2">
@@ -64,9 +68,7 @@
             <x-data-table.empty colspan=6 />
             @endforelse
         </x-slot>
-        {{-- {{$subjects->links()}} --}}
+        {{ $subjects->links() }}
     </x-form.table>
 
-    <x-form.confirm name="deleteSubject" id="{{ $deleteId }}" />
-    <livewire:book.subject.edit-subject>
 </div>

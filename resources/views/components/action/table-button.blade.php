@@ -29,45 +29,45 @@ active:bg-red-600 active:hover:scale-110 focus:scale-105 focus:-translate-y-0.5 
 focus:bg-red-400";
 @endphp
 
-<div class="flex  items-center text-xs">
+<div class="flex items-center text-xs">
     @if ($link)
-    {{-- @isset($add)
+    @isset($add)
     <a wire:click="{{ $add }}()">
     <div class="{{$btn }}">
-        <i class="fi fi-rr-plus flex dark:text-gray-300"></i>
+        <i class="flex fi fi-rr-plus dark:text-gray-300"></i>
         {{ $text }}
     </div>
     </a>
-    @endisset --}}
+    @endisset
 
     @isset($view)
     <a href="{{ $view }}">
         <div class="{{$info }}">
-            <i class="fi fi-rr-eye flex dark:text-gray-300"></i>
+            <i class="flex fi fi-rr-eye dark:text-gray-300"></i>
         </div>
     </a>
     @endisset
 
-    {{-- @isset($edit)
+    @isset($edit)
     <a href="#{{ $edit }}" wire:click="{{ $edit }}({{$id}})">
     <div class="{{ $warning }}">
-        <i class="fi fi-rr-edit flex dark:text-gray-300"></i>
+        <i class="flex fi fi-rr-edit dark:text-gray-300"></i>
     </div>
     </a>
-    @endisset --}}
+    @endisset
 
-    {{-- @isset($delete)
+    @isset($delete)
     <a href="#{{ $delete }}" x-on:Click="deleteId = {{ $id }}" wire:click="deleteId({{ $id }})">
     <div class="{{ $danger }}"">
-            <i class=" fi fi-rr-trash flex dark:text-gray-300"></i>
+            <i class="flex  fi fi-rr-trash dark:text-gray-300"></i>
     </div>
     </a>
-    @endisset --}}
+    @endisset
     @else
     @isset($add)
     <a wire:click="{{ $add }}()">
         <div class="{{$btn }}">
-            <i class="fi fi-rr-plus flex dark:text-gray-300"></i>
+            <i class="flex fi fi-rr-plus dark:text-gray-300"></i>
             {{ $text }}
         </div>
     </a>
@@ -76,7 +76,7 @@ focus:bg-red-400";
     @isset($view)
     <a wire:click="{{ $view }}({{$id}})">
         <div class="{{$info }}">
-            <i class="fi fi-rr-eye flex dark:text-gray-300"></i>
+            <i class="flex fi fi-rr-eye dark:text-gray-300"></i>
         </div>
     </a>
     @endisset
@@ -84,15 +84,15 @@ focus:bg-red-400";
     @isset($edit)
     <a href="#{{ $edit }}" wire:click="{{ $edit }}({{$id}})">
         <div class="{{ $warning }}">
-            <i class="fi fi-rr-edit flex dark:text-gray-300"></i>
+            <i class="flex fi fi-rr-edit dark:text-gray-300"></i>
         </div>
     </a>
     @endisset
 
     @isset($delete)
-    <a href="#{{ $delete }}" x-on:Click="deleteId = {{ $id }}" wire:click="deleteId({{ $id }})">
+        <a href="#{{ $delete }}" x-on:Click="deleteId = {{ $id }}" wire:click="{{ $delete }}({{ $id }})">
         <div class="{{ $danger }}"">
-            <i class=" fi fi-rr-trash flex dark:text-gray-300"></i>
+            <i class="flex  fi fi-rr-trash dark:text-gray-300"></i>
         </div>
     </a>
     @endisset

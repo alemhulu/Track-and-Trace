@@ -10,6 +10,8 @@ class Grade extends Model
     use HasFactory;
     protected $fillable = [
         'name',
+        'code',
+        'description',
      ];
 
      public function subjects()
