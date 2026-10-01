@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        if (Schema::hasTable('manual_books')) {
+            return;
+        }
+
         Schema::create('manual_books', function (Blueprint $table): void {
             $table->id();
             $table->string('code')->nullable()->unique();

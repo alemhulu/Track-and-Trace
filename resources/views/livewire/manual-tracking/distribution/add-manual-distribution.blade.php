@@ -4,7 +4,7 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <x-jet-label for="manual_book_id" value="Book" />
-                    <x-form.select wire:model="manual_book_id" id="manual_book_id" class="mt-1 block w-full">
+                    <x-form.select wire:model.live="manual_book_id" id="manual_book_id" class="mt-1 block w-full">
                         <option value="">Select Book</option>
                         @foreach ($books as $book)
                         <option value="{{ $book->id }}">{{ $book->title }}</option>
@@ -15,7 +15,7 @@
 
                 <div>
                     <x-jet-label for="manual_book_package_id" value="Package (Optional)" />
-                    <x-form.select wire:model.defer="manual_book_package_id" id="manual_book_package_id"
+                    <x-form.select wire:model.live="manual_book_package_id" id="manual_book_package_id"
                         class="mt-1 block w-full">
                         <option value="">Select Package</option>
                         @foreach ($packages as $package)
@@ -34,6 +34,26 @@
                     <x-jet-input-error for="quantity" class="mt-2" />
                 </div>
             </div>
+
+            @if ($manual_book_id)
+            <div class="rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-900">
+                <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                    <span>Selected book total copies:
+                        <strong>{{ number_format($selectedBookTotalCopies) }}</strong></span>
+                    <span>Available package balance:
+                        <strong>{{ number_format($selectedPackageAvailable) }}</strong></span>
+                </div>
+                @if ($manual_book_package_id)
+                <div class="mt-2 text-blue-700">
+                    Quantity must not exceed the selected package balance.
+                </div>
+                @else
+                <div class="mt-2 text-blue-700">
+                    Quantity must not exceed the selected book total copies.
+                </div>
+                @endif
+            </div>
+            @endif
 
             <div>
                 @php

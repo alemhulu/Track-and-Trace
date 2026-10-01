@@ -66,6 +66,7 @@ class DatabaseSeeder extends Seeder
             \Database\Seeders\DistributionRouteSeeder::class,
             \Database\Seeders\DistributionSeeder::class,
             \Database\Seeders\DistributionStepSeeder::class,
+            \Database\Seeders\ManualTrackingSeeder::class,
         ];
     }
 }

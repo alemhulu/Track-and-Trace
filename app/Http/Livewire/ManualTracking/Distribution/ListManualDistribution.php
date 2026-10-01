@@ -24,6 +24,19 @@ class ListManualDistribution extends Component
         $distributions = ManualDistribution::query()
             ->withCount('lines')
             ->withSum('lines', 'quantity')
+            ->with([
+                'lines.book',
+                'organization',
+                'destinationOrganization',
+                'country',
+                'region',
+                'zone',
+                'woreda',
+                'destinationCountry',
+                'destinationRegion',
+                'destinationZone',
+                'destinationWoreda',
+            ])
             ->accessibleBy($actor)
             ->orderByDesc('id')
             ->paginate($this->recordes);

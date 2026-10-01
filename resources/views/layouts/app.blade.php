@@ -26,12 +26,12 @@
         <div class="min-h-screen bg-[#edf1f7] dark:bg-gray-900">
             <x-side-navigation.desktop />
 
-            <div class="md:pl-64 flex flex-col flex-1">
+            <div class="flex flex-col flex-1 md:pl-64">
                 @livewire('navigation-menu')
                 <!-- Page Heading -->
                 @if (isset($header))
-                <header class="bg-white dark:bg-gray-800 shadow mx-3 rounded-lg">
-                    <div class="mx-auto py-3 px-4 sm:px-6 lg:px-8 rounded-lg flex justify-between items-center">
+                <header class="mx-3 bg-white rounded-lg shadow dark:bg-gray-800">
+                    <div class="flex items-center justify-between px-4 py-3 mx-auto rounded-lg sm:px-6 lg:px-8">
                         {{ $header }}
                         @if (isset($actionButton))
                         <div class="flex justify-between gap-3">

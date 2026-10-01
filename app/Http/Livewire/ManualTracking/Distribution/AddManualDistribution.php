@@ -36,6 +36,8 @@ class AddManualDistribution extends Component
     public $manual_book_package_id;
     public $quantity;
     public $remarks;
+    public $selectedBookTotalCopies = 0;
+    public $selectedPackageAvailable = 0;
 
     public $organization_id;
     public $country_id;
@@ -87,10 +89,21 @@ class AddManualDistribution extends Component
     public function updatedManualBookId($bookId)
     {
         $this->manual_book_package_id = null;
+        $this->selectedPackageAvailable = 0;
+
+        $book = ManualBook::query()->find($bookId);
+        $this->selectedBookTotalCopies = $book ? (int) $book->total_copies : 0;
+
         $this->packages = ManualBookPackage::query()
             ->where('manual_book_id', $bookId)
             ->orderBy('package_code')
             ->get();
+    }
+
+    public function updatedManualBookPackageId($packageId): void
+    {
+        $package = $packageId ? ManualBookPackage::query()->find($packageId) : null;
+        $this->selectedPackageAvailable = $package ? (int) $package->current_balance : 0;
     }
 
     public function updatedOrganizationId($organizationId)
@@ -289,6 +302,7 @@ class AddManualDistribution extends Component
                 return $this->alertError('You are not authorized to create manual distributions.');
             }
 
+            $this->validateDistributionQuantity($data);
             $data = $this->validateAndNormalizeHierarchy($data, $actor);
 
             DB::transaction(function () use ($actor, $data): void {
@@ -380,6 +394,47 @@ class AddManualDistribution extends Component
         $this->resetForm();
         $this->alertSuccess('Manual distribution recorded successfully.');
         return redirect()->route('manual-tracking.distribution.list');
+    }
+
+    public function validateDistributionQuantity(array $data): void
+    {
+        $bookId = (int) ($data['manual_book_id'] ?? $this->manual_book_id ?? 0);
+        $quantity = (int) ($data['quantity'] ?? $this->quantity ?? 0);
+        $packageId = $data['manual_book_package_id'] ?? $this->manual_book_package_id ?? null;
+
+        if ($bookId <= 0) {
+            throw new \RuntimeException('A book must be selected before recording a distribution.');
+        }
+
+        $book = ManualBook::query()->find($bookId);
+        if (! $book) {
+            throw new \RuntimeException('Selected book not found.');
+        }
+
+        $this->selectedBookTotalCopies = (int) $book->total_copies;
+
+        if ($packageId) {
+            $package = ManualBookPackage::query()->find($packageId);
+            if (! $package) {
+                throw new \RuntimeException('Selected package is invalid.');
+            }
+
+            if ((int) $package->manual_book_id !== $bookId) {
+                throw new \RuntimeException('Selected package does not belong to the chosen book.');
+            }
+
+            $this->selectedPackageAvailable = (int) $package->current_balance;
+
+            if ($quantity > (int) $package->current_balance) {
+                throw new \RuntimeException('Quantity ' . $quantity . ' exceeds the package balance of ' . $package->current_balance . '.');
+            }
+        } else {
+            $this->selectedPackageAvailable = 0;
+        }
+
+        if ($quantity > (int) $book->total_copies) {
+            throw new \RuntimeException('Quantity ' . $quantity . ' exceeds the available book copies (' . $book->total_copies . ').');
+        }
     }
 
     private function validateAndNormalizeHierarchy(array $data, $actor): array

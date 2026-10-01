@@ -17,6 +17,9 @@ class AddManualPackage extends Component
     public $status = 'available';
     public $notes;
     public $editingPackageId;
+    public $selectedBookTotalCopies = 0;
+    public $selectedBookTitle = '';
+    public $packageTotalBooks = 0;
 
     protected function rules()
     {
@@ -40,6 +43,26 @@ class AddManualPackage extends Component
         if ($editId) {
             $this->loadForEdit((int) $editId);
         }
+
+        $this->recalculatePackageSummary();
+    }
+
+    public function updatedManualBookId($bookId): void
+    {
+        $book = ManualBook::query()->find($bookId);
+        $this->selectedBookTotalCopies = $book ? (int) $book->total_copies : 0;
+        $this->selectedBookTitle = $book?->title ?? '';
+        $this->recalculatePackageSummary();
+    }
+
+    public function updatedNoOfPackages($value): void
+    {
+        $this->recalculatePackageSummary();
+    }
+
+    public function updatedBooksPerPackage($value): void
+    {
+        $this->recalculatePackageSummary();
     }
 
     public function render()
@@ -51,6 +74,11 @@ class AddManualPackage extends Component
     {
         try {
             $data = $this->validate();
+            $this->validatePackageStock(
+                manualBookId: (int) $data['manual_book_id'],
+                noOfPackages: (int) $data['no_of_packages'],
+                booksPerPackage: (int) $data['books_per_package'],
+            );
             $totalBooks = (int) $data['no_of_packages'] * (int) $data['books_per_package'];
 
             DB::transaction(function () use ($data, $totalBooks): void {
@@ -90,6 +118,30 @@ class AddManualPackage extends Component
         $this->alertSuccess('Manual package created successfully.');
     }
 
+    public function validatePackageStock(?int $manualBookId = null, ?int $noOfPackages = null, ?int $booksPerPackage = null): void
+    {
+        $bookId = $manualBookId ?? (int) ($this->manual_book_id ?? 0);
+        $totalPackages = (int) ($noOfPackages ?? (int) ($this->no_of_packages ?? 0));
+        $copiesPerPackage = (int) ($booksPerPackage ?? (int) ($this->books_per_package ?? 0));
+
+        if ($bookId <= 0) {
+            return;
+        }
+
+        $book = ManualBook::query()->find($bookId);
+        if (! $book) {
+            throw new \RuntimeException('Selected book not found.');
+        }
+
+        $this->selectedBookTotalCopies = (int) $book->total_copies;
+        $this->selectedBookTitle = $book->title;
+
+        $totalBooks = $totalPackages * $copiesPerPackage;
+        if ($totalBooks > (int) $book->total_copies) {
+            throw new \RuntimeException('Package total ' . $totalBooks . ' exceeds the selected book total copies (' . $book->total_copies . ').');
+        }
+    }
+
     private function loadForEdit(int $id): void
     {
         $package = ManualBookPackage::query()->find($id);
@@ -105,6 +157,18 @@ class AddManualPackage extends Component
         $this->books_per_package = $package->books_per_package;
         $this->status = $package->status;
         $this->notes = $package->notes;
+        $this->updatedManualBookId($package->manual_book_id);
+    }
+
+    private function recalculatePackageSummary(): void
+    {
+        $this->packageTotalBooks = ((int) ($this->no_of_packages ?? 0)) * ((int) ($this->books_per_package ?? 0));
+
+        if (! empty($this->manual_book_id)) {
+            $book = ManualBook::query()->find($this->manual_book_id);
+            $this->selectedBookTotalCopies = $book ? (int) $book->total_copies : 0;
+            $this->selectedBookTitle = $book?->title ?? '';
+        }
     }
 
     private function recalculateBookCopies(int $bookId): void

@@ -15,7 +15,7 @@ class ListManualPackage extends Component
     public function render()
     {
         $packages = ManualBookPackage::query()
-            ->with('book:id,title')
+            ->with('book:id,title,subject_name,grade_name,total_copies')
             ->orderByDesc('id')
             ->paginate($this->recordes);
 

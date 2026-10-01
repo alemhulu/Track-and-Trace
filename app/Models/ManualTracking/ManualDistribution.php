@@ -2,8 +2,14 @@
 
 namespace App\Models\ManualTracking;
 
+use App\Models\Country;
+use App\Models\Organization;
+use App\Models\Region;
 use App\Models\User;
+use App\Models\Woreda;
+use App\Models\Zone;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ManualDistribution extends ManualBaseModel
@@ -32,6 +38,56 @@ class ManualDistribution extends ManualBaseModel
     public function lines(): HasMany
     {
         return $this->hasMany(\App\Models\ManualTracking\ManualDistributionLine::class, 'manual_distribution_id');
+    }
+
+    public function organization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'organization_id');
+    }
+
+    public function destinationOrganization(): BelongsTo
+    {
+        return $this->belongsTo(Organization::class, 'destination_organization_id');
+    }
+
+    public function country(): BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'country_id');
+    }
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class, 'region_id');
+    }
+
+    public function zone(): BelongsTo
+    {
+        return $this->belongsTo(Zone::class, 'zone_id');
+    }
+
+    public function woreda(): BelongsTo
+    {
+        return $this->belongsTo(Woreda::class, 'woreda_id');
+    }
+
+    public function destinationCountry(): BelongsTo
+    {
+        return $this->belongsTo(Country::class, 'destination_country_id');
+    }
+
+    public function destinationRegion(): BelongsTo
+    {
+        return $this->belongsTo(Region::class, 'destination_region_id');
+    }
+
+    public function destinationZone(): BelongsTo
+    {
+        return $this->belongsTo(Zone::class, 'destination_zone_id');
+    }
+
+    public function destinationWoreda(): BelongsTo
+    {
+        return $this->belongsTo(Woreda::class, 'destination_woreda_id');
     }
 
     public function scopeAccessibleBy(Builder $query, ?User $actor): Builder

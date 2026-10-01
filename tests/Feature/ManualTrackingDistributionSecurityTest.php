@@ -6,7 +6,9 @@ use App\Http\Livewire\ManualTracking\Distribution\AddManualDistribution;
 use App\Http\Livewire\ManualTracking\Distribution\ListManualDistribution;
 use App\Models\Country;
 use App\Models\ManualTracking\ManualBook;
+use App\Models\ManualTracking\ManualBookPackage;
 use App\Models\ManualTracking\ManualDistribution;
+use App\Models\ManualTracking\ManualDistributionLine;
 use App\Models\Organization;
 use App\Models\Region;
 use App\Models\User;
@@ -175,6 +177,60 @@ class ManualTrackingDistributionSecurityTest extends TestCase
         ]);
     }
 
+    public function test_distribution_list_shows_subject_and_source_destination_details(): void
+    {
+        $source = $this->makeLocationHierarchy('Source');
+        $destination = $this->makeLocationHierarchy('Destination');
+
+        $user = User::factory()->create([
+            'organization_id' => $source['organization']->id,
+            'country_id' => $source['country']->id,
+            'region_id' => $source['region']->id,
+            'zone_id' => $source['zone']->id,
+            'woreda_id' => $source['woreda']->id,
+        ]);
+
+        $book = ManualBook::create([
+            'code' => 'MT-DETAILS',
+            'title' => 'Detail Book',
+            'grade_name' => 'Grade 9',
+            'subject_name' => 'Biology',
+            'total_copies' => 40,
+        ]);
+
+        $distribution = ManualDistribution::create([
+            'reference' => 'MD-DETAILS-' . now()->format('YmdHis') . '-' . Str::random(4),
+            'distributed_by' => $user->id,
+            'organization_id' => $source['organization']->id,
+            'country_id' => $source['country']->id,
+            'region_id' => $source['region']->id,
+            'zone_id' => $source['zone']->id,
+            'woreda_id' => $source['woreda']->id,
+            'destination_organization_id' => $destination['organization']->id,
+            'destination_country_id' => $destination['country']->id,
+            'destination_region_id' => $destination['region']->id,
+            'destination_zone_id' => $destination['zone']->id,
+            'destination_woreda_id' => $destination['woreda']->id,
+            'distributed_at' => now(),
+            'remarks' => 'Detail view check',
+        ]);
+
+        ManualDistributionLine::create([
+            'manual_distribution_id' => $distribution->id,
+            'manual_book_id' => $book->id,
+            'manual_book_package_id' => null,
+            'quantity' => 5,
+            'source_balance_before' => 40,
+            'source_balance_after' => 35,
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(ListManualDistribution::class)
+            ->assertSee('Biology')
+            ->assertSee($source['organization']->name)
+            ->assertSee($destination['organization']->name);
+    }
+
     public function test_manual_distribution_hierarchy_mismatch_is_rejected(): void
     {
         $source = $this->makeLocationHierarchy('Source');
@@ -210,6 +266,77 @@ class ManualTrackingDistributionSecurityTest extends TestCase
             'destination_zone_id' => $wrongZone->id,
             'destination_woreda_id' => $destination['woreda']->id,
         ], $user);
+    }
+
+    public function test_selected_book_total_copies_are_exposed_when_a_book_is_chosen(): void
+    {
+        $book = ManualBook::create([
+            'code' => 'MT-BOOK-TOTAL',
+            'title' => 'Selected Total Book',
+            'grade_name' => 'Grade 8',
+            'subject_name' => 'Math',
+            'total_copies' => 120,
+        ]);
+
+        $component = new \App\Http\Livewire\ManualTracking\Package\AddManualPackage();
+        $component->manual_book_id = $book->id;
+        $component->updatedManualBookId($book->id);
+
+        $this->assertSame(120, $component->selectedBookTotalCopies);
+    }
+
+    public function test_manual_package_total_cannot_exceed_selected_book_total_copies(): void
+    {
+        $book = ManualBook::create([
+            'code' => 'MT-BOOK-LIMIT',
+            'title' => 'Limit Book',
+            'grade_name' => 'Grade 10',
+            'subject_name' => 'Science',
+            'total_copies' => 120,
+        ]);
+
+        $component = new \App\Http\Livewire\ManualTracking\Package\AddManualPackage();
+        $component->manual_book_id = $book->id;
+        $component->updatedManualBookId($book->id);
+
+        $this->expectException(\RuntimeException::class);
+
+        $component->validatePackageStock(
+            manualBookId: $book->id,
+            noOfPackages: 2,
+            booksPerPackage: 70,
+        );
+    }
+
+    public function test_manual_distribution_quantity_must_not_exceed_selected_package_balance(): void
+    {
+        $book = ManualBook::create([
+            'code' => 'MT-DIST-BOOK',
+            'title' => 'Distribution Book',
+            'grade_name' => 'Grade 11',
+            'subject_name' => 'Biology',
+            'total_copies' => 50,
+        ]);
+
+        $package = ManualBookPackage::create([
+            'manual_book_id' => $book->id,
+            'package_code' => 'PKG-DIST-25',
+            'no_of_packages' => 1,
+            'books_per_package' => 25,
+            'total_books' => 25,
+            'current_balance' => 25,
+            'status' => 'available',
+        ]);
+
+        $component = new \App\Http\Livewire\ManualTracking\Distribution\AddManualDistribution();
+
+        $this->expectException(\RuntimeException::class);
+
+        $component->validateDistributionQuantity([
+            'manual_book_id' => $book->id,
+            'manual_book_package_id' => $package->id,
+            'quantity' => 30,
+        ]);
     }
 
     public function test_users_without_delete_permission_cannot_delete_manual_distribution(): void

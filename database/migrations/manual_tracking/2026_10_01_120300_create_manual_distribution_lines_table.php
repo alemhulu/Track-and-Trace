@@ -7,6 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
+        if (Schema::hasTable('manual_distribution_lines')) {
+            return;
+        }
+
         Schema::create('manual_distribution_lines', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('manual_distribution_id')->constrained('manual_distributions')->cascadeOnDelete();
