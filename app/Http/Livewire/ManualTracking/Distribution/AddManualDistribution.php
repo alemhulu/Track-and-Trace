@@ -15,6 +15,7 @@ use App\Models\Woreda;
 use App\Models\Zone;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -24,9 +25,12 @@ class AddManualDistribution extends Component
     public $packages = [];
     public $organizations = [];
     public $countries = [];
-    public $regions = [];
-    public $zones = [];
-    public $woredas = [];
+    public $sourceRegions = [];
+    public $sourceZones = [];
+    public $sourceWoredas = [];
+    public $destinationRegions = [];
+    public $destinationZones = [];
+    public $destinationWoredas = [];
 
     public $manual_book_id;
     public $manual_book_package_id;
@@ -67,9 +71,12 @@ class AddManualDistribution extends Component
         $this->books = ManualBook::query()->orderBy('title')->get();
         $this->organizations = Organization::query()->orderBy('name')->get(['id', 'name']);
         $this->countries = Country::query()->orderBy('name')->get(['id', 'name']);
-        $this->regions = Region::query()->orderBy('name')->get(['id', 'name']);
-        $this->zones = Zone::query()->orderBy('name')->get(['id', 'name']);
-        $this->woredas = Woreda::query()->orderBy('name')->get(['id', 'name']);
+        $this->sourceRegions = [];
+        $this->sourceZones = [];
+        $this->sourceWoredas = [];
+        $this->destinationRegions = [];
+        $this->destinationZones = [];
+        $this->destinationWoredas = [];
     }
 
     public function render()
@@ -86,15 +93,203 @@ class AddManualDistribution extends Component
             ->get();
     }
 
+    public function updatedOrganizationId($organizationId)
+    {
+        $organization = $organizationId ? Organization::query()->find($organizationId) : null;
+
+        $this->country_id = $organization?->country_id;
+        $this->region_id = $organization?->region_id;
+        $this->zone_id = $organization?->zone_id;
+        $this->woreda_id = $organization?->woreda_id;
+
+        $this->hydrateSourceOptions();
+    }
+
+    public function updatedCountryId($countryId)
+    {
+        $this->region_id = null;
+        $this->zone_id = null;
+        $this->woreda_id = null;
+
+        $this->sourceRegions = $countryId
+            ? Region::query()->where('country_id', $countryId)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->sourceZones = [];
+        $this->sourceWoredas = [];
+    }
+
+    public function updatedRegionId($regionId)
+    {
+        $region = $regionId ? Region::query()->find($regionId) : null;
+
+        $this->country_id = $region?->country_id;
+        $this->zone_id = null;
+        $this->woreda_id = null;
+
+        $this->sourceRegions = $this->country_id
+            ? Region::query()->where('country_id', $this->country_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->sourceZones = $regionId
+            ? Zone::query()->where('region_id', $regionId)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->sourceWoredas = [];
+    }
+
+    public function updatedZoneId($zoneId)
+    {
+        $zone = $zoneId ? Zone::query()->find($zoneId) : null;
+
+        if ($zone) {
+            $this->region_id = $zone->region_id;
+            $this->country_id = $zone->country_id;
+        }
+
+        $this->sourceRegions = $this->country_id
+            ? Region::query()->where('country_id', $this->country_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->sourceZones = $this->region_id
+            ? Zone::query()->where('region_id', $this->region_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->woreda_id = null;
+        $this->sourceWoredas = $zoneId
+            ? Woreda::query()->where('zone_id', $zoneId)->orderBy('name')->get(['id', 'name'])
+            : [];
+    }
+
+    public function updatedWoredaId($woredaId)
+    {
+        $woreda = $woredaId ? Woreda::query()->find($woredaId) : null;
+        if (! $woreda) {
+            return;
+        }
+
+        $this->zone_id = $woreda->zone_id;
+        $this->region_id = $woreda->region_id;
+        $this->country_id = $woreda->country_id;
+        $this->hydrateSourceOptions();
+    }
+
+    public function updatedDestinationOrganizationId($organizationId)
+    {
+        $organization = $organizationId ? Organization::query()->find($organizationId) : null;
+
+        $this->destination_country_id = $organization?->country_id;
+        $this->destination_region_id = $organization?->region_id;
+        $this->destination_zone_id = $organization?->zone_id;
+        $this->destination_woreda_id = $organization?->woreda_id;
+
+        $this->hydrateDestinationOptions();
+    }
+
+    public function updatedDestinationCountryId($countryId)
+    {
+        $this->destination_region_id = null;
+        $this->destination_zone_id = null;
+        $this->destination_woreda_id = null;
+
+        $this->destinationRegions = $countryId
+            ? Region::query()->where('country_id', $countryId)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->destinationZones = [];
+        $this->destinationWoredas = [];
+    }
+
+    public function updatedDestinationRegionId($regionId)
+    {
+        $region = $regionId ? Region::query()->find($regionId) : null;
+
+        $this->destination_country_id = $region?->country_id;
+        $this->destination_zone_id = null;
+        $this->destination_woreda_id = null;
+
+        $this->destinationRegions = $this->destination_country_id
+            ? Region::query()->where('country_id', $this->destination_country_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->destinationZones = $regionId
+            ? Zone::query()->where('region_id', $regionId)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->destinationWoredas = [];
+    }
+
+    public function updatedDestinationZoneId($zoneId)
+    {
+        $zone = $zoneId ? Zone::query()->find($zoneId) : null;
+
+        if ($zone) {
+            $this->destination_region_id = $zone->region_id;
+            $this->destination_country_id = $zone->country_id;
+        }
+
+        $this->destinationRegions = $this->destination_country_id
+            ? Region::query()->where('country_id', $this->destination_country_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->destinationZones = $this->destination_region_id
+            ? Zone::query()->where('region_id', $this->destination_region_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+        $this->destination_woreda_id = null;
+        $this->destinationWoredas = $zoneId
+            ? Woreda::query()->where('zone_id', $zoneId)->orderBy('name')->get(['id', 'name'])
+            : [];
+    }
+
+    public function updatedDestinationWoredaId($woredaId)
+    {
+        $woreda = $woredaId ? Woreda::query()->find($woredaId) : null;
+        if (! $woreda) {
+            return;
+        }
+
+        $this->destination_zone_id = $woreda->zone_id;
+        $this->destination_region_id = $woreda->region_id;
+        $this->destination_country_id = $woreda->country_id;
+        $this->hydrateDestinationOptions();
+    }
+
+    private function hydrateSourceOptions(): void
+    {
+        $this->sourceRegions = $this->country_id
+            ? Region::query()->where('country_id', $this->country_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+
+        $this->sourceZones = $this->region_id
+            ? Zone::query()->where('region_id', $this->region_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+
+        $this->sourceWoredas = $this->zone_id
+            ? Woreda::query()->where('zone_id', $this->zone_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+    }
+
+    private function hydrateDestinationOptions(): void
+    {
+        $this->destinationRegions = $this->destination_country_id
+            ? Region::query()->where('country_id', $this->destination_country_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+
+        $this->destinationZones = $this->destination_region_id
+            ? Zone::query()->where('region_id', $this->destination_region_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+
+        $this->destinationWoredas = $this->destination_zone_id
+            ? Woreda::query()->where('zone_id', $this->destination_zone_id)->orderBy('name')->get(['id', 'name'])
+            : [];
+    }
+
     public function saveDistribution()
     {
         try {
-            $data = $this->validate();
             $actor = Auth::user();
+            $data = $this->validate();
 
             if (! $actor) {
                 return $this->alertError('Authentication required.');
             }
+
+            if (Gate::denies('create', ManualDistribution::class)) {
+                return $this->alertError('You are not authorized to create manual distributions.');
+            }
+
+            $data = $this->validateAndNormalizeHierarchy($data, $actor);
 
             DB::transaction(function () use ($actor, $data): void {
                 $package = null;
@@ -114,11 +309,11 @@ class AddManualDistribution extends Component
                 $distribution = ManualDistribution::query()->create([
                     'reference' => $reference,
                     'distributed_by' => $actor->id,
-                    'organization_id' => $data['organization_id'] ?? $actor->organization_id,
-                    'country_id' => $data['country_id'] ?? $actor->country_id,
-                    'region_id' => $data['region_id'] ?? $actor->region_id,
-                    'zone_id' => $data['zone_id'] ?? $actor->zone_id,
-                    'woreda_id' => $data['woreda_id'] ?? $actor->woreda_id,
+                    'organization_id' => $data['organization_id'] ?? null,
+                    'country_id' => $data['country_id'] ?? null,
+                    'region_id' => $data['region_id'] ?? null,
+                    'zone_id' => $data['zone_id'] ?? null,
+                    'woreda_id' => $data['woreda_id'] ?? null,
                     'destination_organization_id' => $data['destination_organization_id'] ?? null,
                     'destination_country_id' => $data['destination_country_id'] ?? null,
                     'destination_region_id' => $data['destination_region_id'] ?? null,
@@ -187,6 +382,149 @@ class AddManualDistribution extends Component
         return redirect()->route('manual-tracking.distribution.list');
     }
 
+    private function validateAndNormalizeHierarchy(array $data, $actor): array
+    {
+        $source = [
+            'organization_id' => $data['organization_id'] ?? $actor->organization_id ?? null,
+            'country_id' => $data['country_id'] ?? $actor->country_id ?? null,
+            'region_id' => $data['region_id'] ?? $actor->region_id ?? null,
+            'zone_id' => $data['zone_id'] ?? $actor->zone_id ?? null,
+            'woreda_id' => $data['woreda_id'] ?? $actor->woreda_id ?? null,
+        ];
+
+        $destination = [
+            'organization_id' => $data['destination_organization_id'] ?? null,
+            'country_id' => $data['destination_country_id'] ?? null,
+            'region_id' => $data['destination_region_id'] ?? null,
+            'zone_id' => $data['destination_zone_id'] ?? null,
+            'woreda_id' => $data['destination_woreda_id'] ?? null,
+        ];
+
+        if (! $this->hasAnyLocationScope($source)) {
+            throw new \RuntimeException('Source location is required. Select organization or hierarchy details.');
+        }
+
+        if (! $this->hasAnyLocationScope($destination)) {
+            throw new \RuntimeException('Destination location is required. Select destination organization or hierarchy details.');
+        }
+
+        $source = $this->resolveHierarchyChain($source, 'source');
+        $destination = $this->resolveHierarchyChain($destination, 'destination');
+
+        $source = $this->alignWithOrganization($source, 'source');
+        $destination = $this->alignWithOrganization($destination, 'destination');
+
+        $data['organization_id'] = $source['organization_id'];
+        $data['country_id'] = $source['country_id'];
+        $data['region_id'] = $source['region_id'];
+        $data['zone_id'] = $source['zone_id'];
+        $data['woreda_id'] = $source['woreda_id'];
+
+        $data['destination_organization_id'] = $destination['organization_id'];
+        $data['destination_country_id'] = $destination['country_id'];
+        $data['destination_region_id'] = $destination['region_id'];
+        $data['destination_zone_id'] = $destination['zone_id'];
+        $data['destination_woreda_id'] = $destination['woreda_id'];
+
+        return $data;
+    }
+
+    private function hasAnyLocationScope(array $scope): bool
+    {
+        return ! empty($scope['organization_id'])
+            || ! empty($scope['region_id'])
+            || ! empty($scope['zone_id'])
+            || ! empty($scope['woreda_id']);
+    }
+
+    private function resolveHierarchyChain(array $scope, string $label): array
+    {
+        if (! empty($scope['woreda_id'])) {
+            $woreda = Woreda::query()->find($scope['woreda_id']);
+            if (! $woreda) {
+                throw new \RuntimeException(ucfirst($label) . ' woreda is invalid.');
+            }
+
+            $scope['zone_id'] = $scope['zone_id'] ?? $woreda->zone_id;
+            $scope['region_id'] = $scope['region_id'] ?? $woreda->region_id;
+            $scope['country_id'] = $scope['country_id'] ?? $woreda->country_id;
+
+            if (! empty($scope['zone_id']) && (int) $scope['zone_id'] !== (int) $woreda->zone_id) {
+                throw new \RuntimeException(ucfirst($label) . ' hierarchy mismatch: woreda does not belong to selected zone.');
+            }
+            if (! empty($scope['region_id']) && (int) $scope['region_id'] !== (int) $woreda->region_id) {
+                throw new \RuntimeException(ucfirst($label) . ' hierarchy mismatch: woreda does not belong to selected region.');
+            }
+            if (! empty($scope['country_id']) && (int) $scope['country_id'] !== (int) $woreda->country_id) {
+                throw new \RuntimeException(ucfirst($label) . ' hierarchy mismatch: woreda does not belong to selected country.');
+            }
+        }
+
+        if (! empty($scope['zone_id'])) {
+            $zone = Zone::query()->find($scope['zone_id']);
+            if (! $zone) {
+                throw new \RuntimeException(ucfirst($label) . ' zone is invalid.');
+            }
+
+            $scope['region_id'] = $scope['region_id'] ?? $zone->region_id;
+            $scope['country_id'] = $scope['country_id'] ?? $zone->country_id;
+
+            if (! empty($scope['region_id']) && (int) $scope['region_id'] !== (int) $zone->region_id) {
+                throw new \RuntimeException(ucfirst($label) . ' hierarchy mismatch: zone does not belong to selected region.');
+            }
+            if (! empty($scope['country_id']) && (int) $scope['country_id'] !== (int) $zone->country_id) {
+                throw new \RuntimeException(ucfirst($label) . ' hierarchy mismatch: zone does not belong to selected country.');
+            }
+        }
+
+        if (! empty($scope['region_id'])) {
+            $region = Region::query()->find($scope['region_id']);
+            if (! $region) {
+                throw new \RuntimeException(ucfirst($label) . ' region is invalid.');
+            }
+
+            $scope['country_id'] = $scope['country_id'] ?? $region->country_id;
+
+            if (! empty($scope['country_id']) && (int) $scope['country_id'] !== (int) $region->country_id) {
+                throw new \RuntimeException(ucfirst($label) . ' hierarchy mismatch: region does not belong to selected country.');
+            }
+        }
+
+        return $scope;
+    }
+
+    private function alignWithOrganization(array $scope, string $label): array
+    {
+        if (empty($scope['organization_id'])) {
+            return $scope;
+        }
+
+        $organization = Organization::query()->find($scope['organization_id']);
+        if (! $organization) {
+            throw new \RuntimeException(ucfirst($label) . ' organization is invalid.');
+        }
+
+        foreach (['country_id', 'region_id', 'zone_id', 'woreda_id'] as $field) {
+            $orgValue = $organization->{$field};
+
+            if (empty($orgValue)) {
+                continue;
+            }
+
+            if (empty($scope[$field])) {
+                $scope[$field] = $orgValue;
+                continue;
+            }
+
+            if ((int) $scope[$field] !== (int) $orgValue) {
+                $name = str_replace('_id', '', $field);
+                throw new \RuntimeException(ucfirst($label) . ' mismatch: selected ' . $name . ' does not match organization location.');
+            }
+        }
+
+        return $scope;
+    }
+
     private function resetForm(): void
     {
         $this->manual_book_id = null;
@@ -204,6 +542,12 @@ class AddManualDistribution extends Component
         $this->destination_zone_id = null;
         $this->destination_woreda_id = null;
         $this->packages = [];
+        $this->sourceRegions = [];
+        $this->sourceZones = [];
+        $this->sourceWoredas = [];
+        $this->destinationRegions = [];
+        $this->destinationZones = [];
+        $this->destinationWoredas = [];
     }
 
     private function alertError($message)
