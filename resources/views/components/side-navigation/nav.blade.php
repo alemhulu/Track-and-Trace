@@ -39,6 +39,9 @@
         <x-side-navigation.link href="/trace" icon="fi-rr-paw" name="Trace"
             :active="( request()->routeIs('trace') | request()->routeIs('distribution-details.*'))" />
 
+        <x-side-navigation.link href="/manual-tracking" icon="fi-rr-hand-holding-box" name="Manual Tracking"
+            :active="(request()->routeIs('manual-tracking') | request()->routeIs('manual-tracking.*'))" />
+
         @can('view-logs')
         <x-side-navigation.link href="/log-viewer" icon="fi-rr-info" name="LOG"
             :active="request()->routeIs('log-viewer')" />

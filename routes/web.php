@@ -18,6 +18,13 @@ use App\Http\Livewire\Location\Kebele;
 use App\Http\Livewire\Location\Region;
 use App\Http\Livewire\Location\Woreda;
 use App\Http\Livewire\Location\Zone;
+use App\Http\Livewire\ManualTracking\Book\AddManualBook;
+use App\Http\Livewire\ManualTracking\Book\ListManualBook;
+use App\Http\Livewire\ManualTracking\Distribution\AddManualDistribution;
+use App\Http\Livewire\ManualTracking\Distribution\ListManualDistribution;
+use App\Http\Livewire\ManualTracking\Package\AddManualPackage;
+use App\Http\Livewire\ManualTracking\Package\ListManualPackage;
+use App\Http\Livewire\ManualTracking\Report\ManualTrackingReports;
 use App\Http\Livewire\Oganization\AddOrganization;
 use App\Http\Livewire\Oganization\AddStore;
 use App\Http\Livewire\Oganization\ListOrganization;
@@ -117,6 +124,22 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/trace', function () {
         return view('main.trace.index');
     })->name('trace');
+
+    // Manual Tracking routes
+    Route::get('/manual-tracking', function () {
+        return view('main.manual-tracking.index');
+    })->name('manual-tracking');
+
+    Route::get('/manual-tracking/books/list', ListManualBook::class)->name('manual-tracking.books.list');
+    Route::get('/manual-tracking/books/add', AddManualBook::class)->name('manual-tracking.books.add');
+
+    Route::get('/manual-tracking/packages/list', ListManualPackage::class)->name('manual-tracking.packages.list');
+    Route::get('/manual-tracking/packages/add', AddManualPackage::class)->name('manual-tracking.packages.add');
+
+    Route::get('/manual-tracking/distribution/list', ListManualDistribution::class)->name('manual-tracking.distribution.list');
+    Route::get('/manual-tracking/distribution/add', AddManualDistribution::class)->name('manual-tracking.distribution.add');
+
+    Route::get('/manual-tracking/reports', ManualTrackingReports::class)->name('manual-tracking.reports.index');
 
     Route::resource('roles', RoleController::class);
     Route::resource('users', UserController::class);
