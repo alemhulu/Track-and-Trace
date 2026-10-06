@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
+        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
             {{ __('Manual Tracking') }}
         </h2>
     </x-slot>
@@ -14,10 +14,10 @@
             <x-page.nav-link class="bg-green-600" title="Distribution Entry" link="manual-tracking.distribution.list"
                 icon="fi fi-rr-truck-side" />
             <x-page.nav-link class="bg-indigo-600" title="Reports" link="manual-tracking.reports.index"
-                icon="fi fi-rr-chart-line-up" />
+                icon="fi fi-rr-chart-histogram" />
         </x-page.nav>
 
-        <div class="mt-6 tab mb-6">
+        <div class="mt-6 mb-6 tab">
             @yield('content')
         </div>
     </div>

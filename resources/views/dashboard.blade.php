@@ -1,33 +1,99 @@
 <x-app-layout>
-  <x-slot name="header">
-    <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
-      {{ __('Dashboard') }}
-    </h2>
-  </x-slot>
+    @php
+        $scopeLevel = $dashboardData['scopeLevel'] ?? 'user';
+        $kpiCards = $dashboardData['kpiCards'] ?? [];
+        $scopeBadgeClasses = match ($scopeLevel) {
+            'national' => 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100',
+            'region' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
+            'zone' => 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-100',
+            'woreda' => 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
+            'organization' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100',
+            'none' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100',
+            default => 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-100',
+        };
+    @endphp
+    <x-slot name="header">
+        <div class="flex items-center justify-between gap-3">
+            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
+                {{ __('Dashboard') }}
+            </h2>
+            <span class="inline-flex items-center px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full {{ $scopeBadgeClasses }}">
+                {{ $dashboardData['scopeLabel'] ?? 'User Scope' }}
+            </span>
+        </div>
+    </x-slot>
 
-  <div class="p-5 gap-5 grid grid-cols-3 bg-white my-5">
+    {{-- <div class="grid grid-cols-3 gap-5 p-5 my-5 bg-white">
     {!! DNS2D::getBarcodeSVG("G-9 Biology: 0000010000001", 'QRCODE')!!}
 
-  </div>
+  </div> --}}
 
-  <div class="mb-8">
-    <div class="w-auto">
-      <div class=" overflow-hidden shadow-xl sm:rounded-lg dark:bg-gray-800">
-        <section>
-          <div class=" rounded-lg grid grid-cols-6 gap-5">
-            <div class="col-span-6 lg:col-span-4 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900" id="chart">
-            </div>
-            <div class="col-span-6 lg:col-span-2 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900" id="chart3">
-            </div>
-            <div class="col-span-6 md:col-span-3 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900" id="chart1">
-            </div>
-            <div class="col-span-6 md:col-span-3 p-4 rounded-lg shadow-md bg-white dark:bg-gray-900" id="chart2">
-            </div>
-          </div>
-        </section>
+    <div class="mb-8">
+        <div class="w-auto">
+            <div class="overflow-hidden shadow-xl sm:rounded-lg dark:bg-gray-800">
+                <section class="p-5">
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                        @foreach ($kpiCards as $card)
+                            @php
+                                $cardStyle = $card['style'] ?? 'slate';
+                                $delta = $card['delta'] ?? ['label' => '0.0% vs previous 30 days', 'direction' => 'flat'];
+                                $cardClasses = match ($cardStyle) {
+                                    'indigo' => 'border-indigo-200 bg-indigo-50 dark:border-indigo-700 dark:bg-indigo-900/30',
+                                    'blue' => 'border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/30',
+                                    'emerald' => 'border-emerald-200 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-900/30',
+                                    'amber' => 'border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/30',
+                                    'teal' => 'border-teal-200 bg-teal-50 dark:border-teal-700 dark:bg-teal-900/30',
+                                    default => 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/30',
+                                };
+                                $deltaClasses = match ($delta['direction'] ?? 'flat') {
+                                    'up' => 'text-emerald-700 dark:text-emerald-300',
+                                    'down' => 'text-rose-700 dark:text-rose-300',
+                                    default => 'text-gray-500 dark:text-gray-400',
+                                };
+                                $deltaIcon = match ($delta['direction'] ?? 'flat') {
+                                    'up' => '▲',
+                                    'down' => '▼',
+                                    default => '•',
+                                };
+                            @endphp
+                            <div class="p-4 border rounded-lg {{ $cardClasses }}">
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">
+                                    {{ $card['label'] ?? 'KPI' }}
+                                </p>
+                                <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">
+                                    {{ number_format((int) ($card['value'] ?? 0)) }}
+                                </p>
+                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                    {{ $card['hint'] ?? '' }}
+                                </p>
+                                <p class="mt-2 flex items-center gap-1 text-xs font-semibold {{ $deltaClasses }}">
+                                    <span>{{ $deltaIcon }}</span>
+                                    <span>{{ $delta['label'] ?? '0.0% vs previous 30 days' }}</span>
+                                </p>
+                            </div>
+                        @endforeach
+                    </div>
+                </section>
 
-        {{-- <section class="rounded-lg">
-                    <div class=" px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
+                <section>
+                    <div class="grid grid-cols-6 gap-5 rounded-lg ">
+                        <div class="col-span-6 p-4 bg-white rounded-lg shadow-md lg:col-span-4 dark:bg-gray-900"
+                            id="chart">
+                        </div>
+                        <div class="col-span-6 p-4 bg-white rounded-lg shadow-md lg:col-span-2 dark:bg-gray-900"
+                            id="chart3">
+                        </div>
+                        <div class="col-span-6 p-4 bg-white rounded-lg shadow-md md:col-span-3 dark:bg-gray-900"
+                            id="chart1">
+                        </div>
+                        <div class="col-span-6 p-4 bg-white rounded-lg shadow-md md:col-span-3 dark:bg-gray-900"
+                            id="chart2">
+                        </div>
+                    </div>
+                </section>
+
+                {{-- <section class="rounded-lg">
+                    <div class="px-4 py-5 mx-auto mb-3 sm:px-6 lg:px-8">
                         <div class="mt-4">
                             <p class="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-400">Print Orders
                             </p>
@@ -73,7 +139,7 @@
                 </section>
 
                 <section class="rounded-lg">
-                    <div class="px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
+                    <div class="px-4 py-5 mx-auto mb-3 sm:px-6 lg:px-8">
                         <div class="mt-4">
                             <p class="text-xl font-bold text-gray-900 dark:text-gray-400 sm:text-2xl">Books
                             </p>
@@ -109,7 +175,7 @@
                 </section>
 
                 <section class="rounded-lg">
-                    <div class="px-4 py-5 mx-auto sm:px-6 lg:px-8 mb-3">
+                    <div class="px-4 py-5 mx-auto mb-3 sm:px-6 lg:px-8">
                         <div class="mt-4">
                             <p class="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-400">Wearhouses
                             </p>
@@ -143,53 +209,51 @@
                         </div>
                     </div>
                 </section> --}}
-      </div>
+            </div>
+        </div>
     </div>
-  </div>
 
 
 </x-app-layout>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
-  var options = {
+    const dashboardData = @json($dashboardData);
+
+    var options = {
         colors: ['#688cff', '#005bfc', '#0617db'],
-          series: [ { name: 'Printed', data: [3550, 4100, 3690, 2226, 4445, 7748, 5290, 5553, 8941] },
-                        { name: 'Distributed', data: [3050, 4001, 2236, 2600, 4000, 3008, 4452, 2253, 4991] },
-                        { name: 'Store', data: [1350, 1141, 1036, 1026, 1045, 1048, 1152, 1053, 1041] }
-                    ],
-          chart: {
-          type: 'bar',
-          height: 350
+        series: dashboardData.subjectChart.series,
+        chart: {
+            type: 'bar',
+            height: 350
         },
         plotOptions: {
-          bar: {
-            horizontal: false,
-            borderRadius: 3,
-            columnWidth: '75%',
-            endingShape: 'rounded'
-          },
+            bar: {
+                horizontal: false,
+                borderRadius: 3,
+                columnWidth: '75%',
+                endingShape: 'rounded'
+            },
         },
         dataLabels: {
-          enabled: false
+            enabled: false
         },
         stroke: {
-          show: true,
-          width: 1,
-          radius: 5,
-          colors: ['transparent']
+            show: true,
+            width: 1,
+            radius: 5,
+            colors: ['transparent']
         },
         xaxis: {
-          categories: ['Amharic', 'Biology', 'English', 'Chemistry', 'Geogarphy', 'Mathimatics', 'Physics', 'Civics', 'History'],
+            categories: dashboardData.subjectChart.categories,
         },
-       
         fill: {
-          opacity: 1
+            opacity: 1
         },
         tooltip: {
-                  shared: true,
-                  followCursor: true,
-                  intersect: false
-                  },
+            shared: true,
+            followCursor: true,
+            intersect: false
+        },
         };
 
         var chart = new ApexCharts(document.querySelector("#chart"), options);
@@ -197,49 +261,49 @@
 
 
         var chart3 = {
-            colors: ['#688cff', '#005bfc', '#0617db', '#053385'],
-          series: [70, 67, 40, 62,],
-          chart: {
-          width: 380,
-          height: 350,
-          type: 'polarArea'
-        },
-        labels: ['Orders', 'Accepted', 'Rejected', 'Printed'],
-        fill: {
-          opacity: 1
-        },
-        stroke: {
-          width: 1,
-          colors: undefined
-        },
-        yaxis: {
-          show: false
-        },
-        legend: {
-          position: 'bottom'
-        },
-        plotOptions: {
-          polarArea: {
-            rings: {
-              strokeWidth: 0
+            colors: ['#688cff', '#005bfc', '#0617db', '#053385', '#2f9e44'],
+            series: dashboardData.printOrderChart.series,
+            chart: {
+                width: 380,
+                height: 350,
+                type: 'polarArea'
             },
-            spokes: {
-              strokeWidth: 0
+            labels: dashboardData.printOrderChart.labels,
+            fill: {
+                opacity: 1
             },
-          }
-        },
-        theme: {
-          monochrome: {
-            enabled: true,
-            shadeTo: 'dark',
-            shadeIntensity: 0.6
-          }
-        }
+            stroke: {
+                width: 1,
+                colors: undefined
+            },
+            yaxis: {
+                show: false
+            },
+            legend: {
+                position: 'bottom'
+            },
+            plotOptions: {
+                polarArea: {
+                    rings: {
+                        strokeWidth: 0
+                    },
+                    spokes: {
+                        strokeWidth: 0
+                    },
+                }
+            },
+            theme: {
+                monochrome: {
+                    enabled: true,
+                    shadeTo: 'dark',
+                    shadeIntensity: 0.6
+                }
+            }
         };
 
         var chart = new ApexCharts(document.querySelector("#chart3"), chart3);
         chart.render();
-      
+
 
     var chart1 = {
         title: {
@@ -263,8 +327,8 @@
                       }
                   },
                   colors: ["#ff4f36", "#b91e09", "#6b0d00", "#16a349"],
-          series: [210000, 240000, 210000],
-          labels: ["Stock", "Distributed", "On Students Hand"],
+          series: dashboardData.bookSummaryChart.series,
+          labels: dashboardData.bookSummaryChart.labels,
           chart: {
           type: 'donut',
           height: 400
@@ -289,7 +353,7 @@
 
         var chart2 = {
                      title: {
-                          text: 'Wearhouses',
+                          text: 'Warehouses',
                           offsetX: 0,
                           style: {
                               fontSize: '24px',
@@ -299,7 +363,7 @@
                               }
                     },
                     subtitle: {
-                      text: 'Wearhouses Informations',
+                      text: 'Warehouses Information',
                       offsetX: 1,
                       style: {
                       fontSize: '14px',
@@ -309,8 +373,8 @@
                       }
                   },
                   colors: ["#ffad00", "#ac5709", "#ff8500", "#16a349"],
-          series: [700, 2400],
-          labels: ["Wearhouses", "Stores"],
+          series: dashboardData.warehouseChart.series,
+          labels: dashboardData.warehouseChart.labels,
           chart: {
           type: 'donut',
           height: 400
@@ -335,5 +399,5 @@
 
         var chart = new ApexCharts(document.querySelector("#chart1"), chart1);chart.render();
         var chart = new ApexCharts(document.querySelector("#chart2"), chart2);chart.render();
-        
+
 </script>
