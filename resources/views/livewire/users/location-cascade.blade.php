@@ -54,7 +54,7 @@
     </div>
 
     <div x-show="{{ $this->showsWoreda() ? 'true' : 'false' }}"
-        class="hidden  sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5" id="woreda-row">
+        class="hidden sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5" id="woreda-row">
         <x-label for="woreda_id" value="Woreda" />
         <div class="mt-1 sm:mt-0 sm:col-span-2">
             <select wire:model="woredaId" name="woreda_id" id="woreda_id" class="w-full border-gray-300 rounded-md">
@@ -68,7 +68,7 @@
     </div>
 
     <div x-show="{{ $this->showsOrganization() ? 'true' : 'false' }}"
-        class="hidden  sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5" id="organization-row">
+        class="hidden sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5" id="organization-row">
         <x-label for="organization_id" value="Organization" />
         <div class="mt-1 sm:mt-0 sm:col-span-2">
             <select wire:model="organizationId" name="organization_id" id="organization_id"
@@ -82,5 +82,5 @@
         </div>
     </div>
 
-    <input type="hidden" name="country_id" value="{{ $countryId ?? '' }}">
+    <input type="hidden" wire:model="countryId" name="country_id" value="{{ $countryId ?? '' }}">
 </div>

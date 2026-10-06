@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Users;
 
+use App\Models\Country;
 use App\Models\Organization;
 use App\Models\Region;
 use App\Models\User;
@@ -67,13 +68,14 @@ class LocationCascade extends Component
             ? (string) $initialAccessLevel
             : $fallbackLevel;
 
-        $this->countryId = $this->toNullableInt($initialCountryId);
+        $initialCountryId = $this->toNullableInt($initialCountryId);
+        $this->countryId = $initialCountryId ?? $this->defaultCountryId();
         $this->regionId = $this->toNullableInt($initialRegionId);
         $this->zoneId = $this->toNullableInt($initialZoneId);
         $this->woredaId = $this->toNullableInt($initialWoredaId);
         $this->organizationId = $this->toNullableInt($initialOrganizationId);
 
-        $this->hadInitialCountry = $this->countryId !== null;
+        $this->hadInitialCountry = $initialCountryId !== null;
         $this->hadInitialRegion = $this->regionId !== null;
 
         $this->resetHiddenByAccessLevel();
@@ -298,6 +300,10 @@ class LocationCascade extends Component
     {
         $query = Region::query()->select('id', 'name', 'country_id')->orderBy('name');
 
+        if ($this->countryId) {
+            $query->where('country_id', $this->countryId);
+        }
+
         if ($this->actorCountryId) {
             $query->where('country_id', $this->actorCountryId);
         }
@@ -316,6 +322,10 @@ class LocationCascade extends Component
     private function fetchZones(): array
     {
         $query = Zone::query()->select('id', 'name', 'country_id', 'region_id')->orderBy('name');
+
+        if ($this->countryId) {
+            $query->where('country_id', $this->countryId);
+        }
 
         if ($this->actorCountryId) {
             $query->where('country_id', $this->actorCountryId);
@@ -347,6 +357,12 @@ class LocationCascade extends Component
             ->select('id', 'name', 'zone_id')
             ->with('zone:id,region_id,country_id')
             ->orderBy('name');
+
+        if ($this->countryId) {
+            $query->whereHas('zone', function ($zoneQuery): void {
+                $zoneQuery->where('country_id', $this->countryId);
+            });
+        }
 
         if ($this->actorCountryId) {
             $query->whereHas('zone', function ($zoneQuery): void {
@@ -393,6 +409,10 @@ class LocationCascade extends Component
             ->select('id', 'name', 'country_id', 'region_id', 'zone_id', 'woreda_id')
             ->accessibleBy($this->currentActor())
             ->orderBy('name');
+
+        if ($this->countryId) {
+            $query->where('country_id', $this->countryId);
+        }
 
         if ($this->regionId) {
             $query->where('region_id', $this->regionId);
@@ -455,11 +475,18 @@ class LocationCascade extends Component
         }
 
         if ($this->mode === 'create' && ! $this->hadInitialCountry) {
-            $this->countryId = null;
+            $this->countryId = $this->defaultCountryId();
             return;
         }
 
         $this->countryId = $this->actorCountryId;
+    }
+
+    private function defaultCountryId(): ?int
+    {
+        $countryId = Country::query()->where('name', 'Ethiopia')->value('id');
+
+        return $countryId !== null ? (int) $countryId : null;
     }
 
     private function inList($id, array $list): bool

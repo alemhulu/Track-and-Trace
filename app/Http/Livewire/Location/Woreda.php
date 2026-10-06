@@ -6,6 +6,7 @@ use App\Models\Country;
 use App\Models\Region;
 use App\Models\Woreda as woredas;
 use App\Models\Zone;
+use Illuminate\Validation\Rule;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -22,12 +23,22 @@ class Woreda extends Component
     public $zone_id;
     public $name;
 
-    protected $rules = [
-        'name' => 'required|min:2|max:20|unique:woredas,name,zone_id,region_id',
-        'zone_id' => 'nullable',
-        'region_id' => 'required',
-        'country_id' => 'required'
-    ];
+    protected function rules(): array
+    {
+        return [
+            'name' => [
+                'required',
+                'min:2',
+                'max:20',
+                Rule::unique('woredas', 'name')->where(function ($query) {
+                    return $query->where('zone_id', $this->zone_id);
+                }),
+            ],
+            'zone_id' => 'required|exists:zones,id',
+            'region_id' => 'required',
+            'country_id' => 'required',
+        ];
+    }
 
     public function hydrate()
     {
@@ -35,52 +46,55 @@ class Woreda extends Component
         $this->resetValidation();
     }
 
-    public $recordes=5;
-    public $column='name';
-    public $sortType='asc';
+    public $recordes = 5;
+    public $column = 'name';
+    public $sortType = 'asc';
 
-    public function sort($value){
-        if($this->column==$value && $this->sortType=='asc'){
-            $this->sortType='desc';
-        }else{
-            $this->column=$value;
-            $this->sortType='asc';
+    public function sort($value)
+    {
+        if ($this->column == $value && $this->sortType == 'asc') {
+            $this->sortType = 'desc';
+        } else {
+            $this->column = $value;
+            $this->sortType = 'asc';
         }
         $this->resetPage();
     }
-  
-    public $search='';
+
+    public $search = '';
     // public $attributes=[
     //     'name', 'code'
     // ];
 
-    public function updatedSearch(){
-        $this->column='name';
-        $this->sortType='asc';
+    public function updatedSearch()
+    {
+        $this->column = 'name';
+        $this->sortType = 'asc';
         $this->resetPage();
     }
-   
-    public function updated(){
+
+    public function updated()
+    {
         $this->resetPage();
     }
 
     public function updatedCountryId()
     {
-        if($this->country_id==""){
-            $this->regions=region::orderBy('name')->get();
-         }else{
-             $this->regions = region::where('country_id', $this->country_id)->get();
-         }
+        if ($this->country_id == "") {
+            $this->regions = region::orderBy('name')->get();
+        } else {
+            $this->regions = region::where('country_id', $this->country_id)->get();
+        }
         $this->resetPage();
     }
 
     public function updatedRegionId()
     {
-        if($this->region_id == ""){
-            $this->zones=zone::orderBy('name')->get();
-         }else{
-             $this->zones = zone::where('region_id', $this->region_id)->get();
-         }
+        if ($this->region_id == "") {
+            $this->zones = zone::orderBy('name')->get();
+        } else {
+            $this->zones = zone::where('region_id', $this->region_id)->get();
+        }
         $this->resetPage();
     }
 
@@ -93,46 +107,50 @@ class Woreda extends Component
 
     public function render()
     {
-        return view('livewire.location.woreda', 
-        ['woredas'=>woredas::when($this->zone_id,function($q,$zone_id){
-            return $q->where('zone_id',$this->zone_id);
-        })
-        ->when($this->column,function($q,$column){
-            return $q->orderBy($this->column,$this->sortType);
-        })->paginate($this->recordes)
-        ])->extends('main.location.index');
+        return view(
+            'livewire.location.woreda',
+            [
+                'woredas' => woredas::when($this->zone_id, function ($q, $zone_id) {
+                    return $q->where('zone_id', $this->zone_id);
+                })
+                    ->when($this->column, function ($q, $column) {
+                        return $q->orderBy($this->column, $this->sortType);
+                    })->paginate($this->recordes)
+            ]
+        )->extends('main.location.index');
     }
 
     public function addWoreda()
     {
         $this->validate();
         woredas::create([
-            'country_id'=> $this->country_id,
-            'region_id'=> $this->region_id,
-            'zone_id'=> $this->zone_id,
-            'name'=> $this->name
+            'zone_id' => $this->zone_id,
+            'name' => $this->name
         ]);
 
         $this->emit('woredaAdded');
         $this->alertSuccess();
         $this->resetFields();
-        $this->column='created_at';
-        $this->sortType='desc';
+        $this->column = 'created_at';
+        $this->sortType = 'desc';
         $this->resetPage();
         $this->emit('newWoreda');
     }
 
-    public function editWoreda($id){
-        $this->emit('editWoreda',$id);
+    public function editWoreda($id)
+    {
+        $this->emit('editWoreda', $id);
     }
 
-    public $deleteId ="";
+    public $deleteId = "";
 
-    public function deleteId($id){
+    public function deleteId($id)
+    {
         $this->deleteId = $id;
     }
-    
-    public function deleteWoreda(woredas $woreda){
+
+    public function deleteWoreda(woredas $woreda)
+    {
         $woreda->delete();
         $this->alertDelete();
         $this->resetPage();
@@ -146,46 +164,48 @@ class Woreda extends Component
         'updatedRegion' => 'mount',
         'updatedZone' => 'mount',
         'updatedWoreda'
-        ];
+    ];
 
-        public function updatedWoreda(){
-            $this->column='updated_at';
-            $this->sortType='desc';
-            $this->resetPage();
-        }
-
-        public function alertSuccess()
-        {
-            $this->dispatchBrowserEvent(
-                'alert',
-                ['type' => 'success',  'message' => 'Woreda Created Successfully!']
-            );
-        }
-
-        public function alertError($name)
-        {
-            $this->dispatchBrowserEvent(
-                'alert',
-                ['type' => 'error',  'message' => $name.' Required!']
-            );
-        }
-
-        public function alertDelete()
-        {
-            $this->dispatchBrowserEvent(
-                'alert',
-                ['type' => 'success',  'message' => 'Woreda Deleted Successfully!']
-            );
-        }
-
-        public function resetFields()
+    public function updatedWoreda()
     {
-        $this->name="";
-        $this->zone_id="";
+        $this->column = 'updated_at';
+        $this->sortType = 'desc';
+        $this->resetPage();
     }
 
-        // Clear input variables 
-        public function clearid(){
-            $this->name="";
-        }
+    public function alertSuccess()
+    {
+        $this->dispatchBrowserEvent(
+            'alert',
+            ['type' => 'success',  'message' => 'Woreda Created Successfully!']
+        );
+    }
+
+    public function alertError($name)
+    {
+        $this->dispatchBrowserEvent(
+            'alert',
+            ['type' => 'error',  'message' => $name . ' Required!']
+        );
+    }
+
+    public function alertDelete()
+    {
+        $this->dispatchBrowserEvent(
+            'alert',
+            ['type' => 'success',  'message' => 'Woreda Deleted Successfully!']
+        );
+    }
+
+    public function resetFields()
+    {
+        $this->name = "";
+        $this->zone_id = "";
+    }
+
+    // Clear input variables
+    public function clearid()
+    {
+        $this->name = "";
+    }
 }

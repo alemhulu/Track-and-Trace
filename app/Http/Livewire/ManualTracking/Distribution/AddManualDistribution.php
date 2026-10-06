@@ -11,6 +11,7 @@ use App\Models\ManualTracking\ManualDistributionLine;
 use App\Models\ManualTracking\ManualStockLedger;
 use App\Models\Organization;
 use App\Models\Region;
+use App\Models\User;
 use App\Models\Woreda;
 use App\Models\Zone;
 use Illuminate\Support\Facades\Auth;
@@ -51,6 +52,12 @@ class AddManualDistribution extends Component
     public $destination_zone_id;
     public $destination_woreda_id;
 
+    public ?int $actor_country_id = null;
+    public ?int $actor_region_id = null;
+    public ?int $actor_zone_id = null;
+    public ?int $actor_woreda_id = null;
+    public ?int $actor_organization_id = null;
+
     protected $rules = [
         'manual_book_id' => 'required|exists:manual_books,id',
         'manual_book_package_id' => 'nullable|exists:manual_book_packages,id',
@@ -70,15 +77,41 @@ class AddManualDistribution extends Component
 
     public function mount()
     {
+        $actor = Auth::user();
+        if (! $actor instanceof User) {
+            abort(403);
+        }
+
+        $this->hydrateActorScope($actor);
+
         $this->books = ManualBook::query()->orderBy('title')->get();
-        $this->organizations = Organization::query()->orderBy('name')->get(['id', 'name']);
+        $this->organizations = Organization::query()
+            ->accessibleBy($actor)
+            ->orderBy('name')
+            ->get(['id', 'name']);
         $this->countries = Country::query()->orderBy('name')->get(['id', 'name']);
+
+        $defaultCountry = $this->actor_country_id ?? $this->defaultCountryId();
+        $this->country_id = $this->normalizeNullableId($this->country_id) ?? $defaultCountry;
+        $this->destination_country_id = $this->normalizeNullableId($this->destination_country_id) ?? $defaultCountry;
+        $this->region_id = $this->normalizeNullableId($this->region_id) ?? $this->actor_region_id;
+        $this->destination_region_id = $this->normalizeNullableId($this->destination_region_id) ?? $this->actor_region_id;
+        $this->zone_id = $this->normalizeNullableId($this->zone_id) ?? $this->actor_zone_id;
+        $this->destination_zone_id = $this->normalizeNullableId($this->destination_zone_id) ?? $this->actor_zone_id;
+        $this->woreda_id = $this->normalizeNullableId($this->woreda_id) ?? $this->actor_woreda_id;
+        $this->destination_woreda_id = $this->normalizeNullableId($this->destination_woreda_id) ?? $this->actor_woreda_id;
+        $this->organization_id = $this->normalizeNullableId($this->organization_id) ?? $this->actor_organization_id;
+        $this->destination_organization_id = $this->normalizeNullableId($this->destination_organization_id);
+
         $this->sourceRegions = [];
         $this->sourceZones = [];
         $this->sourceWoredas = [];
         $this->destinationRegions = [];
         $this->destinationZones = [];
         $this->destinationWoredas = [];
+
+        $this->hydrateSourceOptions();
+        $this->hydrateDestinationOptions();
     }
 
     public function render()
@@ -108,7 +141,9 @@ class AddManualDistribution extends Component
 
     public function updatedOrganizationId($organizationId)
     {
-        $organization = $organizationId ? Organization::query()->find($organizationId) : null;
+        $organization = $organizationId
+            ? Organization::query()->accessibleBy($this->currentActor())->find($organizationId)
+            : null;
 
         $this->country_id = $organization?->country_id;
         $this->region_id = $organization?->region_id;
@@ -120,6 +155,7 @@ class AddManualDistribution extends Component
 
     public function updatedCountryId($countryId)
     {
+        $this->organization_id = null;
         $this->region_id = null;
         $this->zone_id = null;
         $this->woreda_id = null;
@@ -133,8 +169,11 @@ class AddManualDistribution extends Component
 
     public function updatedRegionId($regionId)
     {
-        $region = $regionId ? Region::query()->find($regionId) : null;
+        $region = $regionId
+            ? $this->applyActorScopeToRegionQuery(Region::query())->find($regionId)
+            : null;
 
+        $this->organization_id = null;
         $this->country_id = $region?->country_id;
         $this->zone_id = null;
         $this->woreda_id = null;
@@ -150,7 +189,11 @@ class AddManualDistribution extends Component
 
     public function updatedZoneId($zoneId)
     {
-        $zone = $zoneId ? Zone::query()->find($zoneId) : null;
+        $zone = $zoneId
+            ? $this->applyActorScopeToZoneQuery(Zone::query())->find($zoneId)
+            : null;
+
+        $this->organization_id = null;
 
         if ($zone) {
             $this->region_id = $zone->region_id;
@@ -171,20 +214,27 @@ class AddManualDistribution extends Component
 
     public function updatedWoredaId($woredaId)
     {
-        $woreda = $woredaId ? Woreda::query()->find($woredaId) : null;
+        $woreda = $woredaId
+            ? $this->applyActorScopeToWoredaQuery(Woreda::query()->with('zone:id,region_id,country_id'))->find($woredaId)
+            : null;
         if (! $woreda) {
+            $this->organization_id = null;
+
             return;
         }
 
+        $this->organization_id = null;
         $this->zone_id = $woreda->zone_id;
-        $this->region_id = $woreda->region_id;
-        $this->country_id = $woreda->country_id;
+        $this->region_id = $woreda->zone?->region_id;
+        $this->country_id = $woreda->zone?->country_id;
         $this->hydrateSourceOptions();
     }
 
     public function updatedDestinationOrganizationId($organizationId)
     {
-        $organization = $organizationId ? Organization::query()->find($organizationId) : null;
+        $organization = $organizationId
+            ? Organization::query()->accessibleBy($this->currentActor())->find($organizationId)
+            : null;
 
         $this->destination_country_id = $organization?->country_id;
         $this->destination_region_id = $organization?->region_id;
@@ -196,6 +246,7 @@ class AddManualDistribution extends Component
 
     public function updatedDestinationCountryId($countryId)
     {
+        $this->destination_organization_id = null;
         $this->destination_region_id = null;
         $this->destination_zone_id = null;
         $this->destination_woreda_id = null;
@@ -209,8 +260,11 @@ class AddManualDistribution extends Component
 
     public function updatedDestinationRegionId($regionId)
     {
-        $region = $regionId ? Region::query()->find($regionId) : null;
+        $region = $regionId
+            ? $this->applyActorScopeToRegionQuery(Region::query())->find($regionId)
+            : null;
 
+        $this->destination_organization_id = null;
         $this->destination_country_id = $region?->country_id;
         $this->destination_zone_id = null;
         $this->destination_woreda_id = null;
@@ -226,7 +280,11 @@ class AddManualDistribution extends Component
 
     public function updatedDestinationZoneId($zoneId)
     {
-        $zone = $zoneId ? Zone::query()->find($zoneId) : null;
+        $zone = $zoneId
+            ? $this->applyActorScopeToZoneQuery(Zone::query())->find($zoneId)
+            : null;
+
+        $this->destination_organization_id = null;
 
         if ($zone) {
             $this->destination_region_id = $zone->region_id;
@@ -247,45 +305,104 @@ class AddManualDistribution extends Component
 
     public function updatedDestinationWoredaId($woredaId)
     {
-        $woreda = $woredaId ? Woreda::query()->find($woredaId) : null;
+        $woreda = $woredaId
+            ? $this->applyActorScopeToWoredaQuery(Woreda::query()->with('zone:id,region_id,country_id'))->find($woredaId)
+            : null;
         if (! $woreda) {
+            $this->destination_organization_id = null;
+
             return;
         }
 
+        $this->destination_organization_id = null;
         $this->destination_zone_id = $woreda->zone_id;
-        $this->destination_region_id = $woreda->region_id;
-        $this->destination_country_id = $woreda->country_id;
+        $this->destination_region_id = $woreda->zone?->region_id;
+        $this->destination_country_id = $woreda->zone?->country_id;
         $this->hydrateDestinationOptions();
     }
 
     private function hydrateSourceOptions(): void
     {
         $this->sourceRegions = $this->country_id
-            ? Region::query()->where('country_id', $this->country_id)->orderBy('name')->get(['id', 'name'])
+            ? $this->applyActorScopeToRegionQuery(Region::query())
+            ->where('country_id', $this->country_id)
+            ->orderBy('name')
+            ->get(['id', 'name'])
             : [];
 
         $this->sourceZones = $this->region_id
-            ? Zone::query()->where('region_id', $this->region_id)->orderBy('name')->get(['id', 'name'])
+            ? $this->applyActorScopeToZoneQuery(Zone::query())
+            ->where('region_id', $this->region_id)
+            ->orderBy('name')
+            ->get(['id', 'name'])
             : [];
 
         $this->sourceWoredas = $this->zone_id
-            ? Woreda::query()->where('zone_id', $this->zone_id)->orderBy('name')->get(['id', 'name'])
+            ? $this->applyActorScopeToWoredaQuery(Woreda::query())
+            ->where('zone_id', $this->zone_id)
+            ->orderBy('name')
+            ->get(['id', 'name'])
             : [];
+
+        if ($this->region_id && ! $this->sourceRegions->contains('id', (int) $this->region_id)) {
+            $this->region_id = null;
+            $this->zone_id = null;
+            $this->woreda_id = null;
+            $this->organization_id = null;
+        }
+
+        if ($this->zone_id && ! $this->sourceZones->contains('id', (int) $this->zone_id)) {
+            $this->zone_id = null;
+            $this->woreda_id = null;
+            $this->organization_id = null;
+        }
+
+        if ($this->woreda_id && ! $this->sourceWoredas->contains('id', (int) $this->woreda_id)) {
+            $this->woreda_id = null;
+            $this->organization_id = null;
+        }
     }
 
     private function hydrateDestinationOptions(): void
     {
         $this->destinationRegions = $this->destination_country_id
-            ? Region::query()->where('country_id', $this->destination_country_id)->orderBy('name')->get(['id', 'name'])
+            ? $this->applyActorScopeToRegionQuery(Region::query())
+            ->where('country_id', $this->destination_country_id)
+            ->orderBy('name')
+            ->get(['id', 'name'])
             : [];
 
         $this->destinationZones = $this->destination_region_id
-            ? Zone::query()->where('region_id', $this->destination_region_id)->orderBy('name')->get(['id', 'name'])
+            ? $this->applyActorScopeToZoneQuery(Zone::query())
+            ->where('region_id', $this->destination_region_id)
+            ->orderBy('name')
+            ->get(['id', 'name'])
             : [];
 
         $this->destinationWoredas = $this->destination_zone_id
-            ? Woreda::query()->where('zone_id', $this->destination_zone_id)->orderBy('name')->get(['id', 'name'])
+            ? $this->applyActorScopeToWoredaQuery(Woreda::query())
+            ->where('zone_id', $this->destination_zone_id)
+            ->orderBy('name')
+            ->get(['id', 'name'])
             : [];
+
+        if ($this->destination_region_id && ! $this->destinationRegions->contains('id', (int) $this->destination_region_id)) {
+            $this->destination_region_id = null;
+            $this->destination_zone_id = null;
+            $this->destination_woreda_id = null;
+            $this->destination_organization_id = null;
+        }
+
+        if ($this->destination_zone_id && ! $this->destinationZones->contains('id', (int) $this->destination_zone_id)) {
+            $this->destination_zone_id = null;
+            $this->destination_woreda_id = null;
+            $this->destination_organization_id = null;
+        }
+
+        if ($this->destination_woreda_id && ! $this->destinationWoredas->contains('id', (int) $this->destination_woreda_id)) {
+            $this->destination_woreda_id = null;
+            $this->destination_organization_id = null;
+        }
     }
 
     public function saveDistribution()
@@ -396,6 +513,22 @@ class AddManualDistribution extends Component
         return redirect()->route('manual-tracking.distribution.list');
     }
 
+    private function defaultCountryId(): ?int
+    {
+        $countryId = Country::query()->where('name', 'Ethiopia')->value('id');
+
+        return $countryId !== null ? (int) $countryId : null;
+    }
+
+    private function normalizeNullableId($value): ?int
+    {
+        if ($value === null || $value === '') {
+            return null;
+        }
+
+        return (int) $value;
+    }
+
     public function validateDistributionQuantity(array $data): void
     {
         $bookId = (int) ($data['manual_book_id'] ?? $this->manual_book_id ?? 0);
@@ -466,6 +599,9 @@ class AddManualDistribution extends Component
         $source = $this->resolveHierarchyChain($source, 'source');
         $destination = $this->resolveHierarchyChain($destination, 'destination');
 
+        $this->enforceActorScope($source, 'source');
+        $this->enforceActorScope($destination, 'destination');
+
         $source = $this->alignWithOrganization($source, 'source');
         $destination = $this->alignWithOrganization($destination, 'destination');
 
@@ -495,22 +631,23 @@ class AddManualDistribution extends Component
     private function resolveHierarchyChain(array $scope, string $label): array
     {
         if (! empty($scope['woreda_id'])) {
-            $woreda = Woreda::query()->find($scope['woreda_id']);
-            if (! $woreda) {
+            $woreda = Woreda::query()->with('zone:id,region_id,country_id')->find($scope['woreda_id']);
+            if (! $woreda || ! $woreda->zone) {
                 throw new \RuntimeException(ucfirst($label) . ' woreda is invalid.');
             }
 
+            $zone = $woreda->zone;
             $scope['zone_id'] = $scope['zone_id'] ?? $woreda->zone_id;
-            $scope['region_id'] = $scope['region_id'] ?? $woreda->region_id;
-            $scope['country_id'] = $scope['country_id'] ?? $woreda->country_id;
+            $scope['region_id'] = $scope['region_id'] ?? $zone->region_id;
+            $scope['country_id'] = $scope['country_id'] ?? $zone->country_id;
 
             if (! empty($scope['zone_id']) && (int) $scope['zone_id'] !== (int) $woreda->zone_id) {
                 throw new \RuntimeException(ucfirst($label) . ' hierarchy mismatch: woreda does not belong to selected zone.');
             }
-            if (! empty($scope['region_id']) && (int) $scope['region_id'] !== (int) $woreda->region_id) {
+            if (! empty($scope['region_id']) && (int) $scope['region_id'] !== (int) $zone->region_id) {
                 throw new \RuntimeException(ucfirst($label) . ' hierarchy mismatch: woreda does not belong to selected region.');
             }
-            if (! empty($scope['country_id']) && (int) $scope['country_id'] !== (int) $woreda->country_id) {
+            if (! empty($scope['country_id']) && (int) $scope['country_id'] !== (int) $zone->country_id) {
                 throw new \RuntimeException(ucfirst($label) . ' hierarchy mismatch: woreda does not belong to selected country.');
             }
         }
@@ -554,7 +691,9 @@ class AddManualDistribution extends Component
             return $scope;
         }
 
-        $organization = Organization::query()->find($scope['organization_id']);
+        $organization = Organization::query()
+            ->accessibleBy($this->currentActor())
+            ->find($scope['organization_id']);
         if (! $organization) {
             throw new \RuntimeException(ucfirst($label) . ' organization is invalid.');
         }
@@ -580,22 +719,133 @@ class AddManualDistribution extends Component
         return $scope;
     }
 
+    private function enforceActorScope(array $scope, string $label): void
+    {
+        if ($this->actor_country_id && ! empty($scope['country_id']) && (int) $scope['country_id'] !== (int) $this->actor_country_id) {
+            throw new \RuntimeException(ucfirst($label) . ' country is outside your access scope.');
+        }
+
+        if ($this->actor_region_id && ! empty($scope['region_id']) && (int) $scope['region_id'] !== (int) $this->actor_region_id) {
+            throw new \RuntimeException(ucfirst($label) . ' region is outside your access scope.');
+        }
+
+        if ($this->actor_zone_id && ! empty($scope['zone_id']) && (int) $scope['zone_id'] !== (int) $this->actor_zone_id) {
+            throw new \RuntimeException(ucfirst($label) . ' zone is outside your access scope.');
+        }
+
+        if ($this->actor_woreda_id && ! empty($scope['woreda_id']) && (int) $scope['woreda_id'] !== (int) $this->actor_woreda_id) {
+            throw new \RuntimeException(ucfirst($label) . ' woreda is outside your access scope.');
+        }
+
+        if ($this->actor_organization_id && ! empty($scope['organization_id']) && (int) $scope['organization_id'] !== (int) $this->actor_organization_id) {
+            throw new \RuntimeException(ucfirst($label) . ' organization is outside your access scope.');
+        }
+    }
+
+    private function hydrateActorScope(User $actor): void
+    {
+        $this->actor_country_id = $this->normalizeNullableId($actor->country_id);
+        $this->actor_region_id = $this->normalizeNullableId($actor->region_id);
+        $this->actor_zone_id = $this->normalizeNullableId($actor->zone_id);
+        $this->actor_woreda_id = $this->normalizeNullableId($actor->woreda_id);
+        $this->actor_organization_id = $this->normalizeNullableId($actor->organization_id);
+
+        if ($this->actor_organization_id) {
+            $organization = Organization::query()
+                ->select('id', 'country_id', 'region_id', 'zone_id', 'woreda_id')
+                ->find($this->actor_organization_id);
+
+            if ($organization) {
+                $this->actor_country_id = $this->actor_country_id ?: $this->normalizeNullableId($organization->country_id);
+                $this->actor_region_id = $this->actor_region_id ?: $this->normalizeNullableId($organization->region_id);
+                $this->actor_zone_id = $this->actor_zone_id ?: $this->normalizeNullableId($organization->zone_id);
+                $this->actor_woreda_id = $this->actor_woreda_id ?: $this->normalizeNullableId($organization->woreda_id);
+            }
+        }
+    }
+
+    private function applyActorScopeToRegionQuery($query)
+    {
+        if ($this->actor_country_id) {
+            $query->where('country_id', $this->actor_country_id);
+        }
+
+        if ($this->actor_region_id) {
+            $query->where('id', $this->actor_region_id);
+        }
+
+        return $query;
+    }
+
+    private function applyActorScopeToZoneQuery($query)
+    {
+        if ($this->actor_country_id) {
+            $query->where('country_id', $this->actor_country_id);
+        }
+
+        if ($this->actor_region_id) {
+            $query->where('region_id', $this->actor_region_id);
+        }
+
+        if ($this->actor_zone_id) {
+            $query->where('id', $this->actor_zone_id);
+        }
+
+        return $query;
+    }
+
+    private function applyActorScopeToWoredaQuery($query)
+    {
+        if ($this->actor_country_id) {
+            $query->whereHas('zone', function ($zoneQuery): void {
+                $zoneQuery->where('country_id', $this->actor_country_id);
+            });
+        }
+
+        if ($this->actor_region_id) {
+            $query->whereHas('zone', function ($zoneQuery): void {
+                $zoneQuery->where('region_id', $this->actor_region_id);
+            });
+        }
+
+        if ($this->actor_zone_id) {
+            $query->where('zone_id', $this->actor_zone_id);
+        }
+
+        if ($this->actor_woreda_id) {
+            $query->where('id', $this->actor_woreda_id);
+        }
+
+        return $query;
+    }
+
+    private function currentActor(): User
+    {
+        $actor = Auth::user();
+
+        if ($actor instanceof User) {
+            return $actor;
+        }
+
+        abort(403);
+    }
+
     private function resetForm(): void
     {
         $this->manual_book_id = null;
         $this->manual_book_package_id = null;
         $this->quantity = null;
         $this->remarks = null;
-        $this->organization_id = null;
-        $this->country_id = null;
-        $this->region_id = null;
-        $this->zone_id = null;
-        $this->woreda_id = null;
+        $this->organization_id = $this->actor_organization_id;
+        $this->country_id = $this->actor_country_id ?? $this->defaultCountryId();
+        $this->region_id = $this->actor_region_id;
+        $this->zone_id = $this->actor_zone_id;
+        $this->woreda_id = $this->actor_woreda_id;
         $this->destination_organization_id = null;
-        $this->destination_country_id = null;
-        $this->destination_region_id = null;
-        $this->destination_zone_id = null;
-        $this->destination_woreda_id = null;
+        $this->destination_country_id = $this->actor_country_id ?? $this->defaultCountryId();
+        $this->destination_region_id = $this->actor_region_id;
+        $this->destination_zone_id = $this->actor_zone_id;
+        $this->destination_woreda_id = $this->actor_woreda_id;
         $this->packages = [];
         $this->sourceRegions = [];
         $this->sourceZones = [];
@@ -603,6 +853,9 @@ class AddManualDistribution extends Component
         $this->destinationRegions = [];
         $this->destinationZones = [];
         $this->destinationWoredas = [];
+
+        $this->hydrateSourceOptions();
+        $this->hydrateDestinationOptions();
     }
 
     private function alertError($message)

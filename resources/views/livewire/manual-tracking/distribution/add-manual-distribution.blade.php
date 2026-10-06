@@ -67,24 +67,6 @@
                     → woreda chain.</p>
                 <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div>
-                        <x-jet-label for="organization_id" value="Organization" />
-                        <x-form.select wire:model="organization_id" id="organization_id" class="mt-1 block w-full">
-                            <option value="">Select Organization</option>
-                            @foreach ($organizations as $organization)
-                            <option value="{{ $organization->id }}">{{ $organization->name }}</option>
-                            @endforeach
-                        </x-form.select>
-                    </div>
-                    <div>
-                        <x-jet-label for="country_id" value="Country" />
-                        <x-form.select wire:model="country_id" id="country_id" class="mt-1 block w-full">
-                            <option value="">Select Country</option>
-                            @foreach ($countries as $country)
-                            <option value="{{ $country->id }}">{{ $country->name }}</option>
-                            @endforeach
-                        </x-form.select>
-                    </div>
-                    <div>
                         <x-jet-label for="region_id" value="Region" />
                         <select wire:model="region_id" id="region_id" class="mt-1 block w-full" {{ $sourceRegionDisabled
                             ? 'disabled' : '' }}>
@@ -114,6 +96,16 @@
                             @endforeach
                         </select>
                     </div>
+                    <div>
+                        <x-jet-label for="organization_id" value="Organization" />
+                        <x-form.select wire:model="organization_id" id="organization_id" class="mt-1 block w-full">
+                            <option value="">Select Organization</option>
+                            @foreach ($organizations as $organization)
+                            <option value="{{ $organization->id }}">{{ $organization->name }}</option>
+                            @endforeach
+                        </x-form.select>
+                    </div>
+                    <input type="hidden" wire:model="country_id" name="country_id" value="{{ $country_id ?? '' }}">
                 </div>
             </div>
 
@@ -129,26 +121,6 @@
                 <p class="mt-1 text-xs text-gray-500">Select a valid destination organization or country → region → zone
                     → woreda chain.</p>
                 <div class="mt-3 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <x-jet-label for="destination_organization_id" value="Destination Organization" />
-                        <x-form.select wire:model="destination_organization_id" id="destination_organization_id"
-                            class="mt-1 block w-full">
-                            <option value="">Select Organization</option>
-                            @foreach ($organizations as $organization)
-                            <option value="{{ $organization->id }}">{{ $organization->name }}</option>
-                            @endforeach
-                        </x-form.select>
-                    </div>
-                    <div>
-                        <x-jet-label for="destination_country_id" value="Destination Country" />
-                        <x-form.select wire:model="destination_country_id" id="destination_country_id"
-                            class="mt-1 block w-full">
-                            <option value="">Select Country</option>
-                            @foreach ($countries as $country)
-                            <option value="{{ $country->id }}">{{ $country->name }}</option>
-                            @endforeach
-                        </x-form.select>
-                    </div>
                     <div>
                         <x-jet-label for="destination_region_id" value="Destination Region" />
                         <select wire:model="destination_region_id" id="destination_region_id" class="mt-1 block w-full"
@@ -179,6 +151,18 @@
                             @endforeach
                         </select>
                     </div>
+                    <div>
+                        <x-jet-label for="destination_organization_id" value="Destination Organization" />
+                        <x-form.select wire:model="destination_organization_id" id="destination_organization_id"
+                            class="mt-1 block w-full">
+                            <option value="">Select Organization</option>
+                            @foreach ($organizations as $organization)
+                            <option value="{{ $organization->id }}">{{ $organization->name }}</option>
+                            @endforeach
+                        </x-form.select>
+                    </div>
+                    <input type="hidden" wire:model="destination_country_id" name="destination_country_id"
+                        value="{{ $destination_country_id ?? '' }}">
                 </div>
             </div>
 
