@@ -388,14 +388,18 @@ class UserController extends Controller
                 $countries->where('id', $actor->country_id);
                 $regions->where('country_id', $actor->country_id);
                 $zones->where('country_id', $actor->country_id);
-                $woredas->where('country_id', $actor->country_id);
+                $woredas->whereHas('zone', function ($zoneQuery) use ($actor) {
+                    $zoneQuery->where('country_id', $actor->country_id);
+                });
                 $organizations->where('country_id', $actor->country_id);
             }
 
             if (!empty($actor->region_id)) {
                 $regions->where('id', $actor->region_id);
                 $zones->where('region_id', $actor->region_id);
-                $woredas->where('region_id', $actor->region_id);
+                $woredas->whereHas('zone', function ($zoneQuery) use ($actor) {
+                    $zoneQuery->where('region_id', $actor->region_id);
+                });
                 $organizations->where('region_id', $actor->region_id);
             }
 
