@@ -61,214 +61,171 @@ class ManualTrackingSeeder extends Seeder
             $users = $this->ensureBaselineUsers();
         }
 
-        $bookCatalog = [
-            ['code' => 'MT-ENG-05', 'title' => 'English Grade 5', 'grade_name' => 'Grade 5', 'subject_name' => 'English', 'isbn' => '978-1-00001-0051', 'edition' => 1, 'total_copies' => 350],
-            ['code' => 'MT-MATH-06', 'title' => 'Mathematics Grade 6', 'grade_name' => 'Grade 6', 'subject_name' => 'Mathematics', 'isbn' => '978-1-00001-0061', 'edition' => 2, 'total_copies' => 420],
-            ['code' => 'MT-BIO-08', 'title' => 'Biology Grade 8', 'grade_name' => 'Grade 8', 'subject_name' => 'Biology', 'isbn' => '978-1-00001-0081', 'edition' => 3, 'total_copies' => 510],
-            ['code' => 'MT-ICT-10', 'title' => 'ICT Grade 10', 'grade_name' => 'Grade 10', 'subject_name' => 'ICT', 'isbn' => '978-1-00001-0101', 'edition' => 2, 'total_copies' => 600],
-            ['code' => 'MT-CHEM-11', 'title' => 'Chemistry Grade 11', 'grade_name' => 'Grade 11', 'subject_name' => 'Chemistry', 'isbn' => '978-1-00001-0111', 'edition' => 1, 'total_copies' => 470],
-            ['code' => 'MT-GEO-12', 'title' => 'Geography Grade 12', 'grade_name' => 'Grade 12', 'subject_name' => 'Geography', 'isbn' => '978-1-00001-0121', 'edition' => 2, 'total_copies' => 435],
-        ];
+        $opsUser = $users->get('ops.manager@track.local') ?? $users->first();
+        $books = collect();
 
-        $books = [];
-        foreach ($bookCatalog as $bookData) {
-            $book = ManualBook::query()->firstOrCreate(
-                ['code' => $bookData['code']],
-                [
-                    'title' => $bookData['title'],
-                    'grade_name' => $bookData['grade_name'],
-                    'subject_name' => $bookData['subject_name'],
-                    'isbn' => $bookData['isbn'],
-                    'edition' => $bookData['edition'],
-                    'total_copies' => $bookData['total_copies'],
-                    'notes' => 'Operational manual tracking reference copy for standard distribution planning.',
-                ]
+        for ($i = 0; $i < 14; $i++) {
+            $baseCopies = fake()->numberBetween(6, 48) * 40;
+            $remainder = $i % 5 === 0 ? fake()->numberBetween(1, 39) : 0;
+
+            $books->push(
+                ManualBook::factory()->create([
+                    'total_copies' => $baseCopies + $remainder,
+                    'notes' => 'Seeded demo textbook inventory for manual package tracking.',
+                ])
             );
-
-            $books[] = $book;
         }
 
-        $bookPackages = [];
         foreach ($books as $book) {
-            $packageCount = fake()->numberBetween(2, 3);
+            $packageQuantities = $this->splitIntoStandardPackages((int) $book->total_copies, 40);
             $sourceOrganization = $organizations->values()->random();
 
-            for ($i = 0; $i < $packageCount; $i++) {
-                $packageCode = 'PKG-' . strtoupper(Str::slug($book->code, '-')) . '-' . ($i + 1);
-                $package = ManualBookPackage::query()->firstOrCreate(
-                    ['package_code' => $packageCode],
-                    [
-                        'manual_book_id' => $book->id,
-                        'no_of_packages' => 1,
-                        'books_per_package' => fake()->numberBetween(80, 220),
-                        'total_books' => 0,
-                        'current_balance' => 0,
-                        'status' => 'available',
-                        'notes' => 'Seeded stock package for ' . $book->title,
-                    ]
-                );
+            foreach ($packageQuantities as $index => $quantity) {
+                $trackingNumber = $this->buildTrackingNumber($book->code ?? 'BOOK', $index + 1);
+                $packageStatus = fake()->randomElement(['Packed', 'In Transit', 'Distributed']);
 
-                $package->update([
-                    'no_of_packages' => max(1, (int) $package->no_of_packages),
-                    'books_per_package' => max(80, (int) $package->books_per_package),
-                    'total_books' => max($package->total_books, (int) $package->books_per_package),
-                    'current_balance' => max($package->current_balance, (int) $package->books_per_package),
+                $package = ManualBookPackage::query()->create([
+                    'manual_book_id' => $book->id,
+                    'package_code' => $trackingNumber,
+                    'no_of_packages' => 1,
+                    'books_per_package' => 40,
+                    'total_books' => $quantity,
+                    'current_balance' => $quantity,
+                    'status' => 'Packed',
+                    'notes' => sprintf('Package %d of %d for %s.', $index + 1, count($packageQuantities), $book->title),
                 ]);
-
-                $bookPackages[$book->id][] = $package;
 
                 ManualStockLedger::query()->create([
                     'manual_book_id' => $book->id,
                     'manual_book_package_id' => $package->id,
                     'movement_type' => 'initial',
-                    'movement_qty' => (int) $package->current_balance,
-                    'balance_after' => (int) $package->current_balance,
+                    'movement_qty' => $quantity,
+                    'balance_after' => $quantity,
                     'ref_type' => 'seed',
                     'ref_id' => $book->id,
-                    'acted_by' => $users->get('ops.manager@track.local')?->id ?? $users->first()?->id,
+                    'acted_by' => $opsUser?->id,
                     'organization_id' => $sourceOrganization?->id,
                     'country_id' => $sourceOrganization?->country_id,
                     'region_id' => $sourceOrganization?->region_id,
                     'zone_id' => $sourceOrganization?->zone_id,
                     'woreda_id' => $sourceOrganization?->woreda_id,
-                    'notes' => 'Initial operational stock seeded for ' . $book->title . ' at ' . $sourceOrganization?->name,
+                    'notes' => "Initial package stock for {$book->title}.",
                 ]);
-            }
-        }
 
-        $distributionPlan = [
-            [
-                'source' => 'Bole Woreda Education Office',
-                'destination' => 'Bole Primary School',
-                'user' => 'ops.manager@track.local',
-                'book' => 'MT-ENG-05',
-                'quantity' => 45,
-                'remarks' => 'Quarterly textbook issue for Bole primary schools.',
-            ],
-            [
-                'source' => 'Bole Woreda Education Office',
-                'destination' => 'Bole Primary School',
-                'user' => 'ops.manager@track.local',
-                'book' => 'MT-MATH-06',
-                'quantity' => 55,
-                'remarks' => 'Mathematics package allocation to the school network.',
-            ],
-            [
-                'source' => 'Oromia Regional Education Bureau',
-                'destination' => 'East Shewa Zone Education Office',
-                'user' => 'regional.officer@track.local',
-                'book' => 'MT-BIO-08',
-                'quantity' => 75,
-                'remarks' => 'Regional transfer of biology books to the zone office.',
-            ],
-            [
-                'source' => 'East Shewa Zone Education Office',
-                'destination' => 'Bole Woreda Education Office',
-                'user' => 'regional.officer@track.local',
-                'book' => 'MT-ICT-10',
-                'quantity' => 30,
-                'remarks' => 'Zone distribution to woreda education office for classroom use.',
-            ],
-            [
-                'source' => 'National School Printer',
-                'destination' => 'Federal Ministry of Education',
-                'user' => 'printer.manager@track.local',
-                'book' => 'MT-CHEM-11',
-                'quantity' => 60,
-                'remarks' => 'Print-run reconciliation for chemistry titles.',
-            ],
-            [
-                'source' => 'Federal Ministry of Education',
-                'destination' => 'Oromia Regional Education Bureau',
-                'user' => 'superadmin@gmail.com',
-                'book' => 'MT-GEO-12',
-                'quantity' => 80,
-                'remarks' => 'National allocation for the region education bureau.',
-            ],
-        ];
+                if ($packageStatus === 'Packed') {
+                    continue;
+                }
 
-        foreach ($distributionPlan as $plan) {
-            $sourceOrganization = $organizations[$plan['source']] ?? $organizations->first();
-            $destinationOrganization = $organizations[$plan['destination']] ?? $organizations->first();
-            $actor = $users[$plan['user']] ?? $users->first();
-            $book = ManualBook::query()->where('code', $plan['book'])->first() ?? $books[0];
-            $package = $book->packages()->orderByDesc('current_balance')->first();
+                $destinationOrganization = $organizations
+                    ->values()
+                    ->where('id', '!=', $sourceOrganization?->id)
+                    ->random();
+                $actor = $users->values()->random();
+                $quantityShipped = (int) $package->current_balance;
+                $balanceBefore = (int) $package->current_balance;
+                $balanceAfter = max(0, $balanceBefore - $quantityShipped);
 
-            if (! $package) {
-                $package = ManualBookPackage::query()->create([
+                $distribution = ManualDistribution::query()->create([
+                    'reference' => 'MD-' . strtoupper(fake()->bothify('######??')),
+                    'distributed_by' => $actor?->id,
+                    'organization_id' => $sourceOrganization?->id,
+                    'country_id' => $sourceOrganization?->country_id,
+                    'region_id' => $sourceOrganization?->region_id,
+                    'zone_id' => $sourceOrganization?->zone_id,
+                    'woreda_id' => $sourceOrganization?->woreda_id,
+                    'destination_organization_id' => $destinationOrganization?->id,
+                    'destination_country_id' => $destinationOrganization?->country_id,
+                    'destination_region_id' => $destinationOrganization?->region_id,
+                    'destination_zone_id' => $destinationOrganization?->zone_id,
+                    'destination_woreda_id' => $destinationOrganization?->woreda_id,
+                    'distributed_at' => fake()->dateTimeBetween('-45 days', 'now'),
+                    'remarks' => sprintf(
+                        'Demo shipment %s from %s to %s (%s / %s / %s).',
+                        $trackingNumber,
+                        $sourceOrganization?->name ?? 'source office',
+                        $destinationOrganization?->name ?? 'destination office',
+                        $destinationOrganization?->region?->name ?? 'region',
+                        $destinationOrganization?->zone?->name ?? 'zone',
+                        $destinationOrganization?->woreda?->name ?? 'woreda',
+                    ),
+                ]);
+
+                $distributionLine = ManualDistributionLine::query()->create([
+                    'manual_distribution_id' => $distribution->id,
                     'manual_book_id' => $book->id,
-                    'package_code' => 'PKG-' . strtoupper(Str::slug($book->code, '-')) . '-SEED',
-                    'no_of_packages' => 1,
-                    'books_per_package' => (int) $book->total_copies,
-                    'total_books' => (int) $book->total_copies,
-                    'current_balance' => (int) $book->total_copies,
-                    'status' => 'available',
+                    'manual_book_package_id' => $package->id,
+                    'quantity' => $quantityShipped,
+                    'source_balance_before' => $balanceBefore,
+                    'source_balance_after' => $balanceAfter,
+                ]);
+
+                $package->update([
+                    'current_balance' => $balanceAfter,
+                    'status' => $packageStatus,
+                ]);
+
+                ManualStockLedger::query()->create([
+                    'manual_book_id' => $book->id,
+                    'manual_book_package_id' => $package->id,
+                    'movement_type' => 'outbound',
+                    'movement_qty' => -$quantityShipped,
+                    'balance_after' => $balanceAfter,
+                    'ref_type' => ManualDistribution::class,
+                    'ref_id' => $distribution->id,
+                    'acted_by' => $actor?->id,
+                    'organization_id' => $sourceOrganization?->id,
+                    'country_id' => $sourceOrganization?->country_id,
+                    'region_id' => $sourceOrganization?->region_id,
+                    'zone_id' => $sourceOrganization?->zone_id,
+                    'woreda_id' => $sourceOrganization?->woreda_id,
+                    'notes' => "Outbound distribution for {$trackingNumber}.",
+                ]);
+
+                ManualAudit::query()->create([
+                    'user_id' => $actor?->id,
+                    'action' => 'manual_distribution_seeded',
+                    'auditable_type' => ManualDistribution::class,
+                    'auditable_id' => $distribution->id,
+                    'meta' => [
+                        'book_id' => $book->id,
+                        'package_id' => $package->id,
+                        'manual_distribution_line_id' => $distributionLine->id,
+                        'tracking_number' => $trackingNumber,
+                        'quantity' => $quantityShipped,
+                        'source_organization' => $sourceOrganization?->name,
+                        'destination_organization' => $destinationOrganization?->name,
+                    ],
                 ]);
             }
-
-            $quantity = min((int) $plan['quantity'], (int) $package->current_balance ?: (int) $book->total_copies);
-            $balanceBefore = (int) $package->current_balance;
-            $balanceAfter = max($balanceBefore - $quantity, 0);
-
-            $distribution = ManualDistribution::query()->create([
-                'reference' => 'MD-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(4)),
-                'distributed_by' => $actor?->id,
-                'organization_id' => $sourceOrganization?->id,
-                'country_id' => $sourceOrganization?->country_id,
-                'region_id' => $sourceOrganization?->region_id,
-                'zone_id' => $sourceOrganization?->zone_id,
-                'woreda_id' => $sourceOrganization?->woreda_id,
-                'destination_organization_id' => $destinationOrganization?->id,
-                'destination_country_id' => $destinationOrganization?->country_id,
-                'destination_region_id' => $destinationOrganization?->region_id,
-                'destination_zone_id' => $destinationOrganization?->zone_id,
-                'destination_woreda_id' => $destinationOrganization?->woreda_id,
-                'distributed_at' => now(),
-                'remarks' => $plan['remarks'],
-            ]);
-
-            $line = ManualDistributionLine::query()->create([
-                'manual_distribution_id' => $distribution->id,
-                'manual_book_id' => $book->id,
-                'manual_book_package_id' => $package->id,
-                'quantity' => $quantity,
-                'source_balance_before' => $balanceBefore,
-                'source_balance_after' => $balanceAfter,
-            ]);
-
-            $package->update(['current_balance' => $balanceAfter]);
-
-            ManualStockLedger::query()->create([
-                'manual_book_id' => $book->id,
-                'manual_book_package_id' => $package->id,
-                'movement_type' => 'outbound',
-                'movement_qty' => -$quantity,
-                'balance_after' => $balanceAfter,
-                'ref_type' => ManualDistribution::class,
-                'ref_id' => $distribution->id,
-                'acted_by' => $actor?->id,
-                'organization_id' => $distribution->organization_id,
-                'country_id' => $distribution->country_id,
-                'region_id' => $distribution->region_id,
-                'zone_id' => $distribution->zone_id,
-                'woreda_id' => $distribution->woreda_id,
-                'notes' => $plan['remarks'],
-            ]);
-
-            ManualAudit::query()->create([
-                'user_id' => $actor?->id,
-                'action' => 'manual_distribution_seeded',
-                'auditable_type' => ManualDistribution::class,
-                'auditable_id' => $distribution->id,
-                'meta' => [
-                    'book_id' => $book->id,
-                    'manual_distribution_line_id' => $line->id,
-                    'quantity' => $quantity,
-                    'source_organization' => $sourceOrganization?->name,
-                    'destination_organization' => $destinationOrganization?->name,
-                ],
-            ]);
         }
+    }
+
+    /**
+     * @return array<int, int>
+     */
+    private function splitIntoStandardPackages(int $totalCopies, int $standardPackageSize = 40): array
+    {
+        if ($totalCopies <= 0 || $standardPackageSize <= 0) {
+            return [];
+        }
+
+        $fullPackages = intdiv($totalCopies, $standardPackageSize);
+        $remainingCopies = $totalCopies % $standardPackageSize;
+
+        $packages = array_fill(0, $fullPackages, $standardPackageSize);
+        if ($remainingCopies > 0) {
+            $packages[] = $remainingCopies;
+        }
+
+        return $packages;
+    }
+
+    private function buildTrackingNumber(string $bookCode, int $packageSequence): string
+    {
+        $bookSegment = strtoupper(Str::substr(preg_replace('/[^A-Za-z0-9]/', '', $bookCode), 0, 8));
+        $sequenceSegment = str_pad((string) $packageSequence, 3, '0', STR_PAD_LEFT);
+
+        return "TRK-{$bookSegment}-{$sequenceSegment}-" . strtoupper(fake()->bothify('##??'));
     }
 
     private function ensureManualTrackingSchema(): void

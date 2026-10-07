@@ -19,8 +19,8 @@ class ManualDistributionLineFactory extends Factory
         $package = ManualBookPackage::query()->where('manual_book_id', $book->id)->inRandomOrder()->first()
             ?? ManualBookPackage::factory()->create(['manual_book_id' => $book->id]);
 
-        $quantity = $this->faker->numberBetween(10, 250);
-        $sourceBefore = $package?->current_balance ?? $book->total_copies;
+        $sourceBefore = max(0, (int) ($package?->current_balance ?? $package?->total_books ?? $book->total_copies));
+        $quantity = $sourceBefore > 0 ? $this->faker->numberBetween(1, $sourceBefore) : 0;
 
         return [
             'manual_distribution_id' => $distribution->id,

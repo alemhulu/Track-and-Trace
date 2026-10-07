@@ -13,18 +13,22 @@ class ManualBookPackageFactory extends Factory
 
     public function definition(): array
     {
-        $booksPerPackage = $this->faker->numberBetween(20, 150);
-        $noOfPackages = $this->faker->numberBetween(1, 6);
-        $totalBooks = $noOfPackages * $booksPerPackage;
+        $status = $this->faker->randomElement(['Packed', 'In Transit', 'Distributed']);
+        $booksPerPackage = 40;
+        $totalBooks = $booksPerPackage;
+        $currentBalance = match ($status) {
+            'Distributed' => 0,
+            default => $totalBooks,
+        };
 
         return [
             'manual_book_id' => ManualBook::factory(),
-            'package_code' => 'PKG-' . strtoupper(Str::random(3)) . '-' . $this->faker->unique()->numberBetween(1000, 9999),
-            'no_of_packages' => $noOfPackages,
+            'package_code' => 'TRK-' . strtoupper(Str::random(4)) . '-' . $this->faker->unique()->numberBetween(100000, 999999),
+            'no_of_packages' => 1,
             'books_per_package' => $booksPerPackage,
             'total_books' => $totalBooks,
-            'current_balance' => $totalBooks,
-            'status' => $this->faker->randomElement(['available', 'partial', 'issued']),
+            'current_balance' => $currentBalance,
+            'status' => $status,
             'notes' => $this->faker->sentence(6),
         ];
     }

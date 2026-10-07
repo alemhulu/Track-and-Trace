@@ -25,6 +25,7 @@ class UserSeeder extends Seeder
         $eastShewaZone = Zone::query()->where('name', 'East Shewa Zone')->first();
         $boleWoreda = Woreda::query()->where('name', 'Bole Woreda 01')->first();
         $adamaWoreda = Woreda::query()->where('name', 'Adama Woreda 01')->first();
+        $boleSchool = \App\Models\Organization::query()->where('name', 'Bole Primary School')->first();
 
         $users = [
             [
@@ -37,7 +38,8 @@ class UserSeeder extends Seeder
                 'region_id' => $addis?->id,
                 'zone_id' => $boleZone?->id,
                 'woreda_id' => $boleWoreda?->id,
-                'role' => 'Org-Manager',
+                'organization_id' => null,
+                'role' => 'Woreda Officer',
             ],
             [
                 'name' => 'Printer Manager',
@@ -48,8 +50,9 @@ class UserSeeder extends Seeder
                 'country_id' => $country?->id,
                 'region_id' => $addis?->id,
                 'zone_id' => $boleZone?->id,
-                'woreda_id' => $boleWoreda?->id,
-                'role' => 'Org-Manager',
+                'woreda_id' => null,
+                'organization_id' => null,
+                'role' => 'Zone Officer',
             ],
             [
                 'name' => 'Regional Officer',
@@ -59,9 +62,10 @@ class UserSeeder extends Seeder
                 'access_level' => 'region',
                 'country_id' => $country?->id,
                 'region_id' => $oromia?->id,
-                'zone_id' => $eastShewaZone?->id,
-                'woreda_id' => $adamaWoreda?->id,
-                'role' => 'Admin',
+                'zone_id' => null,
+                'woreda_id' => null,
+                'organization_id' => null,
+                'role' => 'Region Officer',
             ],
             [
                 'name' => 'School Director',
@@ -73,7 +77,8 @@ class UserSeeder extends Seeder
                 'region_id' => $addis?->id,
                 'zone_id' => $boleZone?->id,
                 'woreda_id' => $boleWoreda?->id,
-                'role' => 'Org-Manager',
+                'organization_id' => $boleSchool?->id,
+                'role' => 'Organization User',
             ],
         ];
 
@@ -92,6 +97,7 @@ class UserSeeder extends Seeder
                     'region_id' => $user['region_id'],
                     'zone_id' => $user['zone_id'],
                     'woreda_id' => $user['woreda_id'],
+                    'organization_id' => $user['organization_id'],
                     'email_verified_at' => now(),
                 ]
             );

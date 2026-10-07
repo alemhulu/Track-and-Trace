@@ -173,7 +173,17 @@ class OrganizationSeeder extends Seeder
             );
 
             if ($assignedUserId) {
-                User::query()->whereKey($assignedUserId)->update(['organization_id' => $organization->id]);
+                $assignedUser = User::query()->find($assignedUserId);
+
+                if ($assignedUser && $assignedUser->effectiveAccessLevel() === User::ACCESS_LEVEL_ORGANIZATION) {
+                    User::query()->whereKey($assignedUserId)->update([
+                        'organization_id' => $organization->id,
+                        'country_id' => $organization->country_id,
+                        'region_id' => $organization->region_id,
+                        'zone_id' => $organization->zone_id,
+                        'woreda_id' => $organization->woreda_id,
+                    ]);
+                }
             }
         }
     }

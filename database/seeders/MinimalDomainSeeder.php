@@ -42,6 +42,8 @@ class MinimalDomainSeeder extends Seeder
                 'name' => 'Minimal Ops User',
                 'password' => Hash::make('test1234'),
                 'email_verified_at' => now(),
+                'access_level' => User::ACCESS_LEVEL_WOREDA,
+                'organization_id' => null,
                 'country_id' => $country?->id,
                 'region_id' => $region?->id,
                 'zone_id' => $zone?->id,
@@ -223,7 +225,12 @@ class MinimalDomainSeeder extends Seeder
             ]
         );
 
+        $user->access_level = User::ACCESS_LEVEL_ORGANIZATION;
         $user->organization_id = $moe->id;
+        $user->country_id = $moe->country_id;
+        $user->region_id = $moe->region_id;
+        $user->zone_id = $moe->zone_id;
+        $user->woreda_id = $moe->woreda_id;
         $user->save();
     }
 }

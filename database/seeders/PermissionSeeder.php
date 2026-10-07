@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -14,77 +15,209 @@ class PermissionSeeder extends Seeder
      *
      * @return void
      */
-    public function run()
+    public function run(): void
     {
-        // Reset cached roles and permissions
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
         $permissionNames = [
-            'user-list',
-            'user-create',
-            'user-edit',
-            'user-delete',
-            'view-user',
-            'org-list',
-            'org-create',
-            'org-edit',
-            'org-update',
-            'org-delete',
-            'org-publish',
-            'org-unpublish',
-            'role-list',
-            'view-role',
-            'role-create',
-            'role-edit',
-            'role-delete',
-            'location-list',
-            'location-create',
-            'location-edit',
-            'location-delete',
-            'book-list',
-            'book-show',
-            'book-edit',
-            'book-update',
-            'book-delete',
+            'view-dashboard',
+            'view-users',
+            'create-users',
+            'edit-users',
+            'delete-users',
+            'view-roles',
+            'create-roles',
+            'edit-roles',
+            'delete-roles',
+            'view-locations',
+            'manage-locations',
+            'view-organizations',
+            'manage-organizations',
+            'view-manual-tracking',
+            'view-books',
+            'create-books',
+            'edit-books',
+            'delete-books',
+            'view-print-orders',
+            'create-print-orders',
+            'manage-print-orders',
+            'view-packages',
+            'create-packages',
+            'update-package-status',
+            'view-warehouses',
+            'manage-warehouses',
+            'view-routes',
+            'manage-routes',
+            'view-distributions',
+            'create-distributions',
+            'update-distributions',
+            'view-trace',
             'view-logs',
         ];
 
         foreach ($permissionNames as $permissionName) {
-            Permission::firstOrCreate(['name' => $permissionName]);
+            Permission::firstOrCreate(['name' => $permissionName, 'guard_name' => 'web']);
         }
 
-        $role1 = Role::create(['name' => 'Org-Manager']);
-        $role1->givePermissionTo(['book-list', 'book-show', 'org-edit', 'org-update', 'view-user']);
+        $roles = [
+            'Super-Admin' => array_values($permissionNames),
+            'National Admin' => array_values(array_filter($permissionNames, fn ($permission) => ! in_array($permission, [
+                'view-dashboard',
+            ], true))),
+            'Region Officer' => [
+                'view-dashboard',
+                'view-users',
+                'view-books',
+                'view-manual-tracking',
+                'view-print-orders',
+                'view-packages',
+                'view-warehouses',
+                'view-routes',
+                'view-distributions',
+                'view-trace',
+                'view-organizations',
+                'view-locations',
+            ],
+            'Zone Officer' => [
+                'view-dashboard',
+                'view-users',
+                'view-books',
+                'view-manual-tracking',
+                'view-print-orders',
+                'view-packages',
+                'view-warehouses',
+                'view-routes',
+                'view-distributions',
+                'view-trace',
+                'view-organizations',
+                'view-locations',
+            ],
+            'Woreda Officer' => [
+                'view-dashboard',
+                'view-users',
+                'view-books',
+                'view-manual-tracking',
+                'view-print-orders',
+                'view-packages',
+                'create-packages',
+                'update-package-status',
+                'view-warehouses',
+                'view-routes',
+                'view-distributions',
+                'create-distributions',
+                'update-distributions',
+                'view-trace',
+                'view-organizations',
+                'view-locations',
+            ],
+            'Organization User' => [
+                'view-dashboard',
+                'view-books',
+                'view-manual-tracking',
+                'view-packages',
+                'view-distributions',
+                'view-warehouses',
+                'view-organizations',
+                'view-locations',
+            ],
+            'School User' => [
+                'view-dashboard',
+                'view-books',
+                'view-manual-tracking',
+                'view-packages',
+                'view-distributions',
+                'view-warehouses',
+                'view-organizations',
+            ],
+            'Admin' => [
+                'view-dashboard',
+                'view-users',
+                'create-users',
+                'edit-users',
+                'delete-users',
+                'view-roles',
+                'create-roles',
+                'edit-roles',
+                'delete-roles',
+                'view-locations',
+                'manage-locations',
+                'view-organizations',
+                'manage-organizations',
+                'view-manual-tracking',
+                'view-books',
+                'create-books',
+                'edit-books',
+                'delete-books',
+                'view-print-orders',
+                'create-print-orders',
+                'manage-print-orders',
+                'view-packages',
+                'create-packages',
+                'update-package-status',
+                'view-warehouses',
+                'manage-warehouses',
+                'view-routes',
+                'manage-routes',
+                'view-distributions',
+                'create-distributions',
+                'update-distributions',
+                'view-trace',
+                'view-logs',
+            ],
+            'Org-Manager' => [
+                'view-dashboard',
+                'view-users',
+                'view-books',
+                'create-books',
+                'edit-books',
+                'view-manual-tracking',
+                'view-print-orders',
+                'create-print-orders',
+                'view-packages',
+                'create-packages',
+                'update-package-status',
+                'view-warehouses',
+                'view-routes',
+                'view-distributions',
+                'create-distributions',
+                'view-organizations',
+                'view-locations',
+            ],
+        ];
 
-        $role2 = Role::create(['name' => 'Admin']);
-        $role2->givePermissionTo(['role-list', 'role-create', 'role-edit', 'role-delete', 'view-role', 'user-list', 'user-create', 'user-edit', 'user-delete']);
+        foreach ($roles as $roleName => $permissions) {
+            $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
+            $role->syncPermissions($permissions);
+        }
 
-        $role3 = Role::create(['name' => 'Super-Admin']);
-        // gets all permissions via Gate::before rule; see AuthServiceProvider
+        $this->seedDemoUsers();
+    }
 
-        // create demo users
-        //superadmin
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@gmail.com',
-            'password' => bcrypt('test1234'),
-        ]);
-        $user->assignRole($role3);
+    protected function seedDemoUsers(): void
+    {
+        $nationalUserData = [
+            'superadmin@gmail.com' => ['name' => 'Super Admin', 'access_level' => User::ACCESS_LEVEL_NATIONAL, 'role' => 'Super-Admin'],
+            'admin@gmail.com' => ['name' => 'Admin User', 'access_level' => User::ACCESS_LEVEL_NATIONAL, 'role' => 'Admin'],
+            'test@gmail.com' => ['name' => 'Organization Manager', 'access_level' => User::ACCESS_LEVEL_NATIONAL, 'role' => 'Org-Manager'],
+        ];
 
-        // create a new user1
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Organization Manager',
-            'email' => 'test@gmail.com',
-            'password' => bcrypt('test1234'),
-        ]);
-        $user->assignRole($role1);
+        foreach ($nationalUserData as $email => $data) {
+            $user = User::query()->updateOrCreate(
+                ['email' => $email],
+                [
+                    'name' => $data['name'],
+                    'password' => bcrypt('test1234'),
+                    'access_level' => $data['access_level'],
+                    'country_id' => null,
+                    'region_id' => null,
+                    'zone_id' => null,
+                    'woreda_id' => null,
+                    'organization_id' => null,
+                    'email_verified_at' => now(),
+                ]
+            );
 
-        // create a new admin user2
-        $user = \App\Models\User::factory()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@gmail.com',
-            'password' => bcrypt('test1234'),
-        ]);
-        $user->assignRole($role2);
+            $user->syncRoles([$data['role']]);
+        }
     }
 }

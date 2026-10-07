@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Models\Woreda;
 use App\Models\Zone;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Str;
 
 class ManualDistributionFactory extends Factory
 {
@@ -27,11 +26,13 @@ class ManualDistributionFactory extends Factory
 
         $organization = Organization::query()->whereNotNull('region_id')->whereNotNull('zone_id')->inRandomOrder()->first();
         $destinationOrganization = Organization::query()->whereNotNull('region_id')->whereNotNull('zone_id')->whereKeyNot($organization?->id)->inRandomOrder()->first() ?? $organization;
+        $destinationRegion = $destinationOrganization?->region;
+        $destinationZone = $destinationOrganization?->zone;
 
         $actor = User::query()->whereIn('email', ['ops.manager@track.local', 'regional.officer@track.local', 'school.director@track.local'])->inRandomOrder()->first() ?? User::query()->first();
 
         return [
-            'reference' => 'MD-' . now()->format('YmdHis') . '-' . strtoupper(Str::random(4)),
+            'reference' => 'MD-' . strtoupper($this->faker->unique()->bothify('######??')),
             'distributed_by' => $actor?->id,
             'organization_id' => $organization?->id,
             'country_id' => $organization?->country_id ?? $country?->id,
@@ -43,8 +44,16 @@ class ManualDistributionFactory extends Factory
             'destination_region_id' => $destinationOrganization?->region_id ?? $region?->id,
             'destination_zone_id' => $destinationOrganization?->zone_id ?? $zone?->id,
             'destination_woreda_id' => $destinationOrganization?->woreda_id ?? $woreda?->id,
-            'distributed_at' => now(),
-            'remarks' => $this->faker->sentence(8),
+            'distributed_at' => $this->faker->dateTimeBetween('-60 days', 'now'),
+            'remarks' => sprintf(
+                'School delivery from %s (%s/%s) to %s (%s/%s).',
+                $organization?->name ?? 'source organization',
+                $region?->name ?? 'region',
+                $zone?->name ?? 'zone',
+                $destinationOrganization?->name ?? 'destination organization',
+                $destinationRegion?->name ?? 'region',
+                $destinationZone?->name ?? 'zone',
+            ),
         ];
     }
 }
