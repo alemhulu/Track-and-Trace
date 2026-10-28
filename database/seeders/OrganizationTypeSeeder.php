@@ -21,6 +21,7 @@ class OrganizationTypeSeeder extends Seeder
             ['name' => 'Woreda Bureau'],
             ['name' => 'School'],
             ['name' => 'Printer'],
+            ['name' => 'Logistics Hub'],
         ];
 
         foreach ($datas as $data) {

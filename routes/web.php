@@ -21,10 +21,19 @@ use App\Http\Livewire\Location\Woreda;
 use App\Http\Livewire\Location\Zone;
 use App\Http\Livewire\ManualTracking\Book\AddManualBook;
 use App\Http\Livewire\ManualTracking\Book\ListManualBook;
-use App\Http\Livewire\ManualTracking\Distribution\AddManualDistribution;
+use App\Http\Livewire\ManualTracking\Discrepancy\ManualDiscrepancyIndex;
+use App\Http\Controllers\ManualTracking\FieldAppController;
+use App\Http\Controllers\ManualTracking\ManualPrintController;
+use App\Http\Controllers\ManualTracking\ManualExportController;
+use App\Http\Livewire\ManualTracking\Oversight\RecordVisit;
+use App\Http\Livewire\ManualTracking\Oversight\ShowVisit;
+use App\Http\Livewire\ManualTracking\Oversight\VisitIndex;
+use App\Http\Livewire\ManualTracking\Scan\ScanAlertIndex;
+use App\Http\Livewire\ManualTracking\Scan\SortPackages;
 use App\Http\Livewire\ManualTracking\Distribution\ListManualDistribution;
-use App\Http\Livewire\ManualTracking\Package\AddManualPackage;
-use App\Http\Livewire\ManualTracking\Package\ListManualPackage;
+use App\Http\Livewire\ManualTracking\Shipment\CreateShipment;
+use App\Http\Livewire\ManualTracking\Shipment\ShowShipment;
+use App\Http\Livewire\ManualTracking\Stock\ManualStockIndex;
 use App\Http\Livewire\ManualTracking\Report\ManualTrackingReports;
 use App\Http\Livewire\Oganization\AddOrganization;
 use App\Http\Livewire\Oganization\AddStore;
@@ -33,6 +42,8 @@ use App\Http\Livewire\Oganization\OrganizationType;
 use App\Http\Livewire\Print\AddPrintOrder;
 use App\Http\Livewire\Print\ListPrintOrder;
 use App\Http\Livewire\PrintRequest;
+use App\Http\Livewire\School\SchoolIndex;
+use App\Http\Livewire\School\SchoolShow;
 use App\Http\Livewire\Route\AddRoute;
 use App\Http\Livewire\Route\ListRoute;
 use App\Http\Livewire\Route\ViewRoute;
@@ -55,6 +66,9 @@ Route::get('/', function () {
 
 Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified'])->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
+    Route::get('/dashboard/inventory', \App\Http\Controllers\InventoryDashboardController::class)->name('dashboard.inventory');
+    Route::get('/dashboard/distribution', \App\Http\Controllers\DistributionDashboardController::class)->name('dashboard.distribution');
+
 
     // Location routes
     Route::get('/location', function () {
@@ -132,11 +146,31 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
     Route::get('/manual-tracking/books/list', ListManualBook::class)->name('manual-tracking.books.list');
     Route::get('/manual-tracking/books/add', AddManualBook::class)->name('manual-tracking.books.add');
 
-    Route::get('/manual-tracking/packages/list', ListManualPackage::class)->name('manual-tracking.packages.list');
-    Route::get('/manual-tracking/packages/add', AddManualPackage::class)->name('manual-tracking.packages.add');
+    Route::get('/manual-tracking/stock', ManualStockIndex::class)->name('manual-tracking.stock.index');
 
     Route::get('/manual-tracking/distribution/list', ListManualDistribution::class)->name('manual-tracking.distribution.list');
-    Route::get('/manual-tracking/distribution/add', AddManualDistribution::class)->name('manual-tracking.distribution.add');
+    Route::get('/manual-tracking/distribution/add', CreateShipment::class)->name('manual-tracking.distribution.add');
+    Route::get('/manual-tracking/shipments/{shipment}', ShowShipment::class)->whereNumber('shipment')->name('manual-tracking.shipments.show');
+
+    Route::get('/manual-tracking/discrepancies', ManualDiscrepancyIndex::class)->name('manual-tracking.discrepancies.index');
+
+    Route::get('/field', [FieldAppController::class, 'show'])->name('field.app');
+    Route::get('/field/pack', [FieldAppController::class, 'pack'])->name('field.pack');
+    Route::post('/field/sync', [FieldAppController::class, 'sync'])->name('field.sync');
+
+    Route::get('/manual-tracking/shipments/{shipment}/print', [ManualPrintController::class, 'shipment'])->whereNumber('shipment')->name('manual-tracking.shipments.print');
+    Route::get('/manual-tracking/schools/{school}/print', [ManualPrintController::class, 'classSheet'])->whereNumber('school')->name('manual-tracking.schools.print');
+
+    Route::get('/manual-tracking/visits', VisitIndex::class)->name('manual-tracking.visits.index');
+    Route::get('/manual-tracking/visits/new/{school}', RecordVisit::class)->whereNumber('school')->name('manual-tracking.visits.create');
+    Route::get('/manual-tracking/visits/{visit}', ShowVisit::class)->whereNumber('visit')->name('manual-tracking.visits.show');
+    Route::get('/manual-tracking/exports/{type}', ManualExportController::class)->name('manual-tracking.exports');
+
+    Route::get('/manual-tracking/scan/sort', SortPackages::class)->name('manual-tracking.scan.sort');
+    Route::get('/manual-tracking/scan/alerts', ScanAlertIndex::class)->name('manual-tracking.scan.alerts');
+
+    Route::get('/manual-tracking/schools', SchoolIndex::class)->name('manual-tracking.schools.index');
+    Route::get('/manual-tracking/schools/{school}', SchoolShow::class)->whereNumber('school')->name('manual-tracking.schools.show');
 
     Route::get('/manual-tracking/reports', ManualTrackingReports::class)->name('manual-tracking.reports.index');
 

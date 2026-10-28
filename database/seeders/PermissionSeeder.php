@@ -185,9 +185,31 @@ class PermissionSeeder extends Seeder
             ],
         ];
 
+        // Names checked by UserController, RoleController and the side navigation;
+        // each is granted wherever its canonical permission is granted
+        $aliases = [
+            'view-users' => ['view-user', 'user-list'],
+            'create-users' => ['user-create'],
+            'edit-users' => ['user-edit'],
+            'delete-users' => ['user-delete'],
+            'view-roles' => ['view-role', 'role-list'],
+            'create-roles' => ['role-create'],
+            'edit-roles' => ['role-edit'],
+            'delete-roles' => ['role-delete'],
+        ];
+
+        foreach (array_merge(...array_values($aliases)) as $aliasName) {
+            Permission::firstOrCreate(['name' => $aliasName, 'guard_name' => 'web']);
+        }
+
         foreach ($roles as $roleName => $permissions) {
+            $withAliases = $permissions;
+            foreach ($permissions as $permission) {
+                array_push($withAliases, ...($aliases[$permission] ?? []));
+            }
+
             $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
-            $role->syncPermissions($permissions);
+            $role->syncPermissions($withAliases);
         }
 
         $this->seedDemoUsers();

@@ -2,6 +2,11 @@
     <nav class="flex-1 px-2 pb-4 space-y-1">
         <x-side-navigation.link href="/dashboard" icon="fi-rr-dashboard" name="Dashboard"
             :active="request()->routeIs('dashboard')" />
+        <x-side-navigation.link href="/dashboard/inventory" icon="fi-rr-chart-histogram" name="Inventory"
+            :active="request()->routeIs('dashboard.inventory')" />
+        <x-side-navigation.link href="/dashboard/distribution" icon="fi-rr-chart-connected" name="Distribution"
+            :active="request()->routeIs('dashboard.distribution')" />
+
 
         @canany(['view-user', 'user-list'])
         <x-side-navigation.link href="{{ route('users.index') }}" icon="fi-rr-user" name="Users"

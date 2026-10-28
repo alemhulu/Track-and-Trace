@@ -80,6 +80,7 @@ class ListDistribution extends Component
         ]);
     }
 
+
     protected function alertError($message)
     {
         $this->dispatchBrowserEvent('alert', [

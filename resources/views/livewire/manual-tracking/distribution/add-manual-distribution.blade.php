@@ -156,7 +156,7 @@
                         <x-form.select wire:model="destination_organization_id" id="destination_organization_id"
                             class="mt-1 block w-full">
                             <option value="">Select Organization</option>
-                            @foreach ($organizations as $organization)
+                            @foreach ($destinationOrganizations as $organization)
                             <option value="{{ $organization->id }}">{{ $organization->name }}</option>
                             @endforeach
                         </x-form.select>

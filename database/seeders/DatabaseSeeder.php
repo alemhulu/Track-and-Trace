@@ -24,6 +24,14 @@ class DatabaseSeeder extends Seeder
             return;
         }
 
+        if ($profile === 'showcase') {
+            $this->call([
+                \Database\Seeders\SectorSeeder::class,
+                \Database\Seeders\Showcase\ShowcaseSeeder::class,
+            ]);
+            return;
+        }
+
         $this->call($this->demoDomainSeeders());
     }
 

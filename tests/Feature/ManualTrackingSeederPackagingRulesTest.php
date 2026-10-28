@@ -8,30 +8,11 @@ use App\Models\ManualTracking\ManualDistribution;
 use App\Models\ManualTracking\ManualDistributionLine;
 use Database\Seeders\ManualTrackingSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
 
 class ManualTrackingSeederPackagingRulesTest extends TestCase
 {
     use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        if (! Schema::hasColumn('woredas', 'country_id') || ! Schema::hasColumn('woredas', 'region_id')) {
-            Schema::table('woredas', function (Blueprint $table): void {
-                if (! Schema::hasColumn('woredas', 'country_id')) {
-                    $table->unsignedBigInteger('country_id')->nullable()->after('code');
-                }
-
-                if (! Schema::hasColumn('woredas', 'region_id')) {
-                    $table->unsignedBigInteger('region_id')->nullable()->after('country_id');
-                }
-            });
-        }
-    }
 
     public function test_seeded_packages_follow_40_book_standard_and_partial_package_rules(): void
     {

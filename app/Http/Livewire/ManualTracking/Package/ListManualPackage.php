@@ -64,4 +64,11 @@ class ListManualPackage extends Component
             'message' => $message,
         ]);
     }
+
+    public function clearid()
+    {
+        $this->resetFields();
+    }
+
+    protected function resetFields() {}
 }

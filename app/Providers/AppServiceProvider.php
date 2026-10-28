@@ -24,6 +24,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        $this->loadMigrationsFrom(database_path('migrations/manual_tracking'));
+
         Builder::macro('search', function ($columns, string $searchTerm) {
             $this->where(function (Builder $query) use ($columns, $searchTerm) {
                 foreach (($columns) as $attribute) {

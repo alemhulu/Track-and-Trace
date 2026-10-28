@@ -15,8 +15,10 @@ class ListManualBook extends Component
     public function render()
     {
         $books = ManualBook::query()
-            ->withCount('packages')
-            ->orderByDesc('id')
+            ->with(['region:id,name', 'codes'])
+            ->withSum(['balances as student_on_hand' => fn ($query) => $query->where('edition', ManualBook::EDITION_STUDENT)], 'on_hand')
+            ->withSum(['balances as teacher_on_hand' => fn ($query) => $query->where('edition', ManualBook::EDITION_TEACHER)], 'on_hand')
+            ->orderBy('title')
             ->paginate($this->recordes);
 
         return view('livewire.manual-tracking.book.list-manual-book', [
@@ -31,17 +33,18 @@ class ListManualBook extends Component
 
     public function deleteBook($id)
     {
-        $book = ManualBook::query()->withCount('packages')->find($id);
+        $book = ManualBook::query()->withCount(['stockLedgers', 'distributionLines'])->find($id);
         if (! $book) {
-            return $this->alertError('Manual book not found.');
+            return $this->alertError('Title not found.');
         }
 
-        if ($book->packages_count > 0) {
-            return $this->alertError('Book has related packages and cannot be deleted.');
+        // Titles with history stay, so the ledger and shipments remain explainable
+        if ($book->stock_ledgers_count > 0 || $book->distribution_lines_count > 0) {
+            return $this->alertError('This title has stock or shipment history and cannot be deleted.');
         }
 
         $book->delete();
-        $this->alertSuccess('Manual book deleted successfully.');
+        $this->alertSuccess('Title deleted successfully.');
     }
 
     public function deleteId($id)

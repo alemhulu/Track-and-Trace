@@ -12,10 +12,26 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * A shipment of manual-tracked books from one organization to another.
+ * Dispatched by the sender, then counted and confirmed by the receiver.
+ * (`distributed_by` / `distributed_at` are the dispatcher and dispatch time.)
+ */
 class ManualDistribution extends ManualBaseModel
 {
+    public const STATUS_DISPATCHED = 'dispatched';
+    public const STATUS_RECEIVED = 'received';
+    public const STATUS_RECEIVED_WITH_DISCREPANCY = 'received_with_discrepancy';
+
+    public const STATUSES = [
+        self::STATUS_DISPATCHED => 'In Transit',
+        self::STATUS_RECEIVED => 'Received',
+        self::STATUS_RECEIVED_WITH_DISCREPANCY => 'Received with Discrepancy',
+    ];
+
     protected $fillable = [
         'reference',
+        'status',
         'distributed_by',
         'organization_id',
         'country_id',
@@ -29,11 +45,38 @@ class ManualDistribution extends ManualBaseModel
         'destination_woreda_id',
         'distributed_at',
         'remarks',
+        'carrier',
+        'vehicle_no',
+        'driver_name',
+        'driver_phone',
+        'waybill_no',
+        'expected_at',
+        'received_at',
+        'received_by',
+        'receipt_notes',
+        'client_uuid',
     ];
 
     protected $casts = [
         'distributed_at' => 'datetime',
+        'expected_at' => 'datetime',
+        'received_at' => 'datetime',
     ];
+
+    public function isInTransit(): bool
+    {
+        return $this->status === self::STATUS_DISPATCHED;
+    }
+
+    public function dispatcher(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'distributed_by');
+    }
+
+    public function receiver(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'received_by');
+    }
 
     public function lines(): HasMany
     {
@@ -100,14 +143,13 @@ class ManualDistribution extends ManualBaseModel
             return $query;
         }
 
-        if (! empty($actor->organization_id)) {
-            return $query->where(function (Builder $scoped) use ($actor): void {
-                $scoped->where('organization_id', $actor->organization_id)
-                    ->orWhere('destination_organization_id', $actor->organization_id)
-                    ->orWhere('distributed_by', $actor->id);
-            });
-        }
+        // Shipments leaving or arriving at any organization inside the actor's area
+        $organizationIds = Organization::query()->accessibleBy($actor)->select('id');
 
-        return $query->where('distributed_by', $actor->id);
+        return $query->where(function (Builder $scoped) use ($actor, $organizationIds): void {
+            $scoped->whereIn('organization_id', $organizationIds)
+                ->orWhereIn('destination_organization_id', $organizationIds)
+                ->orWhere('distributed_by', $actor->id);
+        });
     }
 }

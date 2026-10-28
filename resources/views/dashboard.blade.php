@@ -1,7 +1,7 @@
 <x-app-layout>
     @php
         $scopeLevel = $dashboardData['scopeLevel'] ?? 'user';
-        $kpiCards = $dashboardData['kpiCards'] ?? [];
+        $kpiGroups = $dashboardData['kpiGroups'] ?? [];
         $scopeBadgeClasses = match ($scopeLevel) {
             'national' => 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100',
             'region' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
@@ -30,10 +30,22 @@
 
     <div class="mb-8">
         <div class="w-auto">
-            <div class="overflow-hidden shadow-xl sm:rounded-lg dark:bg-gray-800">
+            <div class="overflow-hidden shadow-xl sm:rounded-lg dark:bg-gray-800"
+                x-data="{ tab: 'manual' }"
+                x-init="renderDashboardCharts(tab); $watch('tab', value => $nextTick(() => renderDashboardCharts(value)))">
+                <div class="px-5 pt-5">
+                    <x-dashboard.source-tabs />
+                </div>
+
+                @foreach (['manual', 'digital'] as $source)
+                <div id="panel-{{ $source }}" role="tabpanel" aria-labelledby="tab-{{ $source }}"
+                    x-show="tab === '{{ $source }}'" @if ($source !== 'manual') style="display: none" @endif>
                 <section class="p-5">
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
-                        @foreach ($kpiCards as $card)
+                    <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
+                        {{ $kpiGroups[$source]['subtitle'] }}
+                    </p>
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                        @foreach ($kpiGroups[$source]['cards'] as $card)
                             @php
                                 $cardStyle = $card['style'] ?? 'slate';
                                 $delta = $card['delta'] ?? ['label' => '0.0% vs previous 30 days', 'direction' => 'flat'];
@@ -75,22 +87,28 @@
                     </div>
                 </section>
 
+                @if ($source === 'manual' && ! empty($dashboardData['oversight']))
+                <x-dashboard.coverage :overview="$dashboardData['oversight']" :year="$dashboardData['academicYear']" />
+                @endif
+
                 <section>
                     <div class="grid grid-cols-6 gap-5 rounded-lg ">
                         <div class="col-span-6 p-4 bg-white rounded-lg shadow-md lg:col-span-4 dark:bg-gray-900"
-                            id="chart">
+                            id="{{ $source }}SubjectChart">
                         </div>
                         <div class="col-span-6 p-4 bg-white rounded-lg shadow-md lg:col-span-2 dark:bg-gray-900"
-                            id="chart3">
+                            id="{{ $source }}StatusChart">
                         </div>
                         <div class="col-span-6 p-4 bg-white rounded-lg shadow-md md:col-span-3 dark:bg-gray-900"
-                            id="chart1">
+                            id="{{ $source }}SummaryChart">
                         </div>
                         <div class="col-span-6 p-4 bg-white rounded-lg shadow-md md:col-span-3 dark:bg-gray-900"
-                            id="chart2">
+                            id="{{ $source }}NetworkChart">
                         </div>
                     </div>
                 </section>
+                </div>
+                @endforeach
 
                 {{-- <section class="rounded-lg">
                     <div class="px-4 py-5 mx-auto mb-3 sm:px-6 lg:px-8">
@@ -218,186 +236,72 @@
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     const dashboardData = @json($dashboardData);
+    const renderedDashboardTabs = new Set();
 
-    var options = {
-        colors: ['#688cff', '#005bfc', '#0617db'],
-        series: dashboardData.subjectChart.series,
-        chart: {
-            type: 'bar',
-            height: 350
-        },
-        plotOptions: {
-            bar: {
-                horizontal: false,
-                borderRadius: 3,
-                columnWidth: '75%',
-                endingShape: 'rounded'
-            },
-        },
-        dataLabels: {
-            enabled: false
-        },
-        stroke: {
-            show: true,
-            width: 1,
-            radius: 5,
-            colors: ['transparent']
-        },
-        xaxis: {
-            categories: dashboardData.subjectChart.categories,
-        },
-        fill: {
-            opacity: 1
-        },
-        tooltip: {
-            shared: true,
-            followCursor: true,
-            intersect: false
-        },
-        };
-
-        var chart = new ApexCharts(document.querySelector("#chart"), options);
-        chart.render();
-
-
-        var chart3 = {
-            colors: ['#688cff', '#005bfc', '#0617db', '#053385', '#2f9e44'],
-            series: dashboardData.printOrderChart.series,
-            chart: {
-                width: 380,
-                height: 350,
-                type: 'polarArea'
-            },
-            labels: dashboardData.printOrderChart.labels,
-            fill: {
-                opacity: 1
-            },
-            stroke: {
-                width: 1,
-                colors: undefined
-            },
-            yaxis: {
-                show: false
-            },
-            legend: {
-                position: 'bottom'
-            },
-            plotOptions: {
-                polarArea: {
-                    rings: {
-                        strokeWidth: 0
-                    },
-                    spokes: {
-                        strokeWidth: 0
-                    },
-                }
-            },
-            theme: {
-                monochrome: {
-                    enabled: true,
-                    shadeTo: 'dark',
-                    shadeIntensity: 0.6
-                }
-            }
-        };
-
-        var chart = new ApexCharts(document.querySelector("#chart3"), chart3);
-        chart.render();
-
-
-    var chart1 = {
+    const donutTitle = (chartData, color) => ({
         title: {
-                          text: 'Books',
-                          offsetX: 0,
-                          style: {
-                              fontSize: '24px',
-                              color:  '#6b0d00',
-                              cssClass: 'text-gray-500',
-                              fontFamily: 'Nunito'
-                              }
-                    },
-                    subtitle: {
-                      text: 'Books Information',
-                      offsetX: 1,
-                      style: {
-                      fontSize: '14px',
-                      color:  '#88888e',
-                      cssClass: 'text-gray-500',
-                      fontFamily: 'Nunito'
-                      }
-                  },
-                  colors: ["#ff4f36", "#b91e09", "#6b0d00", "#16a349"],
-          series: dashboardData.bookSummaryChart.series,
-          labels: dashboardData.bookSummaryChart.labels,
-          chart: {
-          type: 'donut',
-          height: 400
+            text: chartData.title,
+            offsetX: 0,
+            style: { fontSize: '24px', color: color, cssClass: 'text-gray-500', fontFamily: 'Nunito' }
         },
-        legend: {
-            position: 'bottom',
-            offsetY: 0,
-            height: 30,
-          },
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }]
-        };
-
-        var chart2 = {
-                     title: {
-                          text: 'Warehouses',
-                          offsetX: 0,
-                          style: {
-                              fontSize: '24px',
-                              color:  '#ac5709',
-                              cssClass: 'text-gray-500',
-                              fontFamily: 'Nunito'
-                              }
-                    },
-                    subtitle: {
-                      text: 'Warehouses Information',
-                      offsetX: 1,
-                      style: {
-                      fontSize: '14px',
-                      color:  '#88888e',
-                      cssClass: 'text-gray-500',
-                      fontFamily: 'Nunito'
-                      }
-                  },
-                  colors: ["#ffad00", "#ac5709", "#ff8500", "#16a349"],
-          series: dashboardData.warehouseChart.series,
-          labels: dashboardData.warehouseChart.labels,
-          chart: {
-          type: 'donut',
-          height: 400
+        subtitle: {
+            text: chartData.subtitle,
+            offsetX: 1,
+            style: { fontSize: '14px', color: '#88888e', cssClass: 'text-gray-500', fontFamily: 'Nunito' }
         },
-        legend: {
-            position: 'bottom',
-            offsetY: 0,
-            height: 30,
-          },
-        responsive: [{
-          breakpoint: 480,
-          options: {
-            chart: {
-              width: 200
-            },
-            legend: {
-              position: 'bottom'
-            }
-          }
-        }]
-        };
+    });
 
-        var chart = new ApexCharts(document.querySelector("#chart1"), chart1);chart.render();
-        var chart = new ApexCharts(document.querySelector("#chart2"), chart2);chart.render();
+    const donutOptions = (chartData, colors, titleColor) => ({
+        ...donutTitle(chartData, titleColor),
+        colors: colors,
+        series: chartData.series,
+        labels: chartData.labels,
+        chart: { type: 'donut', height: 400 },
+        legend: { position: 'bottom', offsetY: 0, height: 30 },
+        responsive: [{ breakpoint: 480, options: { chart: { width: 200 }, legend: { position: 'bottom' } } }]
+    });
+
+    const chartFactories = {
+        Subject: (chartData) => ({
+            colors: ['#688cff', '#005bfc', '#0617db'],
+            series: chartData.series,
+            chart: { type: 'bar', height: 350 },
+            plotOptions: { bar: { horizontal: false, borderRadius: 3, columnWidth: '75%', endingShape: 'rounded' } },
+            dataLabels: { enabled: false },
+            stroke: { show: true, width: 1, radius: 5, colors: ['transparent'] },
+            xaxis: { categories: chartData.categories },
+            fill: { opacity: 1 },
+            tooltip: { shared: true, followCursor: true, intersect: false },
+        }),
+        Status: (chartData) => ({
+            colors: ['#688cff', '#005bfc', '#0617db', '#053385', '#2f9e44'],
+            series: chartData.series,
+            chart: { width: 380, height: 350, type: 'polarArea' },
+            title: { text: chartData.title, align: 'center' },
+            labels: chartData.labels,
+            fill: { opacity: 1 },
+            stroke: { width: 1, colors: undefined },
+            yaxis: { show: false },
+            legend: { position: 'bottom' },
+            plotOptions: { polarArea: { rings: { strokeWidth: 0 }, spokes: { strokeWidth: 0 } } },
+            theme: { monochrome: { enabled: true, shadeTo: 'dark', shadeIntensity: 0.6 } }
+        }),
+        Summary: (chartData) => donutOptions(chartData, ['#ff4f36', '#b91e09', '#6b0d00', '#16a349'], '#6b0d00'),
+        Network: (chartData) => donutOptions(chartData, ['#ffad00', '#ac5709', '#ff8500', '#16a349'], '#ac5709'),
+    };
+
+    // Charts are drawn the first time their tab is shown; ApexCharts cannot size a hidden container
+    function renderDashboardCharts(source) {
+        if (renderedDashboardTabs.has(source)) {
+            return;
+        }
+        renderedDashboardTabs.add(source);
+
+        const charts = dashboardData.charts[source];
+        Object.entries(chartFactories).forEach(([name, factory]) => {
+            const chartData = charts[name.toLowerCase()];
+            new ApexCharts(document.querySelector(`#${source}${name}Chart`), factory(chartData)).render();
+        });
+    }
 
 </script>

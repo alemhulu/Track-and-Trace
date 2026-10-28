@@ -3,7 +3,6 @@
 namespace App\Http\Livewire\ManualTracking\Report;
 
 use App\Models\ManualTracking\ManualBook;
-use App\Models\ManualTracking\ManualBookPackage;
 use App\Models\ManualTracking\ManualDistribution;
 use App\Models\ManualTracking\ManualDistributionLine;
 use App\Models\ManualTracking\ManualStockLedger;
@@ -53,7 +52,7 @@ class ManualTrackingReports extends Component
 
         $summary = [
             'total_books' => ManualBook::count(),
-            'total_packages' => ManualBookPackage::count(),
+            'total_packages' => (int) ManualDistributionLine::sum('full_packages'),
             'total_distributions' => ManualDistribution::count(),
             'total_quantity_distributed' => (int) ManualDistributionLine::sum('quantity'),
             'stock_in_total' => (int) ManualStockLedger::where('movement_qty', '>', 0)->sum('movement_qty'),

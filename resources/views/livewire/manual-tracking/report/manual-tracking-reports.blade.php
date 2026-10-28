@@ -13,6 +13,17 @@
         </div>
     </div>
 
+    <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200 dark:bg-gray-800 dark:border-gray-700">
+        <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Ministry exports</p>
+        <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">CSV files for Excel, limited to your area, for the current academic year ({{ \App\Support\AcademicYear::label(\App\Support\AcademicYear::current()) }}).</p>
+        <div class="flex flex-wrap gap-2">
+            @foreach (\App\Http\Controllers\ManualTracking\ManualExportController::TYPES as $type => $label)
+            <a href="{{ route('manual-tracking.exports', $type) }}"
+                class="px-3 py-2 text-sm font-medium text-blue-700 rounded-md bg-blue-50 hover:bg-blue-100 dark:bg-gray-700 dark:text-blue-300">{{ $label }}</a>
+            @endforeach
+        </div>
+    </div>
+
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200">
             <p class="text-sm text-slate-500">Books</p>
@@ -23,10 +34,10 @@
         </div>
 
         <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200">
-            <p class="text-sm text-slate-500">Packages</p>
+            <p class="text-sm text-slate-500">Packages Dispatched</p>
             <div class="flex items-end justify-between mt-2">
                 <h3 class="text-3xl font-bold text-slate-900">{{ number_format($summary['total_packages']) }}</h3>
-                <span class="px-2 py-1 text-xs font-medium rounded-full bg-violet-100 text-violet-700">Batches</span>
+                <span class="px-2 py-1 text-xs font-medium rounded-full bg-violet-100 text-violet-700">Full</span>
             </div>
         </div>
 

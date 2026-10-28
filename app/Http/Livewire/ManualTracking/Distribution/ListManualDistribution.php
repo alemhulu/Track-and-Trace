@@ -8,11 +8,27 @@ use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+/**
+ * Shipments list. Shipments are never deleted: they have moved stock, so mistakes are
+ * corrected through discrepancies rather than by removing the record.
+ */
 class ListManualDistribution extends Component
 {
     use WithPagination;
 
     public $recordes = 10;
+    public $statusFilter = '';
+    public $search = '';
+
+    public function updatingStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {
@@ -22,67 +38,25 @@ class ListManualDistribution extends Component
         }
 
         $distributions = ManualDistribution::query()
-            ->withCount('lines')
             ->withSum('lines', 'quantity')
-            ->with([
-                'lines.book',
-                'organization',
-                'destinationOrganization',
-                'country',
-                'region',
-                'zone',
-                'woreda',
-                'destinationCountry',
-                'destinationRegion',
-                'destinationZone',
-                'destinationWoreda',
-            ])
+            ->withSum('lines', 'teacher_guides')
+            ->withCount(['lines as open_discrepancies_count' => fn ($query) => $query->whereHas(
+                'discrepancies',
+                fn ($discrepancy) => $discrepancy->where('status', 'open')
+            )])
+            ->with(['lines.book:id,title', 'organization:id,name', 'destinationOrganization:id,name'])
             ->accessibleBy($actor)
+            ->when($this->statusFilter, fn ($query) => $query->where('status', $this->statusFilter))
+            ->when($this->search, fn ($query) => $query->where(fn ($match) => $match
+                ->where('reference', 'like', '%' . $this->search . '%')
+                ->orWhere('waybill_no', 'like', '%' . $this->search . '%')))
+            ->orderByDesc('distributed_at')
             ->orderByDesc('id')
             ->paginate($this->recordes);
 
         return view('livewire.manual-tracking.distribution.list-manual-distribution', [
             'distributions' => $distributions,
+            'canCreate' => Gate::allows('create', ManualDistribution::class),
         ])->extends('main.manual-tracking.index');
-    }
-
-    public function deleteDistribution($id)
-    {
-        $distribution = ManualDistribution::query()->withCount('lines')->find($id);
-        if (! $distribution) {
-            return $this->alertError('Distribution not found.');
-        }
-
-        if (Gate::denies('delete', $distribution)) {
-            return $this->alertError('You are not authorized to delete this distribution.');
-        }
-
-        if ($distribution->lines_count > 0) {
-            return $this->alertError('Distribution has line items and cannot be deleted.');
-        }
-
-        $distribution->delete();
-        $this->alertSuccess('Distribution deleted successfully.');
-    }
-
-    public function deleteId($id)
-    {
-        return $this->deleteDistribution($id);
-    }
-
-    private function alertError($message)
-    {
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'error',
-            'message' => $message,
-        ]);
-    }
-
-    private function alertSuccess($message)
-    {
-        $this->dispatchBrowserEvent('alert', [
-            'type' => 'success',
-            'message' => $message,
-        ]);
     }
 }

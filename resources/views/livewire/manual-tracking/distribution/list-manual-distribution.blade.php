@@ -1,200 +1,77 @@
 <div>
-    <div class="mb-3 flex justify-end">
+    @php
+        $statusClasses = [
+            'dispatched' => 'bg-amber-100 text-amber-800',
+            'received' => 'bg-green-100 text-green-800',
+            'received_with_discrepancy' => 'bg-red-100 text-red-800',
+        ];
+    @endphp
+
+    <div class="flex flex-col gap-3 mb-3 md:flex-row md:items-end md:justify-between">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 md:w-2/3">
+            <div>
+                <x-jet-label for="search" value="Reference or waybill" />
+                <x-jet-input wire:model.debounce.400ms="search" id="search" type="search" class="block w-full mt-1" />
+            </div>
+            <div>
+                <x-jet-label for="statusFilter" value="Status" />
+                <x-form.select wire:model="statusFilter" id="statusFilter">
+                    <option value="">All statuses</option>
+                    @foreach (\App\Models\ManualTracking\ManualDistribution::STATUSES as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
+                </x-form.select>
+            </div>
+        </div>
+
+        @if ($canCreate)
         <a href="{{ route('manual-tracking.distribution.add') }}"
-            class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium">
-            Add Distribution Entry
+            class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+            New Shipment
         </a>
+        @endif
     </div>
 
-    <x-form.table title="Manual Distribution Entries">
+    <x-form.table title="Shipments">
         <x-slot name="tableHeaders">
-            <x-data-table.th scope="col">#</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Reference') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Date') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Subject') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Source') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Destination') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Lines') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Quantity') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Remark') }}</x-data-table.th>
-            <x-data-table.th scope="col" class="sr-only">{{ __('Action') }}</x-data-table.th>
+            <x-data-table.th scope="col">{{ __('Dispatched') }}</x-data-table.th>
+            <x-data-table.th scope="col">{{ __('From') }}</x-data-table.th>
+            <x-data-table.th scope="col">{{ __('To') }}</x-data-table.th>
+            <x-data-table.th scope="col">{{ __('Titles') }}</x-data-table.th>
+            <x-data-table.th scope="col">{{ __('Sent (SB / TG)') }}</x-data-table.th>
+            <x-data-table.th scope="col">{{ __('Status') }}</x-data-table.th>
         </x-slot>
 
         <x-slot name="tableRows">
             @forelse ($distributions as $distribution)
             <x-data-table.tr>
-                <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">{{ $loop->iteration }}
+                <td class="px-5 py-2 text-sm font-semibold whitespace-nowrap">
+                    <a href="{{ route('manual-tracking.shipments.show', $distribution->id) }}"
+                        class="text-blue-700 hover:underline dark:text-blue-300">{{ $distribution->reference }}</a>
                 </td>
-                <td class="px-5 py-2 whitespace-nowrap text-sm font-semibold text-gray-700 dark:text-gray-100">
-                    {{ $distribution->reference }}
+                <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">
+                    {{ optional($distribution->distributed_at)->format('Y-m-d') ?: '-' }}
                 </td>
-                <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
-                    {{ optional($distribution->distributed_at)->format('Y-m-d H:i') ?: '-' }}
+                <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">{{ $distribution->organization->name ?? '-' }}</td>
+                <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">{{ $distribution->destinationOrganization->name ?? '-' }}</td>
+                <td class="px-5 py-2 text-sm text-gray-700 dark:text-gray-100">
+                    {{ $distribution->lines->pluck('book.title')->filter()->join(', ') ?: '-' }}
                 </td>
-                <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
-                    @php
-                    $subjects = $distribution->lines
-                    ->pluck('book.subject_name')
-                    ->filter()
-                    ->unique()
-                    ->values()
-                    ->all();
-                    @endphp
-                    {{ empty($subjects) ? '-' : implode(', ', $subjects) }}
+                <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">
+                    {{ number_format((int) $distribution->lines_sum_quantity) }} / {{ number_format((int) $distribution->lines_sum_teacher_guides) }}
                 </td>
-                <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
-                    @php
-                    $sourceLabel = $distribution->organization?->name
-                    ?? $distribution->woreda?->name
-                    ?? $distribution->zone?->name
-                    ?? $distribution->region?->name
-                    ?? $distribution->country?->name
-                    ?? '-';
-                    @endphp
-                    <a href="#viewDistribution{{ $distribution->id }}"
-                        class="font-medium text-blue-700 hover:text-blue-800 hover:underline dark:text-blue-300 dark:hover:text-blue-200">
-                        {{ $sourceLabel }}
-                    </a>
-                </td>
-                <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
-                    @php
-                    $destinationLabel = $distribution->destinationOrganization?->name
-                    ?? $distribution->destinationWoreda?->name
-                    ?? $distribution->destinationZone?->name
-                    ?? $distribution->destinationRegion?->name
-                    ?? $distribution->destinationCountry?->name
-                    ?? '-';
-                    @endphp
-                    <a href="#viewDistribution{{ $distribution->id }}"
-                        class="font-medium text-blue-700 hover:text-blue-800 hover:underline dark:text-blue-300 dark:hover:text-blue-200">
-                        {{ $destinationLabel }}
-                    </a>
-                </td>
-                <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
-                    {{ number_format($distribution->lines_count) }}
-                </td>
-                <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
-                    {{ number_format((int) ($distribution->lines_sum_quantity ?? 0)) }}
-                </td>
-                <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
-                    {{ $distribution->remarks ?: '-' }}
-                </td>
-                <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $distribution->id }}" view="#viewDistribution{{ $distribution->id }}"
-                        delete="deleteDistribution" link />
+                <td class="px-5 py-2 text-sm whitespace-nowrap">
+                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusClasses[$distribution->status] ?? 'bg-gray-100 text-gray-700' }}">
+                        {{ \App\Models\ManualTracking\ManualDistribution::STATUSES[$distribution->status] ?? $distribution->status }}
+                    </span>
+                    @if ($distribution->open_discrepancies_count)
+                    <span class="ml-1 text-xs text-red-600">{{ $distribution->open_discrepancies_count }} open</span>
+                    @endif
                 </td>
             </x-data-table.tr>
-
-            <x-data-table.modal name="viewDistribution{{ $distribution->id }}" maxWidth="3xl" :buttons="false">
-                <x-slot name="title">Distribution Detail</x-slot>
-                <x-slot name="body">
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                <div class="text-xs text-gray-500">Reference</div>
-                                <div class="mt-1 font-semibold text-gray-800">{{ $distribution->reference }}</div>
-                            </div>
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                <div class="text-xs text-gray-500">Distributed At</div>
-                                <div class="mt-1 font-semibold text-gray-800">
-                                    {{ optional($distribution->distributed_at)->format('Y-m-d H:i') ?: '-' }}
-                                </div>
-                            </div>
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                <div class="text-xs text-gray-500">Book</div>
-                                <div class="mt-1 font-semibold text-gray-800">
-                                    @php $firstLineBook = $distribution->lines->first()?->book; @endphp
-                                    {{ $firstLineBook?->title ?? '-' }}
-                                </div>
-                            </div>
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                <div class="text-xs text-gray-500">Subject</div>
-                                <div class="mt-1 font-semibold text-gray-800">
-                                    @php $subjectNames =
-                                    $distribution->lines->pluck('book.subject_name')->filter()->unique()->values()->all();
-                                    @endphp
-                                    {{ empty($subjectNames) ? '-' : implode(', ', $subjectNames) }}
-                                </div>
-                            </div>
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                                <div class="text-xs text-gray-500">Total Quantity</div>
-                                <div class="mt-1 font-semibold text-gray-800">
-                                    {{ number_format((int) ($distribution->lines_sum_quantity ?? 0)) }}
-                                </div>
-                            </div>
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 sm:col-span-2">
-                                <div class="text-xs text-gray-500">Source</div>
-                                @php
-                                $sourceChain = collect([
-                                $distribution->country?->name,
-                                $distribution->region?->name,
-                                $distribution->zone?->name,
-                                $distribution->woreda?->name,
-                                ])->filter()->values()->all();
-                                @endphp
-                                <div class="mt-1 font-semibold text-gray-800">
-                                    {{ $distribution->organization?->name ?? $distribution->country?->name ?? 'N/A' }}
-                                    @if (! empty($sourceChain))
-                                    <div class="mt-1 text-xs text-gray-600">
-                                        {{ implode(' > ', $sourceChain) }}
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                            <div class="rounded-lg border border-gray-200 bg-gray-50 p-3 sm:col-span-2">
-                                <div class="text-xs text-gray-500">Destination</div>
-                                @php
-                                $destinationChain = collect([
-                                $distribution->destinationCountry?->name,
-                                $distribution->destinationRegion?->name,
-                                $distribution->destinationZone?->name,
-                                $distribution->destinationWoreda?->name,
-                                ])->filter()->values()->all();
-                                @endphp
-                                <div class="mt-1 font-semibold text-gray-800">
-                                    {{ $distribution->destinationOrganization?->name ?? $distribution->destinationCountry?->name ?? 'N/A' }}
-                                    @if (! empty($destinationChain))
-                                    <div class="mt-1 text-xs text-gray-600">
-                                        {{ implode(' > ', $destinationChain) }}
-                                    </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-
-                        @if ($distribution->lines->isNotEmpty())
-                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                            <div class="text-xs text-gray-500 mb-2">Distribution Lines</div>
-                            <div class="space-y-2">
-                                @foreach ($distribution->lines as $line)
-                                <div
-                                    class="flex flex-col gap-1 rounded border border-gray-200 bg-white p-2 sm:flex-row sm:items-center sm:justify-between">
-                                    <div>
-                                        <div class="font-semibold text-gray-800">{{ $line->book->title ?? '-' }}</div>
-                                        <div class="text-xs text-gray-500">
-                                            {{ $line->package ? 'Package: ' . $line->package->package_code : 'Book only' }}
-                                        </div>
-                                    </div>
-                                    <div class="text-sm font-semibold text-gray-700">Qty:
-                                        {{ number_format($line->quantity) }}
-                                    </div>
-                                </div>
-                                @endforeach
-                            </div>
-                        </div>
-                        @endif
-
-                        @if ($distribution->remarks)
-                        <div class="rounded-lg border border-gray-200 bg-gray-50 p-3">
-                            <div class="text-xs text-gray-500">Remarks</div>
-                            <div class="mt-1 text-sm text-gray-800">{{ $distribution->remarks }}</div>
-                        </div>
-                        @endif
-                    </div>
-                </x-slot>
-            </x-data-table.modal>
             @empty
-            <x-data-table.empty colspan="10" />
+            <x-data-table.empty colspan="7" />
             @endforelse
         </x-slot>
 

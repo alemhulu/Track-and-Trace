@@ -9,6 +9,8 @@ use App\Models\Package;
 use App\Models\PrintOrder;
 use App\Models\User;
 use App\Models\WareHouse;
+use App\Services\Oversight\OversightService;
+use App\Support\AcademicYear;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -19,26 +21,32 @@ class DashboardController extends Controller
         /** @var User|null $actor */
         $actor = auth()->user();
 
-        $kpiCards = $this->buildKpiCards($actor);
-        $subjectChart = $this->buildSubjectChart($actor);
-        $printOrderChart = $this->buildPrintOrderChart($actor);
-        $bookSummaryChart = $this->buildBookSummaryChart($actor);
-        $warehouseChart = $this->buildWarehouseChart($actor);
-
         return view('dashboard', [
             'dashboardData' => [
                 'scopeLabel' => $this->buildScopeLabel($actor),
                 'scopeLevel' => $this->buildScopeLevel($actor),
-                'kpiCards' => $kpiCards,
-                'subjectChart' => $subjectChart,
-                'printOrderChart' => $printOrderChart,
-                'bookSummaryChart' => $bookSummaryChart,
-                'warehouseChart' => $warehouseChart,
+                'kpiGroups' => $this->buildKpiGroups($actor),
+                'oversight' => $actor ? app(OversightService::class)->overview($actor, AcademicYear::current()) : null,
+                'academicYear' => AcademicYear::label(AcademicYear::current()),
+                'charts' => [
+                    'digital' => [
+                        'subject' => $this->buildDigitalSubjectChart($actor),
+                        'status' => $this->buildPrintOrderChart($actor),
+                        'summary' => $this->buildDigitalBookSummaryChart($actor),
+                        'network' => $this->buildWarehouseChart($actor),
+                    ],
+                    'manual' => [
+                        'subject' => $this->buildManualSubjectChart($actor),
+                        'status' => $this->buildManualShipmentStatusChart($actor),
+                        'summary' => $this->buildManualBookSummaryChart($actor),
+                        'network' => $this->buildManualNetworkChart($actor),
+                    ],
+                ],
             ],
         ]);
     }
 
-    protected function buildKpiCards(?User $actor): array
+    protected function buildKpiGroups(?User $actor): array
     {
         $currentPeriodStart = now()->subDays(30);
         $previousPeriodStart = now()->subDays(60);
@@ -171,56 +179,80 @@ class DashboardController extends Controller
             ->count();
 
         return [
-            [
-                'label' => 'Print Orders',
-                'value' => $printOrders,
-                'hint' => 'Digital print workflow orders',
-                'style' => 'indigo',
-                'delta' => $this->buildDelta($printOrdersCurrentWindow, $printOrdersPreviousWindow),
+            'digital' => [
+                'title' => 'Digital Tracking',
+                'subtitle' => 'Barcoded packages moving through the warehouse chain',
+                'cards' => [
+                    [
+                        'label' => 'Print Orders',
+                        'value' => $printOrders,
+                        'hint' => 'Orders placed with printers',
+                        'style' => 'indigo',
+                        'delta' => $this->buildDelta($printOrdersCurrentWindow, $printOrdersPreviousWindow),
+                    ],
+                    [
+                        'label' => 'Distributed Books',
+                        'value' => $digitalDistributed,
+                        'hint' => 'Copies sent between warehouses',
+                        'style' => 'blue',
+                        'delta' => $this->buildDelta($digitalDistributedCurrentWindow, $digitalDistributedPreviousWindow),
+                    ],
+                    [
+                        'label' => 'Stock on Hand',
+                        'value' => $digitalStock,
+                        'hint' => 'Copies held in warehouses',
+                        'style' => 'emerald',
+                        'delta' => $this->buildDelta($digitalStockCurrentWindow, $digitalStockPreviousWindow),
+                    ],
+                    [
+                        'label' => 'Warehouses',
+                        'value' => $warehouses,
+                        'hint' => 'Registered storage locations',
+                        'style' => 'amber',
+                        'delta' => $this->buildDelta($warehousesCurrentWindow, $warehousesPreviousWindow),
+                    ],
+                ],
             ],
-            [
-                'label' => 'Distributed Books',
-                'value' => $digitalDistributed + $manualDistributed,
-                'hint' => 'Digital + manual distributed quantity',
-                'style' => 'blue',
-                'delta' => $this->buildDelta(
-                    $digitalDistributedCurrentWindow + $manualDistributedCurrentWindow,
-                    $digitalDistributedPreviousWindow + $manualDistributedPreviousWindow
-                ),
-            ],
-            [
-                'label' => 'Stock on Hand',
-                'value' => $digitalStock + $manualStock,
-                'hint' => 'Current digital + manual stock balance',
-                'style' => 'emerald',
-                'delta' => $this->buildDelta(
-                    $digitalStockCurrentWindow + $manualStockCurrentWindow,
-                    $digitalStockPreviousWindow + $manualStockPreviousWindow
-                ),
-            ],
-            [
-                'label' => 'Warehouses',
-                'value' => $warehouses + $manualOrganizations,
-                'hint' => 'Warehouses + manual-tracked organizations',
-                'style' => 'amber',
-                'delta' => $this->buildDelta(
-                    $warehousesCurrentWindow + $manualOrganizationsCurrentWindow,
-                    $warehousesPreviousWindow + $manualOrganizationsPreviousWindow
-                ),
-            ],
-            [
-                'label' => 'Manual Movements',
-                'value' => $manualMovements,
-                'hint' => 'Manual distribution records',
-                'style' => 'teal',
-                'delta' => $this->buildDelta($manualMovementsCurrentWindow, $manualMovementsPreviousWindow),
+            'manual' => [
+                'title' => 'Manual Tracking',
+                'subtitle' => 'Supplementary books recorded by hand',
+                'cards' => [
+                    [
+                        'label' => 'Distributed Books',
+                        'value' => $manualDistributed,
+                        'hint' => 'Copies handed out manually',
+                        'style' => 'teal',
+                        'delta' => $this->buildDelta($manualDistributedCurrentWindow, $manualDistributedPreviousWindow),
+                    ],
+                    [
+                        'label' => 'Stock on Hand',
+                        'value' => $manualStock,
+                        'hint' => 'Copies left in manual packages',
+                        'style' => 'emerald',
+                        'delta' => $this->buildDelta($manualStockCurrentWindow, $manualStockPreviousWindow),
+                    ],
+                    [
+                        'label' => 'Organizations',
+                        'value' => $manualOrganizations,
+                        'hint' => 'Senders and receivers of manual stock',
+                        'style' => 'amber',
+                        'delta' => $this->buildDelta($manualOrganizationsCurrentWindow, $manualOrganizationsPreviousWindow),
+                    ],
+                    [
+                        'label' => 'Distribution Records',
+                        'value' => $manualMovements,
+                        'hint' => 'Manual distributions logged',
+                        'style' => 'slate',
+                        'delta' => $this->buildDelta($manualMovementsCurrentWindow, $manualMovementsPreviousWindow),
+                    ],
+                ],
             ],
         ];
     }
 
-    protected function buildSubjectChart(?User $actor): array
+    protected function buildDigitalSubjectChart(?User $actor): array
     {
-        $digitalPrinted = PrintOrder::query()
+        $printed = PrintOrder::query()
             ->selectRaw('LOWER(TRIM(subjects.name)) as subject_key, SUM(COALESCE(print_orders.no_of_books, 0)) as total')
             ->join('books', 'books.id', '=', 'print_orders.book_id')
             ->join('subjects', 'subjects.id', '=', 'books.subject_id')
@@ -228,131 +260,138 @@ class DashboardController extends Controller
             ->groupBy('subject_key')
             ->pluck('total', 'subject_key');
 
-        $digitalDistributed = Package::query()
+        $distributed = Package::query()
             ->selectRaw('LOWER(TRIM(subjects.name)) as subject_key, SUM(COALESCE(packages.sent, 0)) as total')
             ->join('subjects', 'subjects.id', '=', 'packages.subject_id')
             ->when($actor, fn ($query) => $query->accessibleBy($actor))
             ->groupBy('subject_key')
             ->pluck('total', 'subject_key');
 
-        $digitalStored = Package::query()
+        $stored = Package::query()
             ->selectRaw('LOWER(TRIM(subjects.name)) as subject_key, SUM(COALESCE(packages.balance, 0)) as total')
             ->join('subjects', 'subjects.id', '=', 'packages.subject_id')
             ->when($actor, fn ($query) => $query->accessibleBy($actor))
             ->groupBy('subject_key')
             ->pluck('total', 'subject_key');
 
-        $manualPrinted = $this->manualStockLedgerScope($actor)
-            ->join('manual_books', 'manual_books.id', '=', 'manual_stock_ledgers.manual_book_id')
-            ->selectRaw('LOWER(TRIM(manual_books.subject_name)) as subject_key, SUM(COALESCE(manual_stock_ledgers.movement_qty, 0)) as total')
-            ->where('manual_stock_ledgers.movement_qty', '>', 0)
-            ->whereNotNull('manual_books.subject_name')
-            ->groupBy('subject_key')
-            ->pluck('total', 'subject_key');
+        return $this->subjectChart(['Printed' => $printed, 'Distributed' => $distributed, 'Store' => $stored]);
+    }
 
+    protected function buildManualSubjectChart(?User $actor): array
+    {
         $manualDistributionIds = (clone $this->manualDistributionScope($actor))->select('id');
-
-        $manualDistributed = ManualDistributionLine::query()
-            ->selectRaw('LOWER(TRIM(manual_books.subject_name)) as subject_key, SUM(COALESCE(manual_distribution_lines.quantity, 0)) as total')
+        $lineTotals = fn (string $column) => ManualDistributionLine::query()
+            ->selectRaw("LOWER(TRIM(manual_books.subject_name)) as subject_key, SUM(COALESCE(manual_distribution_lines.{$column}, 0)) as total")
             ->join('manual_books', 'manual_books.id', '=', 'manual_distribution_lines.manual_book_id')
             ->whereIn('manual_distribution_lines.manual_distribution_id', $manualDistributionIds)
             ->whereNotNull('manual_books.subject_name')
             ->groupBy('subject_key')
             ->pluck('total', 'subject_key');
 
-        $manualStored = $this->manualStockLedgerScope($actor)
+        // Ledger entries are recorded against the holder, so a scoped sum is stock held in the area
+        $stored = $this->manualStockLedgerScope($actor)
             ->join('manual_books', 'manual_books.id', '=', 'manual_stock_ledgers.manual_book_id')
             ->selectRaw('LOWER(TRIM(manual_books.subject_name)) as subject_key, SUM(COALESCE(manual_stock_ledgers.movement_qty, 0)) as total')
             ->whereNotNull('manual_books.subject_name')
             ->groupBy('subject_key')
-            ->pluck('total', 'subject_key');
+            ->pluck('total', 'subject_key')
+            ->map(fn ($total) => max(0, (int) $total));
 
-        $subjectKeys = collect([
-            ...$digitalPrinted->keys()->all(),
-            ...$digitalDistributed->keys()->all(),
-            ...$digitalStored->keys()->all(),
-            ...$manualPrinted->keys()->all(),
-            ...$manualDistributed->keys()->all(),
-            ...$manualStored->keys()->all(),
-        ])->filter()->unique()->sort()->values();
+        return $this->subjectChart([
+            'Dispatched' => $lineTotals('quantity'),
+            'Received' => $lineTotals('received_quantity'),
+            'In Stock' => $stored,
+        ]);
+    }
+
+    /**
+     * @param  array<string, \Illuminate\Support\Collection>  $seriesTotals  series name => totals keyed by subject
+     */
+    protected function subjectChart(array $seriesTotals): array
+    {
+        $subjectKeys = collect($seriesTotals)
+            ->flatMap(fn ($totals) => $totals->keys()->all())
+            ->filter()
+            ->unique()
+            ->sort()
+            ->values();
 
         if ($subjectKeys->isEmpty()) {
             $subjectKeys = collect(['no data']);
         }
 
-        $categories = [];
-        $printedSeries = [];
-        $distributedSeries = [];
-        $storedSeries = [];
-
-        foreach ($subjectKeys as $subjectKey) {
-            $displayName = $this->toDisplaySubjectName($subjectKey);
-
-            $printedTotal = (int) ($digitalPrinted[$subjectKey] ?? 0) + (int) ($manualPrinted[$subjectKey] ?? 0);
-            $distributedTotal = (int) ($digitalDistributed[$subjectKey] ?? 0) + (int) ($manualDistributed[$subjectKey] ?? 0);
-            $storedTotal = (int) ($digitalStored[$subjectKey] ?? 0) + (int) ($manualStored[$subjectKey] ?? 0);
-
-            $categories[] = $displayName;
-            $printedSeries[] = $printedTotal;
-            $distributedSeries[] = $distributedTotal;
-            $storedSeries[] = $storedTotal;
-        }
-
         return [
-            'categories' => $categories,
-            'series' => [
-                ['name' => 'Printed', 'data' => $printedSeries],
-                ['name' => 'Distributed', 'data' => $distributedSeries],
-                ['name' => 'Store', 'data' => $storedSeries],
-            ],
+            'categories' => $subjectKeys->map(fn ($subjectKey) => $this->toDisplaySubjectName($subjectKey))->all(),
+            'series' => collect($seriesTotals)
+                ->map(fn ($totals, $name) => [
+                    'name' => $name,
+                    'data' => $subjectKeys->map(fn ($subjectKey) => (int) ($totals[$subjectKey] ?? 0))->all(),
+                ])
+                ->values()
+                ->all(),
         ];
     }
 
     protected function buildPrintOrderChart(?User $actor): array
     {
         $printOrderQuery = PrintOrder::query()->when($actor, fn ($query) => $query->accessibleBy($actor));
-        $manualDistributionQuery = $this->manualDistributionScope($actor);
 
         return [
+            'title' => 'Print Orders',
             'series' => [
                 (int) (clone $printOrderQuery)->count(),
                 (int) (clone $printOrderQuery)->where('request_status', 1)->count(),
                 (int) (clone $printOrderQuery)->where('request_status', 4)->count(),
                 (int) (clone $printOrderQuery)->where('request_status', 2)->count(),
-                (int) (clone $manualDistributionQuery)->count(),
             ],
-            'labels' => ['Orders', 'Accepted', 'Rejected', 'Printed', 'Manual Movements'],
+            'labels' => ['Orders', 'Accepted', 'Rejected', 'Printed'],
         ];
     }
 
-    protected function buildBookSummaryChart(?User $actor): array
+    protected function buildManualShipmentStatusChart(?User $actor): array
     {
-        $digitalStock = (int) Package::query()
-            ->when($actor, fn ($query) => $query->accessibleBy($actor))
-            ->sum('balance');
-
-        $digitalDistributed = (int) Package::query()
-            ->when($actor, fn ($query) => $query->accessibleBy($actor))
-            ->sum('sent');
-
-        $digitalOnStudentHand = (int) Package::query()
-            ->when($actor, fn ($query) => $query->accessibleBy($actor))
-            ->sum('received');
-
-        $manualStock = (int) $this->manualStockLedgerScope($actor)->sum('movement_qty');
-        $manualDistributionIds = (clone $this->manualDistributionScope($actor))->select('id');
-        $manualDistributed = (int) ManualDistributionLine::query()
-            ->whereIn('manual_distribution_lines.manual_distribution_id', $manualDistributionIds)
-            ->sum('quantity');
-        $manualOnHand = max(0, $manualStock);
+        $counts = $this->manualDistributionScope($actor)
+            ->selectRaw('status, COUNT(*) as total')
+            ->groupBy('status')
+            ->pluck('total', 'status');
 
         return [
+            'title' => 'Shipments',
+            'series' => collect(ManualDistribution::STATUSES)->keys()->map(fn ($status) => (int) ($counts[$status] ?? 0))->all(),
+            'labels' => array_values(ManualDistribution::STATUSES),
+        ];
+    }
+
+    protected function buildDigitalBookSummaryChart(?User $actor): array
+    {
+        $packages = fn () => Package::query()->when($actor, fn ($query) => $query->accessibleBy($actor));
+
+        return [
+            'title' => 'Books',
+            'subtitle' => 'Digital book information',
             'series' => [
-                $digitalStock + $manualOnHand,
-                $digitalDistributed + $manualDistributed,
-                $digitalOnStudentHand + $manualOnHand,
+                (int) $packages()->sum('balance'),
+                (int) $packages()->sum('sent'),
+                (int) $packages()->sum('received'),
             ],
             'labels' => ['Stock', 'Distributed', 'On Students Hand'],
+        ];
+    }
+
+    protected function buildManualBookSummaryChart(?User $actor): array
+    {
+        $lines = fn () => ManualDistributionLine::query()
+            ->whereIn('manual_distribution_lines.manual_distribution_id', (clone $this->manualDistributionScope($actor))->select('id'));
+
+        return [
+            'title' => 'Books',
+            'subtitle' => 'Manual book information',
+            'series' => [
+                max(0, (int) $this->manualStockLedgerScope($actor)->sum('movement_qty')),
+                (int) $lines()->whereHas('distribution', fn ($shipment) => $shipment->where('status', ManualDistribution::STATUS_DISPATCHED))->sum('quantity'),
+                (int) $lines()->sum('received_quantity'),
+            ],
+            'labels' => ['In Stock', 'In Transit', 'Received'],
         ];
     }
 
@@ -360,15 +399,29 @@ class DashboardController extends Controller
     {
         $warehouseQuery = WareHouse::query()->when($actor, fn ($query) => $query->accessibleBy($actor));
 
-        $manualOrgCount = $this->manualOrganizationCount($actor);
-
         return [
+            'title' => 'Warehouses',
+            'subtitle' => 'Warehouses information',
             'series' => [
                 (int) (clone $warehouseQuery)->count(),
                 (int) (clone $warehouseQuery)->distinct('branch')->count('branch'),
-                (int) ($manualOrgCount ?? 0),
             ],
-            'labels' => ['Warehouses', 'Stores', 'Manual Tracking Organizations'],
+            'labels' => ['Warehouses', 'Stores'],
+        ];
+    }
+
+    protected function buildManualNetworkChart(?User $actor): array
+    {
+        $distributions = $this->manualDistributionScope($actor)->get(['organization_id', 'destination_organization_id']);
+
+        return [
+            'title' => 'Organizations',
+            'subtitle' => 'Manual tracking organizations',
+            'series' => [
+                $distributions->pluck('organization_id')->filter()->unique()->count(),
+                $distributions->pluck('destination_organization_id')->filter()->unique()->count(),
+            ],
+            'labels' => ['Sending', 'Receiving'],
         ];
     }
 
@@ -399,28 +452,28 @@ class DashboardController extends Controller
         $level = $actor->effectiveAccessLevel();
 
         if ($level === User::ACCESS_LEVEL_REGION && ! empty($actor->region_id)) {
-            return $query->where('region_id', $actor->region_id);
+            return $query->where('manual_stock_ledgers.region_id', $actor->region_id);
         }
 
         if ($level === User::ACCESS_LEVEL_ZONE && ! empty($actor->zone_id)) {
-            return $query->where('region_id', $actor->region_id)->where('zone_id', $actor->zone_id);
+            return $query->where('manual_stock_ledgers.region_id', $actor->region_id)->where('manual_stock_ledgers.zone_id', $actor->zone_id);
         }
 
         if ($level === User::ACCESS_LEVEL_WOREDA && ! empty($actor->woreda_id)) {
             return $query
-                ->where('region_id', $actor->region_id)
-                ->where('zone_id', $actor->zone_id)
-                ->where('woreda_id', $actor->woreda_id);
+                ->where('manual_stock_ledgers.region_id', $actor->region_id)
+                ->where('manual_stock_ledgers.zone_id', $actor->zone_id)
+                ->where('manual_stock_ledgers.woreda_id', $actor->woreda_id);
         }
 
         if ($level === User::ACCESS_LEVEL_ORGANIZATION && ! empty($actor->organization_id)) {
             return $query->where(function (Builder $scope) use ($actor): void {
-                $scope->where('organization_id', $actor->organization_id)
-                    ->orWhere('acted_by', $actor->id);
+                $scope->where('manual_stock_ledgers.organization_id', $actor->organization_id)
+                    ->orWhere('manual_stock_ledgers.acted_by', $actor->id);
             });
         }
 
-        return $query->where('acted_by', $actor->id);
+        return $query->where('manual_stock_ledgers.acted_by', $actor->id);
     }
 
     protected function manualDistributionScope(?User $actor): Builder

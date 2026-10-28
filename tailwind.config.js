@@ -26,6 +26,10 @@ module.exports = {
             green: colors.green,
             indigo: colors.sky,
             pink: colors.pink,
+            amber: colors.amber,
+            teal: colors.teal,
+            purple: colors.purple,
+            orange: colors.orange,
             white: colors.white,
         },
         extend: {

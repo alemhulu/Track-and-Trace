@@ -11,10 +11,11 @@
 
 ### Database Seed Profiles
 
-The application supports two seed profiles through the `SEED_PROFILE` environment variable:
+The application supports three seed profiles through the `SEED_PROFILE` environment variable:
 
 - `demo` (default): Seeds reference data and full demo domain data.
 - `minimal`: Seeds reference data and one minimal connected domain graph for faster local setup.
+- `showcase`: Seeds one realistic academic year end to end, for demos and UI work (see below).
 
 Common commands:
 
@@ -27,12 +28,36 @@ SEED_PROFILE=minimal php artisan migrate:fresh --seed
 
 # Explicit demo profile
 SEED_PROFILE=demo php artisan migrate:fresh --seed
+
+# Realistic end-to-end showcase
+SEED_PROFILE=showcase php artisan migrate:fresh --seed
 ```
 
 Notes:
 
-- Reference seeders always run in both profiles (permissions, locations, organization types, ownership, grade and subject references).
+- Reference seeders always run in every profile (permissions, locations, organization types, ownership, grade and subject references).
 - Profile switching only changes the domain-level data volume and shape.
+
+#### Showcase profile
+
+`database/seeders/Showcase/` builds the whole chain for the current Ethiopian academic year:
+print order → printer → MoE → regional bureau → zone → woreda → school.
+
+- 3 regions, 8 zones/sub-cities and 13 woredas (real administrative units), each with an
+  education office, plus 26 schools (one primary and one secondary per woreda), 2 printers and the MoE.
+- 64 curriculum textbooks (grades 1-12). Every leg conserves quantities: a warehouse receives
+  exactly what its parent sent, and child barcode ranges sit inside the parent's range.
+- Grades are at different stages: delivered to schools, held at the woreda, in transit,
+  printed only, plus requested, accepted and rejected print orders.
+- Dates are relative to the day you seed, spread over the last ~4 months, so dashboards show trends.
+- One user per office at the matching access level (password `test1234`), for example
+  `moe.officer@tracktrace.test` (national), `oromia.bureau@…` (region), `east.shewa.zone@…` (zone),
+  `adama.woreda.01@…` (woreda), `empde.store@…` (printer) and `director.<school>@…` (school).
+- Routes for every hop, a distribution plan per school, student hand-out records and manual
+  tracking stock whose ledger reconciles with package balances.
+- QR and barcode SVGs are written to `storage/app/public/printOrders` for the first two packages of each order.
+
+`tests/Feature/ShowcaseSeederTest.php` checks these invariants.
 
 ### Factory Usage In Feature Tests
 

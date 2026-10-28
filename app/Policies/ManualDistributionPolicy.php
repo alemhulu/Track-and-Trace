@@ -19,10 +19,11 @@ class ManualDistributionPolicy
 
     public function create(User $user): bool
     {
+        // Which source they may dispatch from is checked per shipment
         return $user->hasNationalAccess()
             || $user->hasRole('Admin')
-            || $user->hasRole('Org-Manager')
-            || ! empty($user->organization_id);
+            || ! empty($user->organization_id)
+            || ! empty($user->region_id);
     }
 
     public function update(User $user, ManualDistribution $distribution): bool

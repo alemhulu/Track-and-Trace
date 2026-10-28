@@ -25,7 +25,7 @@
                 <td class="px-5 py-2 whitespace-nowrap">
                     <x-organization.location country="{{ $record->country->name ?? ''}}"
                         region="{{ $record->region->name ?? ''}}" zone="{{ $record->zone->name ?? '-------' }}"
-                        woreda="{{ $record->woreda->name }}" />
+                        woreda="{{ $record->woreda->name ?? '-------' }}" />
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
@@ -34,10 +34,14 @@
                         phone="{{ $record->contact->phone ?? '-------' }}" />
                 </td>
 
-                <td class=" px-5 py-2 whitespace-nowrap">
-                    <x-button class="py-1 text-blue-900 font-bold" btnType="info">
+                <td class="px-5 py-2 whitespace-nowrap">
+                    <x-button class="py-1 font-bold text-blue-900" btnType="info">
                         {{ $record->organizationType->name ?? ''}}
                     </x-button>
+                    @if (($record->organizationType->name ?? null) === 'School')
+                    <a href="{{ route('manual-tracking.schools.show', $record->id) }}"
+                        class="block mt-1 text-xs text-blue-700 hover:underline dark:text-blue-300">School records</a>
+                    @endif
                 </td>
 
                 <td class="px-5 py-2">

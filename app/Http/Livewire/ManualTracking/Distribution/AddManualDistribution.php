@@ -25,6 +25,7 @@ class AddManualDistribution extends Component
     public $books = [];
     public $packages = [];
     public $organizations = [];
+    public $destinationOrganizations = [];
     public $countries = [];
     public $sourceRegions = [];
     public $sourceZones = [];
@@ -232,8 +233,9 @@ class AddManualDistribution extends Component
 
     public function updatedDestinationOrganizationId($organizationId)
     {
+        // Destinations are not limited to the actor's scope
         $organization = $organizationId
-            ? Organization::query()->accessibleBy($this->currentActor())->find($organizationId)
+            ? Organization::query()->find($organizationId)
             : null;
 
         $this->destination_country_id = $organization?->country_id;
@@ -256,12 +258,13 @@ class AddManualDistribution extends Component
             : [];
         $this->destinationZones = [];
         $this->destinationWoredas = [];
+        $this->hydrateDestinationOrganizations();
     }
 
     public function updatedDestinationRegionId($regionId)
     {
         $region = $regionId
-            ? $this->applyActorScopeToRegionQuery(Region::query())->find($regionId)
+            ? Region::query()->find($regionId)
             : null;
 
         $this->destination_organization_id = null;
@@ -276,12 +279,13 @@ class AddManualDistribution extends Component
             ? Zone::query()->where('region_id', $regionId)->orderBy('name')->get(['id', 'name'])
             : [];
         $this->destinationWoredas = [];
+        $this->hydrateDestinationOrganizations();
     }
 
     public function updatedDestinationZoneId($zoneId)
     {
         $zone = $zoneId
-            ? $this->applyActorScopeToZoneQuery(Zone::query())->find($zoneId)
+            ? Zone::query()->find($zoneId)
             : null;
 
         $this->destination_organization_id = null;
@@ -301,15 +305,17 @@ class AddManualDistribution extends Component
         $this->destinationWoredas = $zoneId
             ? Woreda::query()->where('zone_id', $zoneId)->orderBy('name')->get(['id', 'name'])
             : [];
+        $this->hydrateDestinationOrganizations();
     }
 
     public function updatedDestinationWoredaId($woredaId)
     {
         $woreda = $woredaId
-            ? $this->applyActorScopeToWoredaQuery(Woreda::query()->with('zone:id,region_id,country_id'))->find($woredaId)
+            ? Woreda::query()->with('zone:id,region_id,country_id')->find($woredaId)
             : null;
         if (! $woreda) {
             $this->destination_organization_id = null;
+            $this->hydrateDestinationOrganizations();
 
             return;
         }
@@ -365,22 +371,23 @@ class AddManualDistribution extends Component
 
     private function hydrateDestinationOptions(): void
     {
+        // Destinations are not limited to the actor's scope; only hierarchy consistency applies
         $this->destinationRegions = $this->destination_country_id
-            ? $this->applyActorScopeToRegionQuery(Region::query())
+            ? Region::query()
             ->where('country_id', $this->destination_country_id)
             ->orderBy('name')
             ->get(['id', 'name'])
             : [];
 
         $this->destinationZones = $this->destination_region_id
-            ? $this->applyActorScopeToZoneQuery(Zone::query())
+            ? Zone::query()
             ->where('region_id', $this->destination_region_id)
             ->orderBy('name')
             ->get(['id', 'name'])
             : [];
 
         $this->destinationWoredas = $this->destination_zone_id
-            ? $this->applyActorScopeToWoredaQuery(Woreda::query())
+            ? Woreda::query()
             ->where('zone_id', $this->destination_zone_id)
             ->orderBy('name')
             ->get(['id', 'name'])
@@ -403,6 +410,26 @@ class AddManualDistribution extends Component
             $this->destination_woreda_id = null;
             $this->destination_organization_id = null;
         }
+
+        $this->hydrateDestinationOrganizations();
+    }
+
+    private function hydrateDestinationOrganizations(): void
+    {
+        // Narrow by the most specific destination location selected
+        $query = Organization::query();
+
+        if ($this->destination_woreda_id) {
+            $query->where('woreda_id', $this->destination_woreda_id);
+        } elseif ($this->destination_zone_id) {
+            $query->where('zone_id', $this->destination_zone_id);
+        } elseif ($this->destination_region_id) {
+            $query->where('region_id', $this->destination_region_id);
+        } elseif ($this->destination_country_id) {
+            $query->where('country_id', $this->destination_country_id);
+        }
+
+        $this->destinationOrganizations = $query->orderBy('name')->get(['id', 'name']);
     }
 
     public function saveDistribution()
@@ -424,10 +451,10 @@ class AddManualDistribution extends Component
 
             DB::transaction(function () use ($actor, $data): void {
                 $package = null;
-                $book = ManualBook::query()->findOrFail($data['manual_book_id']);
+                $book = ManualBook::query()->lockForUpdate()->findOrFail($data['manual_book_id']);
 
                 if (! empty($data['manual_book_package_id'])) {
-                    $package = ManualBookPackage::query()->findOrFail($data['manual_book_package_id']);
+                    $package = ManualBookPackage::query()->lockForUpdate()->findOrFail($data['manual_book_package_id']);
                     if ((int) $package->current_balance < (int) $data['quantity']) {
                         throw new \RuntimeException('Insufficient package balance for this distribution.');
                     }
@@ -572,6 +599,9 @@ class AddManualDistribution extends Component
 
     private function validateAndNormalizeHierarchy(array $data, $actor): array
     {
+        // Recompute from the server; the public actor_* properties can be altered by the client
+        $this->hydrateActorScope($actor);
+
         $source = [
             'organization_id' => $data['organization_id'] ?? $actor->organization_id ?? null,
             'country_id' => $data['country_id'] ?? $actor->country_id ?? null,
@@ -599,11 +629,12 @@ class AddManualDistribution extends Component
         $source = $this->resolveHierarchyChain($source, 'source');
         $destination = $this->resolveHierarchyChain($destination, 'destination');
 
-        $this->enforceActorScope($source, 'source');
-        $this->enforceActorScope($destination, 'destination');
-
-        $source = $this->alignWithOrganization($source, 'source');
+        // Source must lie inside the actor's access scope; the destination only has to
+        // exist and be internally consistent, since books are sent outside one's own area
+        $source = $this->alignWithOrganization($source, 'source', $actor);
         $destination = $this->alignWithOrganization($destination, 'destination');
+
+        $this->enforceSourceScope($source, $actor);
 
         $data['organization_id'] = $source['organization_id'];
         $data['country_id'] = $source['country_id'];
@@ -685,14 +716,14 @@ class AddManualDistribution extends Component
         return $scope;
     }
 
-    private function alignWithOrganization(array $scope, string $label): array
+    private function alignWithOrganization(array $scope, string $label, ?User $restrictTo = null): array
     {
         if (empty($scope['organization_id'])) {
             return $scope;
         }
 
         $organization = Organization::query()
-            ->accessibleBy($this->currentActor())
+            ->when($restrictTo, fn ($query) => $query->accessibleBy($restrictTo))
             ->find($scope['organization_id']);
         if (! $organization) {
             throw new \RuntimeException(ucfirst($label) . ' organization is invalid.');
@@ -719,49 +750,87 @@ class AddManualDistribution extends Component
         return $scope;
     }
 
-    private function enforceActorScope(array $scope, string $label): void
+    private function enforceSourceScope(array $scope, User $actor): void
     {
-        if ($this->actor_country_id && ! empty($scope['country_id']) && (int) $scope['country_id'] !== (int) $this->actor_country_id) {
-            throw new \RuntimeException(ucfirst($label) . ' country is outside your access scope.');
+        if ($this->actorScopeLevel($actor) === User::ACCESS_LEVEL_NATIONAL) {
+            return;
         }
 
-        if ($this->actor_region_id && ! empty($scope['region_id']) && (int) $scope['region_id'] !== (int) $this->actor_region_id) {
-            throw new \RuntimeException(ucfirst($label) . ' region is outside your access scope.');
+        // Every location the actor is pinned to must be matched exactly; leaving a
+        // field empty would widen the source beyond the actor's scope
+        $pinned = array_filter([
+            'country' => [$this->actor_country_id, $scope['country_id'] ?? null],
+            'region' => [$this->actor_region_id, $scope['region_id'] ?? null],
+            'zone' => [$this->actor_zone_id, $scope['zone_id'] ?? null],
+            'woreda' => [$this->actor_woreda_id, $scope['woreda_id'] ?? null],
+            'organization' => [$this->actor_organization_id, $scope['organization_id'] ?? null],
+        ], fn (array $pair) => $pair[0] !== null);
+
+        if (empty($pinned)) {
+            throw new \RuntimeException('Your account has no assigned location or organization, so it cannot record distributions.');
         }
 
-        if ($this->actor_zone_id && ! empty($scope['zone_id']) && (int) $scope['zone_id'] !== (int) $this->actor_zone_id) {
-            throw new \RuntimeException(ucfirst($label) . ' zone is outside your access scope.');
+        foreach ($pinned as $name => [$actorValue, $sourceValue]) {
+            if ((int) $sourceValue !== $actorValue) {
+                throw new \RuntimeException('Source ' . $name . ' is outside your access scope.');
+            }
+        }
+    }
+
+    private function actorScopeLevel(User $actor): string
+    {
+        // Mirrors ManualDistribution::scopeAccessibleBy, where Admin sees everything
+        if ($actor->hasNationalAccess() || $actor->hasRole('Admin')) {
+            return User::ACCESS_LEVEL_NATIONAL;
         }
 
-        if ($this->actor_woreda_id && ! empty($scope['woreda_id']) && (int) $scope['woreda_id'] !== (int) $this->actor_woreda_id) {
-            throw new \RuntimeException(ucfirst($label) . ' woreda is outside your access scope.');
-        }
-
-        if ($this->actor_organization_id && ! empty($scope['organization_id']) && (int) $scope['organization_id'] !== (int) $this->actor_organization_id) {
-            throw new \RuntimeException(ucfirst($label) . ' organization is outside your access scope.');
-        }
+        return $actor->effectiveAccessLevel();
     }
 
     private function hydrateActorScope(User $actor): void
     {
+        $this->actor_country_id = null;
+        $this->actor_region_id = null;
+        $this->actor_zone_id = null;
+        $this->actor_woreda_id = null;
+        $this->actor_organization_id = null;
+
+        $level = $this->actorScopeLevel($actor);
+
+        if ($level === User::ACCESS_LEVEL_NATIONAL) {
+            return;
+        }
+
+        if ($level === User::ACCESS_LEVEL_ORGANIZATION) {
+            $organization = $actor->organization_id
+                ? Organization::query()
+                ->select('id', 'country_id', 'region_id', 'zone_id', 'woreda_id')
+                ->find($actor->organization_id)
+                : null;
+
+            // The organization's own location is authoritative for organization-level users
+            if ($organization) {
+                $this->actor_organization_id = (int) $organization->id;
+                $this->actor_country_id = $this->normalizeNullableId($organization->country_id);
+                $this->actor_region_id = $this->normalizeNullableId($organization->region_id);
+                $this->actor_zone_id = $this->normalizeNullableId($organization->zone_id);
+                $this->actor_woreda_id = $this->normalizeNullableId($organization->woreda_id);
+            }
+
+            return;
+        }
+
+        // Region, zone and woreda users are pinned down to their own level only
+        $rank = User::accessLevelRank($level);
+
         $this->actor_country_id = $this->normalizeNullableId($actor->country_id);
         $this->actor_region_id = $this->normalizeNullableId($actor->region_id);
-        $this->actor_zone_id = $this->normalizeNullableId($actor->zone_id);
-        $this->actor_woreda_id = $this->normalizeNullableId($actor->woreda_id);
-        $this->actor_organization_id = $this->normalizeNullableId($actor->organization_id);
-
-        if ($this->actor_organization_id) {
-            $organization = Organization::query()
-                ->select('id', 'country_id', 'region_id', 'zone_id', 'woreda_id')
-                ->find($this->actor_organization_id);
-
-            if ($organization) {
-                $this->actor_country_id = $this->actor_country_id ?: $this->normalizeNullableId($organization->country_id);
-                $this->actor_region_id = $this->actor_region_id ?: $this->normalizeNullableId($organization->region_id);
-                $this->actor_zone_id = $this->actor_zone_id ?: $this->normalizeNullableId($organization->zone_id);
-                $this->actor_woreda_id = $this->actor_woreda_id ?: $this->normalizeNullableId($organization->woreda_id);
-            }
-        }
+        $this->actor_zone_id = $rank <= User::accessLevelRank(User::ACCESS_LEVEL_ZONE)
+            ? $this->normalizeNullableId($actor->zone_id)
+            : null;
+        $this->actor_woreda_id = $rank <= User::accessLevelRank(User::ACCESS_LEVEL_WOREDA)
+            ? $this->normalizeNullableId($actor->woreda_id)
+            : null;
     }
 
     private function applyActorScopeToRegionQuery($query)
