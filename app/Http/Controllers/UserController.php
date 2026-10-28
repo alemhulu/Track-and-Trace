@@ -31,13 +31,45 @@ class UserController extends Controller
     {
         $actor = Auth::user();
 
+        $filterOptions = [
+            'accessLevels' => config('access_hierarchy.levels', []),
+            'roles' => Role::query()->orderBy('name')->pluck('name')->all(),
+            // Same region scoping as formContext(), without loading the other location lists.
+            'regions' => Region::query()
+                ->when(! $actor->hasNationalAccess() && ! empty($actor->country_id), fn ($query) => $query->where('country_id', $actor->country_id))
+                ->when(! $actor->hasNationalAccess() && ! empty($actor->region_id), fn ($query) => $query->where('id', $actor->region_id))
+                ->orderBy('name')
+                ->pluck('name', 'id')
+                ->all(),
+        ];
+
+        // Unknown values are ignored rather than rejected, so a stale link still shows a list.
+        $filters = [
+            'q' => trim((string) $request->input('q', '')),
+            'access_level' => in_array($request->input('access_level'), $filterOptions['accessLevels'], true) ? $request->input('access_level') : '',
+            'role' => in_array($request->input('role'), $filterOptions['roles'], true) ? $request->input('role') : '',
+            'region_id' => array_key_exists((int) $request->input('region_id'), $filterOptions['regions']) ? (int) $request->input('region_id') : '',
+        ];
+
         $data = User::query()
             ->with(['organization:id,name', 'region:id,name', 'zone:id,name', 'woreda:id,name'])
             ->accessibleBy($actor)
+            ->when($filters['q'] !== '', function ($query) use ($filters) {
+                $term = '%' . $filters['q'] . '%';
+                $query->where(function ($query) use ($term) {
+                    $query->where('name', 'like', $term)
+                        ->orWhere('email', 'like', $term)
+                        ->orWhereHas('organization', fn ($organization) => $organization->where('name', 'like', $term));
+                });
+            })
+            ->when($filters['access_level'], fn ($query, $level) => $query->where('access_level', $level))
+            ->when($filters['role'], fn ($query, $role) => $query->role($role))
+            ->when($filters['region_id'], fn ($query, $regionId) => $query->where('region_id', $regionId))
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate($perPage = $this->perPage($request))
+            ->withQueryString();
 
-        return view('users.index', compact('data'))->with('i', ($request->input('page', 1) - 1) * 10);
+        return view('users.index', compact('data', 'perPage', 'filters', 'filterOptions'))->with('i', ($request->input('page', 1) - 1) * $perPage);
     }
 
     /**
@@ -427,5 +459,15 @@ class UserController extends Controller
             'woredas' => $woredas->orderBy('name')->get(),
             'organizations' => $organizations->orderBy('name')->get(),
         ];
+    }
+
+    /**
+     * Rows per page from ?per_page, limited to the sizes the table offers.
+     */
+    private function perPage(Request $request): int
+    {
+        $perPage = (int) $request->input('per_page', 10);
+
+        return in_array($perPage, [5, 10, 25, 50, 100], true) ? $perPage : 10;
     }
 }

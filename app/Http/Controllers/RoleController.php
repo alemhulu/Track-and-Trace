@@ -30,9 +30,10 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::orderBy('id','DESC')->paginate(5);
-        return view('roles.index',compact('roles'))
-            ->with('i', ($request->input('page', 1) - 1) * 5);
+        $perPage = $this->perPage($request);
+        $roles = Role::orderBy('id','DESC')->paginate($perPage)->withQueryString();
+        return view('roles.index',compact('roles', 'perPage'))
+            ->with('i', ($request->input('page', 1) - 1) * $perPage);
     }
 
     /**
@@ -134,5 +135,15 @@ class RoleController extends Controller
         DB::table("roles")->where('id',$id)->delete();
         return redirect()->route('roles.index')
                         ->with('success','Role deleted successfully');
+    }
+
+    /**
+     * Rows per page from ?per_page, limited to the sizes the table offers.
+     */
+    private function perPage(Request $request): int
+    {
+        $perPage = (int) $request->input('per_page', 10);
+
+        return in_array($perPage, [5, 10, 25, 50, 100], true) ? $perPage : 10;
     }
 }

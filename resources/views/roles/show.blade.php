@@ -1,35 +1,20 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2>{{ __('Users Management') }}</h2>
+        <x-ui.breadcrumbs :items="['Roles & Permissions' => 'roles.index', $role->name => null]" class="mb-2" />
+        <h2>{{ $role->name }}</h2>
+        <p class="page-subtitle">{{ $rolePermissions->count() }} {{ \Illuminate\Support\Str::plural('permission', $rolePermissions->count()) }} granted</p>
     </x-slot>
 
     <x-slot name="actionButton">
-        <a href="{{ route('roles.index') }}">
-            <x-button class="flex ">
-                <i class="flex fi-rr-arrow-left mr-2"></i>
-                {{ __('Back') }}
-            </x-button>
+        <a href="{{ route('roles.index') }}" class="btn-secondary">
+            <i class="flex fi fi-rr-arrow-left"></i> {{ __('Back to roles') }}
+        </a>
+        <a href="{{ route('roles.edit', $role->id) }}" class="btn-primary">
+            <i class="flex fi fi-rr-edit"></i> {{ __('Edit role') }}
         </a>
     </x-slot>
 
-
-
-    <div class="row">
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>Name:</strong>
-                {{ $role->name }}
-            </div>
-        </div>
-        <div class="col-xs-12 col-sm-12 col-md-12">
-            <div class="form-group">
-                <strong>Permissions:</strong>
-                @if(!empty($rolePermissions))
-                @foreach($rolePermissions as $v)
-                <label class="label label-success">{{ $v->name }},</label>
-                @endforeach
-                @endif
-            </div>
-        </div>
-    </div>
+    <x-ui.card title="Permissions" subtitle="Grouped by the module they apply to." icon="fi-rr-key">
+        <x-admin.permission-picker :permissions="$rolePermissions" readonly />
+    </x-ui.card>
 </x-app-layout>
