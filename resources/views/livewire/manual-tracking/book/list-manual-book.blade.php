@@ -1,10 +1,12 @@
 <div>
+    @if ($canManage)
     <div class="mb-3 flex justify-end">
         <a href="{{ route('manual-tracking.books.add') }}"
             class="btn-primary">
             Add Title
         </a>
     </div>
+    @endif
 
     <x-form.table title="Titles">
         <x-slot name="tableHeaders">
@@ -49,7 +51,9 @@
                     {{ $book->has_teacher_guide ? number_format((int) $book->teacher_on_hand) : '—' }}
                 </td>
                 <td class="px-5 py-2">
+                    @if ($canManage)
                     <x-action.table-button id="{{ $book->id }}" edit="editBook" delete="deleteBook" link />
+                    @endif
                 </td>
             </x-data-table.tr>
             @empty

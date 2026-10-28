@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -45,5 +46,14 @@ class Zone extends Model
     public function wareHouses()
     {
         return $this->hasMany(WareHouse::class);
-    } 
+    }
+
+    public function scopeAccessibleBy(Builder $query, User $actor): Builder
+    {
+        $scope = $actor->locationScope();
+
+        return $query
+            ->when($scope['region_id'] !== null, fn (Builder $zones) => $zones->where('region_id', $scope['region_id']))
+            ->when($scope['zone_id'] !== null, fn (Builder $zones) => $zones->whereKey($scope['zone_id']));
+    }
 }

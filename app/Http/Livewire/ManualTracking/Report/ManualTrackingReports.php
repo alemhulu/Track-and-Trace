@@ -6,6 +6,9 @@ use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualDistribution;
 use App\Models\ManualTracking\ManualDistributionLine;
 use App\Models\ManualTracking\ManualStockLedger;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -14,7 +17,7 @@ class ManualTrackingReports extends Component
 {
     public function render()
     {
-        $locationSummary = ManualDistribution::query()
+        $locationSummary = $this->shipments()
             ->selectRaw('COALESCE(regions.name, CONCAT("Region ", manual_distributions.region_id)) as region_name, COALESCE(zones.name, CONCAT("Zone ", manual_distributions.zone_id)) as zone_name, COALESCE(woredas.name, CONCAT("Woreda ", manual_distributions.woreda_id)) as woreda_name, SUM(manual_distribution_lines.quantity) as total_qty')
             ->join('manual_distribution_lines', 'manual_distributions.id', '=', 'manual_distribution_lines.manual_distribution_id')
             ->leftJoin('regions', 'regions.id', '=', 'manual_distributions.region_id')
@@ -25,14 +28,14 @@ class ManualTrackingReports extends Component
             ->limit(20)
             ->get();
 
-        $bookBalance = ManualStockLedger::query()
+        $bookBalance = $this->ledger()
             ->selectRaw('manual_books.title, SUM(CASE WHEN movement_qty > 0 THEN movement_qty ELSE 0 END) as stock_in, SUM(CASE WHEN movement_qty < 0 THEN ABS(movement_qty) ELSE 0 END) as stock_out, MAX(balance_after) as latest_balance')
             ->join('manual_books', 'manual_books.id', '=', 'manual_stock_ledgers.manual_book_id')
             ->groupBy('manual_books.title')
             ->orderBy('manual_books.title')
             ->get();
 
-        $userActivity = DB::table('manual_audits')
+        $userActivity = $this->audits()
             ->selectRaw('manual_audits.user_id, users.name as user_name, manual_audits.action, COUNT(*) as total_actions')
             ->leftJoin('users', 'users.id', '=', 'manual_audits.user_id')
             ->groupBy('manual_audits.user_id', 'users.name', 'manual_audits.action')
@@ -40,7 +43,7 @@ class ManualTrackingReports extends Component
             ->limit(30)
             ->get();
 
-        $movementHistory = ManualDistribution::query()
+        $movementHistory = $this->shipments()
             ->selectRaw('manual_distributions.reference, manual_distributions.distributed_at, manual_distribution_lines.quantity, manual_books.title as book_title, COALESCE(source_org.name, CONCAT("Org ", manual_distributions.organization_id)) as source_name, COALESCE(destination_org.name, CONCAT("Org ", manual_distributions.destination_organization_id)) as destination_name')
             ->join('manual_distribution_lines', 'manual_distributions.id', '=', 'manual_distribution_lines.manual_distribution_id')
             ->leftJoin('manual_books', 'manual_books.id', '=', 'manual_distribution_lines.manual_book_id')
@@ -51,16 +54,16 @@ class ManualTrackingReports extends Component
             ->get();
 
         $summary = [
-            'total_books' => ManualBook::count(),
-            'total_packages' => (int) ManualDistributionLine::sum('full_packages'),
-            'total_distributions' => ManualDistribution::count(),
-            'total_quantity_distributed' => (int) ManualDistributionLine::sum('quantity'),
-            'stock_in_total' => (int) ManualStockLedger::where('movement_qty', '>', 0)->sum('movement_qty'),
-            'stock_out_total' => (int) ManualStockLedger::where('movement_qty', '<', 0)->sum(DB::raw('ABS(movement_qty)')),
-            'active_users' => (int) DB::table('manual_audits')->distinct('user_id')->count('user_id'),
+            'total_books' => ManualBook::query()->accessibleBy($this->actor())->count(),
+            'total_packages' => (int) $this->lines()->sum('full_packages'),
+            'total_distributions' => $this->shipments()->count(),
+            'total_quantity_distributed' => (int) $this->lines()->sum('quantity'),
+            'stock_in_total' => (int) $this->ledger()->where('movement_qty', '>', 0)->sum('movement_qty'),
+            'stock_out_total' => (int) $this->ledger()->where('movement_qty', '<', 0)->sum(DB::raw('ABS(movement_qty)')),
+            'active_users' => (int) $this->audits()->distinct('user_id')->count('user_id'),
         ];
 
-        $monthlyTrend = ManualDistribution::query()
+        $monthlyTrend = $this->shipments()
             ->join('manual_distribution_lines', 'manual_distributions.id', '=', 'manual_distribution_lines.manual_distribution_id')
             ->selectRaw("DATE_FORMAT(manual_distributions.distributed_at, '%Y-%m') as period, SUM(manual_distribution_lines.quantity) as total_qty")
             ->whereNotNull('manual_distributions.distributed_at')
@@ -69,7 +72,7 @@ class ManualTrackingReports extends Component
             ->limit(12)
             ->get();
 
-        $locationBreakdown = DB::table('manual_distributions')
+        $locationBreakdown = $this->shipments()
             ->join('manual_distribution_lines', 'manual_distributions.id', '=', 'manual_distribution_lines.manual_distribution_id')
             ->leftJoin('regions', 'regions.id', '=', 'manual_distributions.region_id')
             ->selectRaw("COALESCE(regions.name, CONCAT('Region ', manual_distributions.region_id)) as label, SUM(manual_distribution_lines.quantity) as total_qty")
@@ -103,7 +106,7 @@ class ManualTrackingReports extends Component
 
     public function exportLocationSummaryCsv(): StreamedResponse
     {
-        $rows = ManualDistribution::query()
+        $rows = $this->shipments()
             ->selectRaw('COALESCE(regions.name, CONCAT("Region ", manual_distributions.region_id)) as region_name, COALESCE(zones.name, CONCAT("Zone ", manual_distributions.zone_id)) as zone_name, COALESCE(woredas.name, CONCAT("Woreda ", manual_distributions.woreda_id)) as woreda_name, SUM(manual_distribution_lines.quantity) as total_qty')
             ->join('manual_distribution_lines', 'manual_distributions.id', '=', 'manual_distribution_lines.manual_distribution_id')
             ->leftJoin('regions', 'regions.id', '=', 'manual_distributions.region_id')
@@ -125,7 +128,7 @@ class ManualTrackingReports extends Component
 
     public function exportBookBalanceCsv(): StreamedResponse
     {
-        $rows = ManualStockLedger::query()
+        $rows = $this->ledger()
             ->selectRaw('manual_books.title, SUM(CASE WHEN movement_qty > 0 THEN movement_qty ELSE 0 END) as stock_in, SUM(CASE WHEN movement_qty < 0 THEN ABS(movement_qty) ELSE 0 END) as stock_out, MAX(balance_after) as latest_balance')
             ->join('manual_books', 'manual_books.id', '=', 'manual_stock_ledgers.manual_book_id')
             ->groupBy('manual_books.title')
@@ -144,7 +147,7 @@ class ManualTrackingReports extends Component
 
     public function exportUserActivityCsv(): StreamedResponse
     {
-        $rows = DB::table('manual_audits')
+        $rows = $this->audits()
             ->selectRaw('manual_audits.user_id, users.name as user_name, manual_audits.action, COUNT(*) as total_actions')
             ->leftJoin('users', 'users.id', '=', 'manual_audits.user_id')
             ->groupBy('manual_audits.user_id', 'users.name', 'manual_audits.action')
@@ -163,7 +166,7 @@ class ManualTrackingReports extends Component
 
     public function exportMovementHistoryCsv(): StreamedResponse
     {
-        $rows = ManualDistribution::query()
+        $rows = $this->shipments()
             ->selectRaw('manual_distributions.reference, manual_distributions.distributed_at, manual_distribution_lines.quantity, manual_books.title as book_title, COALESCE(source_org.name, CONCAT("Org ", manual_distributions.organization_id)) as source_name, COALESCE(destination_org.name, CONCAT("Org ", manual_distributions.destination_organization_id)) as destination_name')
             ->join('manual_distribution_lines', 'manual_distributions.id', '=', 'manual_distribution_lines.manual_distribution_id')
             ->leftJoin('manual_books', 'manual_books.id', '=', 'manual_distribution_lines.manual_book_id')
@@ -180,5 +183,35 @@ class ManualTrackingReports extends Component
             }
             fclose($handle);
         }, 'manual-package-movement-history.csv');
+    }
+
+    private function actor(): User
+    {
+        return Auth::user();
+    }
+
+    // Shipments leaving or arriving inside the user's area
+    private function shipments(): Builder
+    {
+        return ManualDistribution::query()
+            ->whereIn('manual_distributions.id', ManualDistribution::query()->accessibleBy($this->actor())->select('id'));
+    }
+
+    private function lines(): Builder
+    {
+        return ManualDistributionLine::query()
+            ->whereIn('manual_distribution_id', ManualDistribution::query()->accessibleBy($this->actor())->select('id'));
+    }
+
+    private function ledger(): Builder
+    {
+        return ManualStockLedger::query()->accessibleBy($this->actor());
+    }
+
+    // Actions by users the viewer is allowed to see
+    private function audits()
+    {
+        return DB::table('manual_audits')
+            ->whereIn('manual_audits.user_id', User::query()->accessibleBy($this->actor())->select('id'));
     }
 }

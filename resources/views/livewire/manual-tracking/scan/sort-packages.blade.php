@@ -6,16 +6,9 @@
             Packages that do not belong here are flagged and sent to the misroutes list.
         </p>
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div>
-                <x-jet-label for="organizationId" value="Sorting at" />
-                <x-form.select wire:model="organizationId" id="organizationId">
-                    <option value="">Select warehouse or hub</option>
-                    @foreach ($places as $option)
-                    <option value="{{ $option->id }}">{{ $option->name }}</option>
-                    @endforeach
-                </x-form.select>
-            </div>
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+            <x-location-picker :picker="$locationPicker" model="area" organization-model="organizationId"
+                organization-label="Sorting at" organization-placeholder="Select warehouse or hub" mode="choose" />
             <div>
                 <x-jet-label for="titleId" value="Title being counted" />
                 <x-form.select wire:model="titleId" id="titleId">

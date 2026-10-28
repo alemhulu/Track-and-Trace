@@ -152,6 +152,57 @@ class User extends Authenticatable
         return $this->hasRole('Super-Admin') || $this->effectiveAccessLevel() === self::ACCESS_LEVEL_NATIONAL;
     }
 
+    // School staff receive shipments and keep school records; they never send books on
+    public function isSchoolUser(): bool
+    {
+        if ($this->hasRole('School User')) {
+            return true;
+        }
+
+        return $this->effectiveAccessLevel() === self::ACCESS_LEVEL_ORGANIZATION
+            && $this->organization?->organizationType?->name === 'School';
+    }
+
+    // Book titles are national reference data
+    public function canManageBookTitles(): bool
+    {
+        return $this->hasAnyRole(['Super-Admin', 'Admin']);
+    }
+
+    /**
+     * The region, zone and woreda this user is confined to; null means not confined at that
+     * depth. A level whose location is missing yields 0, which matches nothing.
+     *
+     * @return array{region_id: ?int, zone_id: ?int, woreda_id: ?int}
+     */
+    public function locationScope(): array
+    {
+        if ($this->hasNationalAccess()) {
+            return ['region_id' => null, 'zone_id' => null, 'woreda_id' => null];
+        }
+
+        $level = $this->effectiveAccessLevel();
+
+        // Organization users sit wherever their organization does
+        if ($level === self::ACCESS_LEVEL_ORGANIZATION) {
+            $organization = $this->organization;
+
+            return [
+                'region_id' => (int) ($organization->region_id ?? 0),
+                'zone_id' => $organization?->zone_id ? (int) $organization->zone_id : null,
+                'woreda_id' => $organization?->woreda_id ? (int) $organization->woreda_id : null,
+            ];
+        }
+
+        $rank = self::accessLevelRank($level);
+
+        return [
+            'region_id' => (int) ($this->region_id ?? 0),
+            'zone_id' => $rank <= self::accessLevelRank(self::ACCESS_LEVEL_ZONE) ? (int) ($this->zone_id ?? 0) : null,
+            'woreda_id' => $rank <= self::accessLevelRank(self::ACCESS_LEVEL_WOREDA) ? (int) ($this->woreda_id ?? 0) : null,
+        ];
+    }
+
     public static function accessLevelRank(?string $level): int
     {
         return self::ACCESS_LEVEL_RANK[$level ?? ''] ?? 0;

@@ -5,6 +5,8 @@ namespace App\Models\ManualTracking;
 use App\Models\Grade;
 use App\Models\Region;
 use App\Models\Subject;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -118,5 +120,19 @@ class ManualBook extends ManualBaseModel
     public function stockLedgers(): HasMany
     {
         return $this->hasMany(\App\Models\ManualTracking\ManualStockLedger::class, 'manual_book_id');
+    }
+
+    // Titles printed for the user's region, plus titles used in every region
+    public function scopeAccessibleBy(Builder $query, ?User $actor): Builder
+    {
+        if (! $actor) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        $regionId = $actor->hasRole('Admin') ? null : $actor->locationScope()['region_id'];
+
+        return $query->when($regionId !== null, fn (Builder $books) => $books->where(
+            fn (Builder $match) => $match->whereNull('region_id')->orWhere('region_id', $regionId)
+        ));
     }
 }

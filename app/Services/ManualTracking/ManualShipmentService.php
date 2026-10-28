@@ -55,12 +55,27 @@ class ManualShipmentService
             throw new ManualTrackingException('The destination must be different from the source.');
         }
 
+        if ($actor->isSchoolUser() || $from->organizationType?->name === 'School') {
+            throw new ManualTrackingException('Schools receive shipments; they do not send them.');
+        }
+
         if (! $this->stock->canActFor($actor, $from)) {
             throw new ManualTrackingException('You can only dispatch from organizations in your area.');
         }
 
+        // Printers and logistics hubs feed the network from outside it; every other sender stays in its area
+        if (! $this->isSupplySource($from) && ! $this->stock->canActFor($actor, $to)) {
+            throw new ManualTrackingException('You can only send to organizations in your area.');
+        }
+
         $lines = $this->prepareLines($data['lines'] ?? []);
         $external = $this->isExternalSource($from);
+
+        $allowedTitles = ManualBook::query()->accessibleBy($actor)->whereKey($lines->pluck('book.id'))->pluck('id');
+        $outside = $this->isSupplySource($from) ? null : $lines->first(fn ($line) => ! $allowedTitles->contains($line['book']->id));
+        if ($outside) {
+            throw new ManualTrackingException("{$outside['book']->title} is not a title for your region.");
+        }
 
         return DB::transaction(function () use ($actor, $data, $from, $to, $lines, $external): ManualDistribution {
             $shipment = ManualDistribution::query()->create([
@@ -309,6 +324,12 @@ class ManualShipmentService
     public function isExternalSource(?Organization $organization): bool
     {
         return $organization?->organizationType?->name === 'Printer';
+    }
+
+    // Places outside the location hierarchy that deliver into it
+    public function isSupplySource(?Organization $organization): bool
+    {
+        return in_array($organization?->organizationType?->name, ['Printer', 'Logistics Hub'], true);
     }
 
     /**

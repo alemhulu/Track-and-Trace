@@ -7,6 +7,7 @@ use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualBookCode;
 use App\Models\Region;
 use App\Models\Subject;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Livewire\Component;
@@ -59,6 +60,8 @@ class AddManualBook extends Component
 
     public function mount()
     {
+        $this->ensureCanManageTitles();
+
         $editId = request()->query('edit');
         if ($editId) {
             $this->loadForEdit((int) $editId);
@@ -94,6 +97,8 @@ class AddManualBook extends Component
 
     public function saveBook()
     {
+        $this->ensureCanManageTitles();
+
         $data = $this->validate();
         $this->ensureCodesAreUnused();
 
@@ -154,6 +159,12 @@ class AddManualBook extends Component
                 ]);
             }
         }
+    }
+
+    // Only Admin and Super-Admin register or change titles
+    private function ensureCanManageTitles(): void
+    {
+        abort_unless(Auth::user()?->canManageBookTitles(), 403);
     }
 
     private function loadForEdit(int $id): void

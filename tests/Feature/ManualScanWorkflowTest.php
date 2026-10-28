@@ -253,7 +253,7 @@ class ManualScanWorkflowTest extends TestCase
             ->actingAs($this->national)
             ->test(CreateShipment::class)
             ->assertSet('from_organization_id', $this->places['bureau']->id)
-            ->assertSet('destinationZoneFilter', (string) $this->places['eastShewa']->id)
+            ->assertSet('destination.zone_id', (string) $this->places['eastShewa']->id)
             ->assertSet('lines.0.full_packages', 2)
             ->assertSee('East Shewa Zone Education Department')
             ->set('to_organization_id', $this->places['zoneOffice']->id)

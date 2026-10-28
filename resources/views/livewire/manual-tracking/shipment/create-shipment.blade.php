@@ -6,41 +6,28 @@
             Dispatching removes the books from the source's stock. They are added to the destination when it confirms receipt.
         </p>
 
-        <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <div class="space-y-4">
             <div>
-                <x-jet-label for="from_organization_id" value="From (source)" />
-                <x-form.select wire:model="from_organization_id" id="from_organization_id">
-                    <option value="">Select source</option>
-                    @foreach ($sources as $organization)
-                    <option value="{{ $organization->id }}">{{ $organization->name }}</option>
-                    @endforeach
-                </x-form.select>
+                <p class="mb-1 eyebrow">From</p>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                    <x-location-picker :picker="$sourcePicker" model="source" organization-model="from_organization_id"
+                        organization-label="Source" organization-placeholder="Select source" mode="choose" />
+                </div>
             </div>
             <div>
-                <x-jet-label for="destinationRegionFilter" value="Destination region" />
-                <x-form.select wire:model="destinationRegionFilter" id="destinationRegionFilter">
-                    <option value="">All regions</option>
-                    @foreach ($regions as $region)
-                    <option value="{{ $region->id }}">{{ $region->name }}</option>
-                    @endforeach
-                </x-form.select>
+                <p class="mb-1 eyebrow">To</p>
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-4">
+                    <x-location-picker :picker="$destinationPicker" model="destination" organization-model="to_organization_id"
+                        organization-label="Destination" organization-placeholder="Select destination">
+                        @unless ($openDestinations)
+                        <p class="mt-1 text-xs text-gray-500">Only places in your area are listed.</p>
+                        @endunless
+                    </x-location-picker>
+                </div>
             </div>
-            <div>
-                <x-jet-label for="to_organization_id" value="To (destination)" />
-                <x-form.select wire:model="to_organization_id" id="to_organization_id">
-                    <option value="">Select destination</option>
-                    @foreach ($destinations as $organization)
-                    <option value="{{ $organization->id }}">{{ $organization->name }}</option>
-                    @endforeach
-                </x-form.select>
-                @if ($zoneFilter)
-                <p class="mt-1 text-xs text-gray-500">
-                    Showing {{ $zoneFilter->name }} only ·
-                    <button type="button" wire:click="clearZoneFilter" class="link">show all</button>
-                </p>
-                @endif
-            </div>
+        </div>
 
+        <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-3">
             <div>
                 <x-jet-label for="carrier" value="Carrier" />
                 <x-jet-input wire:model.defer="carrier" id="carrier" type="text" placeholder="e.g. Ethiopian Airlines Cargo" class="block w-full mt-1" />

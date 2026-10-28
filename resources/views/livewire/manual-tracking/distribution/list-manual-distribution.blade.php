@@ -7,8 +7,10 @@
         ];
     @endphp
 
-    <div class="flex flex-col gap-3 mb-3 md:flex-row md:items-end md:justify-between">
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 md:w-2/3">
+    <div class="flex flex-col-reverse gap-3 mb-3">
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-3 lg:grid-cols-6">
+            <x-location-picker :picker="$locationPicker" model="area" organization-model="organizationFilter"
+                organization-label="Place" organization-placeholder="All places in my area" />
             <div>
                 <x-jet-label for="search" value="Reference or waybill" />
                 <x-jet-input wire:model.debounce.400ms="search" id="search" type="search" class="block w-full mt-1" />
@@ -25,10 +27,12 @@
         </div>
 
         @if ($canCreate)
-        <a href="{{ route('manual-tracking.distribution.add') }}"
-            class="btn-primary">
-            New Shipment
-        </a>
+        <div class="flex justify-end">
+            <a href="{{ route('manual-tracking.distribution.add') }}"
+                class="btn-primary">
+                New Shipment
+            </a>
+        </div>
         @endif
     </div>
 

@@ -2,6 +2,10 @@
 
 namespace App\Models\ManualTracking;
 
+use App\Models\Organization;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+
 class ManualStockLedger extends ManualBaseModel
 {
     protected $fillable = [
@@ -30,4 +34,17 @@ class ManualStockLedger extends ManualBaseModel
         'balance_after' => 'integer',
         'occurred_at' => 'datetime',
     ];
+
+    public function scopeAccessibleBy(Builder $query, ?User $actor): Builder
+    {
+        if (! $actor) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($actor->hasNationalAccess() || $actor->hasRole('Admin')) {
+            return $query;
+        }
+
+        return $query->whereIn('manual_stock_ledgers.organization_id', Organization::query()->accessibleBy($actor)->select('id'));
+    }
 }

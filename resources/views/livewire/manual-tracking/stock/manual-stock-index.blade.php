@@ -1,15 +1,8 @@
 <div>
     <div class="flex flex-col gap-3 mb-3 md:flex-row md:items-end md:justify-between">
-        <div class="grid grid-cols-1 gap-3 md:grid-cols-2 md:w-2/3">
-            <div>
-                <x-jet-label for="organizationFilter" value="Location" />
-                <x-form.select wire:model="organizationFilter" id="organizationFilter">
-                    <option value="">All locations in my area</option>
-                    @foreach ($organizations as $organization)
-                    <option value="{{ $organization->id }}">{{ $organization->name }}</option>
-                    @endforeach
-                </x-form.select>
-            </div>
+        <div class="grid grid-cols-1 gap-3 md:grid-cols-5 md:flex-1">
+            <x-location-picker :picker="$locationPicker" model="area" organization-model="organizationFilter"
+                organization-label="Location" organization-placeholder="All locations in my area" />
             <div>
                 <x-jet-label for="bookFilter" value="Title" />
                 <x-form.select wire:model="bookFilter" id="bookFilter">
