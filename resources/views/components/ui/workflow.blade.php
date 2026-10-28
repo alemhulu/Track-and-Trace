@@ -12,7 +12,7 @@ $current = collect($steps)->search(fn ($step) => request()->routeIs(...(array) (
         @php
         $state = $current === false ? 'todo' : ($i < $current ? 'done' : ($i === $current ? 'current' : 'todo'));
         @endphp
-        <li class="flex items-center flex-1 min-w-[11rem]">
+        <li class="flex items-center flex-1 min-w-[9.5rem]">
             <a href="{{ route($step['link']) }}" @if ($state === 'current') aria-current="step" @endif
                 @class([
                     'group flex items-center flex-1 gap-3 px-3 py-2.5 rounded-xl transition',
@@ -46,7 +46,7 @@ $current = collect($steps)->search(fn ($step) => request()->routeIs(...(array) (
                     ])>{{ $step['title'] }}</span>
                     @if (! empty($step['hint']))
                     <span @class([
-                        'block text-xs truncate',
+                        'hidden text-xs truncate 2xl:block',
                         'text-brand-100/90' => $state === 'current',
                         'text-slate-500 dark:text-slate-400' => $state !== 'current',
                     ])>{{ $step['hint'] }}</span>

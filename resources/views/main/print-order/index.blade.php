@@ -5,6 +5,7 @@
     </x-slot>
 
     <div class="mb-6">
+        <x-supply-chain-steps class="mb-3" />
         <x-page.nav col='2'>
             <x-page.nav-link class="bg-blue-500" title="List" link="print-order.list" icon="fi fi-rr-list" total="0" />
             <x-page.nav-link class="bg-blue-700" title="Order New Print" link="print-order.order"

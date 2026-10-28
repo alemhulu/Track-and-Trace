@@ -4,11 +4,9 @@
         <p class="page-subtitle">Look up any book and see where it has travelled.</p>
     </x-slot>
 
-    <div class="">
-        <div class="w-auto">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-xl sm:rounded-lg">
-                <livewire:trace.trace-book-index>
-            </div>
-        </div>
+    <x-supply-chain-steps class="mb-6" />
+
+    <div class="overflow-hidden card">
+        <livewire:trace.trace-book-index>
     </div>
 </x-app-layout>

@@ -5,6 +5,7 @@
     </x-slot>
 
     <div class="mb-6">
+        <x-supply-chain-steps class="mb-3" />
         <x-page.nav col='4'>
             <x-page.nav-link class="bg-blue-500" title="Info" link="book-packages" icon="fi fi-rr-info" />
             <x-page.nav-link class="bg-red-600" title="Request" link="packages.request" icon="fi fi-rr-inbox" />
