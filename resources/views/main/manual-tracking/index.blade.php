@@ -5,14 +5,17 @@
     </x-slot>
 
     <div class="mb-6 space-y-3">
-        <x-ui.workflow label="Distribution workflow" :steps="[
+        @php
+            $schoolUser = auth()->user()?->isSchoolUser();
+        @endphp
+        <x-ui.workflow label="Distribution workflow" :steps="array_values(array_filter([
             ['title' => 'Titles', 'hint' => 'Register books', 'link' => 'manual-tracking.books.list', 'match' => 'manual-tracking.books.*', 'icon' => 'fi-rr-book'],
             ['title' => 'Stock', 'hint' => 'Receive from printers', 'link' => 'manual-tracking.stock.index', 'icon' => 'fi-rr-box'],
-            ['title' => 'Shipments', 'hint' => 'Dispatch & receive', 'link' => 'manual-tracking.distribution.list', 'match' => ['manual-tracking.distribution.*', 'manual-tracking.shipments.*'], 'icon' => 'fi-rr-truck-side'],
-            ['title' => 'Sort & Scan', 'hint' => 'Route at hubs', 'link' => 'manual-tracking.scan.sort', 'icon' => 'fi-rr-camera'],
+            ['title' => 'Shipments', 'hint' => $schoolUser ? 'Receive deliveries' : 'Dispatch & receive', 'link' => 'manual-tracking.distribution.list', 'match' => ['manual-tracking.distribution.*', 'manual-tracking.shipments.*'], 'icon' => 'fi-rr-truck-side'],
+            $schoolUser ? null : ['title' => 'Sort & Scan', 'hint' => 'Route at hubs', 'link' => 'manual-tracking.scan.sort', 'icon' => 'fi-rr-camera'],
             ['title' => 'Schools', 'hint' => 'Issue to students', 'link' => 'manual-tracking.schools.index', 'match' => 'manual-tracking.schools.*', 'icon' => 'fi-rr-school'],
             ['title' => 'Visits', 'hint' => 'Verify on site', 'link' => 'manual-tracking.visits.index', 'match' => 'manual-tracking.visits.*', 'icon' => 'fi-rr-checkbox'],
-        ]" />
+        ]))" />
 
         <x-page.nav>
             <li class="flex items-center px-3 eyebrow shrink-0">Monitor</li>

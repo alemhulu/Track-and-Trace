@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\ManualTracking\Book;
 
 use App\Models\ManualTracking\ManualBook;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -15,6 +16,7 @@ class ListManualBook extends Component
     public function render()
     {
         $books = ManualBook::query()
+            ->accessibleBy(Auth::user())
             ->with(['region:id,name', 'codes'])
             ->withSum(['balances as student_on_hand' => fn ($query) => $query->where('edition', ManualBook::EDITION_STUDENT)], 'on_hand')
             ->withSum(['balances as teacher_on_hand' => fn ($query) => $query->where('edition', ManualBook::EDITION_TEACHER)], 'on_hand')
@@ -23,16 +25,23 @@ class ListManualBook extends Component
 
         return view('livewire.manual-tracking.book.list-manual-book', [
             'books' => $books,
+            'canManage' => Auth::user()->canManageBookTitles(),
         ])->extends('main.manual-tracking.index');
     }
 
     public function editBook($id)
     {
+        abort_unless(Auth::user()->canManageBookTitles(), 403);
+
         return redirect()->route('manual-tracking.books.add', ['edit' => $id]);
     }
 
     public function deleteBook($id)
     {
+        if (! Auth::user()->canManageBookTitles()) {
+            return $this->alertError('Only administrators can delete titles.');
+        }
+
         $book = ManualBook::query()->withCount(['stockLedgers', 'distributionLines'])->find($id);
         if (! $book) {
             return $this->alertError('Title not found.');

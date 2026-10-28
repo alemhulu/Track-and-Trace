@@ -19,7 +19,11 @@ class ManualDistributionPolicy
 
     public function create(User $user): bool
     {
-        // Which source they may dispatch from is checked per shipment
+        // Schools only receive. Which source others may dispatch from is checked per shipment
+        if ($user->isSchoolUser()) {
+            return false;
+        }
+
         return $user->hasNationalAccess()
             || $user->hasRole('Admin')
             || ! empty($user->organization_id)

@@ -22,6 +22,7 @@ use App\Services\ManualTracking\ManualShipmentService;
 use App\Services\ManualTracking\ManualStockService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 /**
@@ -75,11 +76,12 @@ class ManualTrackingDistributionSecurityTest extends TestCase
         Livewire::actingAs($this->east['officer'])
             ->test(CreateShipment::class)
             ->set('from_organization_id', $this->west['office']->id)
+            ->assertSet('from_organization_id', '')
             ->set('to_organization_id', $this->east['school']->id)
             ->set('lines.0.manual_book_id', $this->book->id)
             ->set('lines.0.full_packages', 1)
             ->call('dispatchShipment')
-            ->assertDispatchedBrowserEvent('alert', fn ($event, $data) => str_contains($data['message'], 'only dispatch from organizations in your area'));
+            ->assertHasErrors(['from_organization_id' => 'required']);
 
         $this->assertSame(0, ManualDistribution::query()->count());
         $this->assertSame(800, $this->onHand($this->west['office'], 'student'));
@@ -141,8 +143,11 @@ class ManualTrackingDistributionSecurityTest extends TestCase
         $region = Region::query()->firstOrFail();
         $grade = Grade::query()->create(['name' => '8']);
         $subject = Subject::query()->create(['name' => 'Social Studies']);
+        Role::query()->create(['name' => 'Admin', 'guard_name' => 'web']);
+        $admin = User::factory()->create(['access_level' => User::ACCESS_LEVEL_NATIONAL]);
+        $admin->assignRole('Admin');
 
-        Livewire::actingAs($this->east['officer'])
+        Livewire::actingAs($admin)
             ->test(AddManualBook::class)
             ->set('region_id', $region->id)
             ->set('grade_id', $grade->id)

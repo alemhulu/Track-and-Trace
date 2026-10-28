@@ -29,12 +29,9 @@ class ManualTrackingPagesTest extends TestCase
         $shipment = ManualDistribution::query()->where('status', ManualDistribution::STATUS_DISPATCHED)->firstOrFail();
         $pages = [
             route('manual-tracking.books.list'),
-            route('manual-tracking.books.add'),
             route('manual-tracking.stock.index'),
             route('manual-tracking.distribution.list'),
-            route('manual-tracking.distribution.add'),
             route('manual-tracking.discrepancies.index'),
-            route('manual-tracking.scan.sort'),
             route('manual-tracking.scan.alerts'),
             route('manual-tracking.visits.index'),
             route('field.app'),
@@ -51,6 +48,14 @@ class ManualTrackingPagesTest extends TestCase
             foreach ($pages as $page) {
                 $this->actingAs($user)->get($page)->assertOk();
             }
+
+            // Titles are registered by Admin and Super-Admin only
+            $this->actingAs($user)->get(route('manual-tracking.books.add'))->assertForbidden();
+
+            // Schools only receive, so they get neither the shipment form nor the sorting bay
+            $sends = ! $user->isSchoolUser();
+            $this->actingAs($user)->get(route('manual-tracking.distribution.add'))->assertStatus($sends ? 200 : 403);
+            $this->actingAs($user)->get(route('manual-tracking.scan.sort'))->assertStatus($sends ? 200 : 403);
         }
 
         $this->actingAs(User::query()->where('email', 'moe.officer@' . ShowcaseData::EMAIL_DOMAIN)->firstOrFail())

@@ -31,13 +31,45 @@ class UserController extends Controller
     {
         $actor = Auth::user();
 
+        $filterOptions = [
+            'accessLevels' => config('access_hierarchy.levels', []),
+            'roles' => Role::query()->orderBy('name')->pluck('name')->all(),
+            // Same region scoping as formContext(), without loading the other location lists.
+            'regions' => Region::query()
+                ->when(! $actor->hasNationalAccess() && ! empty($actor->country_id), fn ($query) => $query->where('country_id', $actor->country_id))
+                ->when(! $actor->hasNationalAccess() && ! empty($actor->region_id), fn ($query) => $query->where('id', $actor->region_id))
+                ->orderBy('name')
+                ->pluck('name', 'id')
+                ->all(),
+        ];
+
+        // Unknown values are ignored rather than rejected, so a stale link still shows a list.
+        $filters = [
+            'q' => trim((string) $request->input('q', '')),
+            'access_level' => in_array($request->input('access_level'), $filterOptions['accessLevels'], true) ? $request->input('access_level') : '',
+            'role' => in_array($request->input('role'), $filterOptions['roles'], true) ? $request->input('role') : '',
+            'region_id' => array_key_exists((int) $request->input('region_id'), $filterOptions['regions']) ? (int) $request->input('region_id') : '',
+        ];
+
         $data = User::query()
             ->with(['organization:id,name', 'region:id,name', 'zone:id,name', 'woreda:id,name'])
             ->accessibleBy($actor)
+            ->when($filters['q'] !== '', function ($query) use ($filters) {
+                $term = '%' . $filters['q'] . '%';
+                $query->where(function ($query) use ($term) {
+                    $query->where('name', 'like', $term)
+                        ->orWhere('email', 'like', $term)
+                        ->orWhereHas('organization', fn ($organization) => $organization->where('name', 'like', $term));
+                });
+            })
+            ->when($filters['access_level'], fn ($query, $level) => $query->where('access_level', $level))
+            ->when($filters['role'], fn ($query, $role) => $query->role($role))
+            ->when($filters['region_id'], fn ($query, $regionId) => $query->where('region_id', $regionId))
             ->orderByDesc('id')
-            ->paginate(10);
+            ->paginate($perPage = $this->perPage($request))
+            ->withQueryString();
 
-        return view('users.index', compact('data'))->with('i', ($request->input('page', 1) - 1) * 10);
+        return view('users.index', compact('data', 'perPage', 'filters', 'filterOptions'))->with('i', ($request->input('page', 1) - 1) * $perPage);
     }
 
     /**
@@ -48,10 +80,11 @@ class UserController extends Controller
     public function create()
     {
         $actor = Auth::user();
-        $roles = Role::query()->orderBy('name')->pluck('name', 'name')->all();
+        $roles = $actor->assignableRoles()->pluck('name')->all();
+        $keptRoles = [];
 
         return view('users.create', array_merge(
-            compact('roles'),
+            compact('roles', 'keptRoles'),
             $this->formContext($actor)
         ));
     }
@@ -68,11 +101,12 @@ class UserController extends Controller
         $input = $request->validate($this->rules());
 
         $this->validateAccessPayload($request, $actor);
+        $roles = $this->rolesToSync($request, $actor);
         $input = $this->normalizeLocationPayload($input);
         $input['password'] = Hash::make($input['password']);
 
         $user = User::create($input);
-        $user->syncRoles($request->input('roles', []));
+        $user->syncRoles($roles);
 
         return redirect()->route('users.index')
             ->with('success', 'user has been created successfully.');
@@ -104,11 +138,13 @@ class UserController extends Controller
     {
         $actor = Auth::user();
         $user = User::query()->accessibleBy($actor)->findOrFail($id);
-        $roles = Role::query()->orderBy('name')->get();
+        $roles = $actor->assignableRoles()->pluck('name')->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
+        // Roles the user holds that this manager cannot give: shown, but left as they are
+        $keptRoles = array_values(array_diff(array_keys($userRole), $roles));
 
         return view('users.edit', array_merge(
-            compact('user', 'roles', 'userRole'),
+            compact('user', 'roles', 'userRole', 'keptRoles'),
             $this->formContext($actor)
         ));
     }
@@ -127,6 +163,7 @@ class UserController extends Controller
 
         $input = $request->validate($this->rules($id));
         $this->validateAccessPayload($request, $actor, $user);
+        $roles = $this->rolesToSync($request, $actor, $user);
 
         if (!empty($input['password'])) {
             $input['password'] = Hash::make($input['password']);
@@ -138,7 +175,7 @@ class UserController extends Controller
 
         if ($actor->can('role-edit')) {
             $user->update($input);
-            $user->syncRoles($request->input('roles', []));
+            $user->syncRoles($roles);
         } else {
             return back()->with('error', 'You are not allowed to edit this role.');
         }
@@ -176,7 +213,8 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
             'password' => [$id ? 'nullable' : 'required', 'same:confirm-password'],
-            'roles' => ['required', 'array', 'min:1'],
+            // An edited user may keep only roles the manager cannot give, so the count is checked in rolesToSync()
+            'roles' => [$id ? 'nullable' : 'required', 'array'],
             'roles.*' => ['required', Rule::exists('roles', 'name')],
             'access_level' => ['required', Rule::in(config('access_hierarchy.levels', []))],
             'organization_id' => ['nullable', Rule::exists('organizations', 'id')],
@@ -250,6 +288,29 @@ class UserController extends Controller
         if ($target && $target->id === $actor->id && !$actor->canManageAccessLevel($level)) {
             $this->failValidation('access_level', 'You cannot reduce your own access to a conflicting scope.');
         }
+    }
+
+    /**
+     * The chosen roles the manager may give, plus any roles the user already holds that the
+     * manager cannot give (those are kept, never added or removed by this manager).
+     */
+    private function rolesToSync(Request $request, User $actor, ?User $target = null): array
+    {
+        $assignable = $actor->assignableRoles()->pluck('name');
+        $chosen = collect($request->input('roles', []));
+        $kept = $target ? $target->roles->pluck('name')->diff($assignable) : collect();
+
+        if ($chosen->diff($assignable)->diff($kept)->isNotEmpty()) {
+            $this->failValidation('roles', 'You can only give roles whose permissions you already have.');
+        }
+
+        $roles = $chosen->intersect($assignable)->merge($kept)->unique()->values()->all();
+
+        if (empty($roles)) {
+            $this->failValidation('roles', 'Pick at least one role.');
+        }
+
+        return $roles;
     }
 
     private function validateRoleScopeCompatibility(array $roles, User $actor, string $targetLevel): void
@@ -427,5 +488,15 @@ class UserController extends Controller
             'woredas' => $woredas->orderBy('name')->get(),
             'organizations' => $organizations->orderBy('name')->get(),
         ];
+    }
+
+    /**
+     * Rows per page from ?per_page, limited to the sizes the table offers.
+     */
+    private function perPage(Request $request): int
+    {
+        $perPage = (int) $request->input('per_page', 10);
+
+        return in_array($perPage, [5, 10, 25, 50, 100], true) ? $perPage : 10;
     }
 }

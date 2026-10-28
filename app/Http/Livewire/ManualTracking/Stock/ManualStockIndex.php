@@ -8,6 +8,7 @@ use App\Models\Organization;
 use App\Models\User;
 use App\Services\ManualTracking\ManualStockService;
 use App\Services\ManualTracking\ManualTrackingException;
+use App\Support\ScopedLocation;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -16,6 +17,7 @@ class ManualStockIndex extends Component
 {
     use WithPagination;
 
+    public $area = ['region_id' => '', 'zone_id' => '', 'woreda_id' => ''];
     public $organizationFilter = '';
     public $bookFilter = '';
 
@@ -30,8 +32,26 @@ class ManualStockIndex extends Component
         'notes' => '',
     ];
 
+    public function mount()
+    {
+        $this->area = $this->location()->apply([]);
+        $this->organizationFilter = $this->location()->organization($this->area, '');
+    }
+
+    public function updatedArea($value, $key)
+    {
+        $this->area = $this->location()->apply($this->area, $key);
+        $this->updatedOrganizationFilter();
+    }
+
     public function updatingOrganizationFilter()
     {
+        $this->resetPage();
+    }
+
+    public function updatedOrganizationFilter()
+    {
+        $this->organizationFilter = $this->location()->organization($this->area, $this->organizationFilter);
         $this->resetPage();
     }
 
@@ -52,6 +72,7 @@ class ManualStockIndex extends Component
                 SUM(CASE WHEN edition = 'teacher' THEN on_hand ELSE 0 END) as teacher_on_hand,
                 SUM(CASE WHEN edition = 'student' THEN in_transit_out ELSE 0 END) as student_in_transit,
                 SUM(CASE WHEN edition = 'teacher' THEN in_transit_out ELSE 0 END) as teacher_in_transit")
+            ->whereIn('organization_id', $this->location()->organizations($this->area)->select('id'))
             ->when($this->organizationFilter, fn ($query) => $query->where('organization_id', $this->organizationFilter))
             ->when($this->bookFilter, fn ($query) => $query->where('manual_book_id', $this->bookFilter))
             ->groupBy('organization_id', 'manual_book_id')
@@ -63,8 +84,9 @@ class ManualStockIndex extends Component
 
         return view('livewire.manual-tracking.stock.manual-stock-index', [
             'balances' => $balances,
+            'locationPicker' => $this->location()->picker($this->area),
             'organizations' => Organization::query()->accessibleBy($actor)->orderBy('name')->get(['id', 'name']),
-            'books' => ManualBook::query()->orderBy('title')->get(['id', 'title', 'has_teacher_guide', 'students_per_package']),
+            'books' => ManualBook::query()->accessibleBy($actor)->orderBy('title')->get(['id', 'title', 'has_teacher_guide', 'students_per_package']),
             'canRecordOpening' => $actor->hasNationalAccess() || $actor->hasRole('Admin')
                 || $actor->effectiveAccessLevel() === User::ACCESS_LEVEL_REGION,
             'openingCopies' => $this->openingCopies(),
@@ -89,7 +111,7 @@ class ManualStockIndex extends Component
             $stock->recordOpeningStock(
                 Auth::user(),
                 Organization::query()->findOrFail($this->opening['organization_id']),
-                ManualBook::query()->findOrFail($this->opening['manual_book_id']),
+                ManualBook::query()->accessibleBy(Auth::user())->findOrFail($this->opening['manual_book_id']),
                 $this->openingCopies(),
                 $this->opening['notes'] ?: null
             );
@@ -116,5 +138,10 @@ class ManualStockIndex extends Component
     private function alert(string $type, string $message): void
     {
         $this->dispatchBrowserEvent('alert', ['type' => $type, 'message' => $message]);
+    }
+
+    private function location(): ScopedLocation
+    {
+        return ScopedLocation::for(Auth::user());
     }
 }

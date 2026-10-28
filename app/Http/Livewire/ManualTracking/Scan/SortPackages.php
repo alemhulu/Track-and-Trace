@@ -7,6 +7,7 @@ use App\Models\ManualTracking\ManualScan;
 use App\Models\Organization;
 use App\Services\ManualTracking\ManualScanService;
 use App\Services\ManualTracking\ManualTrackingException;
+use App\Support\ScopedLocation;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -17,6 +18,7 @@ use Livewire\Component;
  */
 class SortPackages extends Component
 {
+    public $area = ['region_id' => '', 'zone_id' => '', 'woreda_id' => ''];
     public $organizationId = '';
     public $titleId = '';
     public $since;
@@ -24,12 +26,23 @@ class SortPackages extends Component
 
     public function mount()
     {
-        $this->organizationId = (string) (Auth::user()->organization_id ?? '');
+        // Sorting prepares outgoing shipments, which schools do not send
+        abort_if(Auth::user()->isSchoolUser(), 403);
+
+        $this->area = $this->location()->apply([]);
+        $this->organizationId = $this->location()->organization($this->area, Auth::user()->organization_id);
         $this->since = now()->toDateString();
+    }
+
+    public function updatedArea($value, $key)
+    {
+        $this->area = $this->location()->apply($this->area, $key);
+        $this->updatedOrganizationId();
     }
 
     public function updatedOrganizationId()
     {
+        $this->organizationId = $this->location()->organization($this->area, $this->organizationId);
         $this->reset('titleId', 'lastScanId');
     }
 
@@ -43,7 +56,7 @@ class SortPackages extends Component
             ->where('scanned_at', '>=', $this->sinceDate());
 
         return view('livewire.manual-tracking.scan.sort-packages', [
-            'places' => Organization::query()->accessibleBy($actor)->orderBy('name')->get(['id', 'name']),
+            'locationPicker' => $this->location()->picker($this->area),
             'place' => $place,
             'titles' => ManualBook::query()
                 ->when($place?->region_id, fn ($query) => $query->where(fn ($match) => $match->whereNull('region_id')->orWhere('region_id', $place->region_id)))
@@ -102,6 +115,11 @@ class SortPackages extends Component
         if ((int) $this->lastScanId === (int) $id) {
             $this->lastScanId = null;
         }
+    }
+
+    private function location(): ScopedLocation
+    {
+        return ScopedLocation::for(Auth::user());
     }
 
     private function place(): ?Organization

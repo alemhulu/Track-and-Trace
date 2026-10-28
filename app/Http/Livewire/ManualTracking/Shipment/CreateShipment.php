@@ -7,11 +7,11 @@ use App\Models\ManualTracking\ManualDistribution;
 use App\Models\ManualTracking\ManualScan;
 use App\Models\ManualTracking\ManualStockBalance;
 use App\Models\Organization;
-use App\Models\Region;
 use App\Models\Zone;
 use App\Services\ManualTracking\ManualScanService;
 use App\Services\ManualTracking\ManualShipmentService;
 use App\Services\ManualTracking\ManualTrackingException;
+use App\Support\ScopedLocation;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
@@ -19,10 +19,11 @@ use Livewire\Component;
 
 class CreateShipment extends Component
 {
+    // Where the books leave from and go to; levels fixed by the user's access level stay locked
+    public $source = ['region_id' => '', 'zone_id' => '', 'woreda_id' => ''];
     public $from_organization_id = '';
+    public $destination = ['region_id' => '', 'zone_id' => '', 'woreda_id' => ''];
     public $to_organization_id = '';
-    public $destinationRegionFilter = '';
-    public $destinationZoneFilter = '';
     public $carrier;
     public $vehicle_no;
     public $driver_name;
@@ -52,11 +53,11 @@ class CreateShipment extends Component
         $this->addLine();
 
         $actor = Auth::user();
-        if ($actor->organization_id) {
-            $this->from_organization_id = $actor->organization_id;
-        }
+        $this->source = $this->sourceScope()->apply([]);
+        $this->from_organization_id = $this->validSource($actor->organization_id);
 
         $this->prefillFromSorting($actor);
+        $this->destination = $this->destinationScope()->apply($this->destination);
     }
 
     // Carry the numbers over when switching, so nothing typed is lost
@@ -81,14 +82,30 @@ class CreateShipment extends Component
         }
     }
 
-    public function updatedDestinationRegionFilter()
+    public function updatedSource($value, $key)
     {
-        $this->destinationZoneFilter = '';
+        $this->source = $this->sourceScope()->apply($this->source, $key);
+        $this->updatedFromOrganizationId();
     }
 
-    public function clearZoneFilter()
+    // A new source can change where it may send to (printers and hubs send anywhere)
+    public function updatedFromOrganizationId()
     {
-        $this->destinationZoneFilter = '';
+        $this->from_organization_id = $this->validSource($this->from_organization_id);
+        $this->destination = $this->destinationScope()->apply($this->destination);
+        $this->updatedToOrganizationId();
+    }
+
+    public function updatedDestination($value, $key)
+    {
+        $this->destination = $this->destinationScope()->apply($this->destination, $key);
+        $this->updatedToOrganizationId();
+    }
+
+    public function updatedToOrganizationId()
+    {
+        $to = $this->destinationScope()->organization($this->destination, $this->to_organization_id);
+        $this->to_organization_id = (string) $to === (string) $this->from_organization_id ? '' : $to;
     }
 
     /**
@@ -145,18 +162,16 @@ class CreateShipment extends Component
     public function render()
     {
         $actor = Auth::user();
-        $books = ManualBook::query()->orderBy('title')->get(['id', 'title', 'has_teacher_guide', 'students_per_package'])->keyBy('id');
+        $openDestinations = $this->sendsAnywhere();
+        $books = ManualBook::query()->when(! $openDestinations, fn ($query) => $query->accessibleBy($actor))->orderBy('title')->get(['id', 'title', 'has_teacher_guide', 'students_per_package'])->keyBy('id');
+        $destinations = $this->destinationScope()->organizations($this->destination)
+            ->when($this->from_organization_id, fn ($query) => $query->whereKeyNot($this->from_organization_id));
 
+        // Shipments stay inside the user's own area, except from printers and hubs, which deliver anywhere
         return view('livewire.manual-tracking.shipment.create-shipment', [
-            'sources' => Organization::query()->accessibleBy($actor)->orderBy('name')->get(['id', 'name']),
-            'destinations' => Organization::query()
-                ->when($this->destinationRegionFilter, fn ($query) => $query->where('region_id', $this->destinationRegionFilter))
-                ->when($this->destinationZoneFilter, fn ($query) => $query->where('zone_id', $this->destinationZoneFilter))
-                ->when($this->from_organization_id, fn ($query) => $query->whereKeyNot($this->from_organization_id))
-                ->orderBy('name')
-                ->get(['id', 'name']),
-            'regions' => Region::query()->orderBy('name')->get(['id', 'name']),
-            'zoneFilter' => $this->destinationZoneFilter ? Zone::query()->find($this->destinationZoneFilter, ['id', 'name']) : null,
+            'sourcePicker' => $this->sourceScope()->picker($this->source, $this->sources()),
+            'destinationPicker' => $this->destinationScope()->picker($this->destination, $destinations),
+            'openDestinations' => $openDestinations,
             'books' => $books,
             'available' => $this->availableAtSource(),
             'lineCopies' => collect($this->lines)->map(function ($line) use ($books) {
@@ -233,16 +248,15 @@ class CreateShipment extends Component
     {
         $query = request()->query();
 
-        if (! empty($query['from']) && Organization::query()->accessibleBy($actor)->whereKey($query['from'])->exists()) {
-            $this->from_organization_id = (int) $query['from'];
+        if (! empty($query['from']) && ($from = $this->validSource($query['from']))) {
+            $this->from_organization_id = $from;
         }
 
         if (! empty($query['zone']) && ($zone = Zone::query()->find($query['zone']))) {
-            $this->destinationRegionFilter = (string) $zone->region_id;
-            $this->destinationZoneFilter = (string) $zone->id;
+            $this->destination = ['region_id' => (string) $zone->region_id, 'zone_id' => (string) $zone->id, 'woreda_id' => ''];
         }
 
-        if (! empty($query['book']) && ManualBook::query()->whereKey($query['book'])->exists()) {
+        if (! empty($query['book']) && ManualBook::query()->accessibleBy($actor)->whereKey($query['book'])->exists()) {
             $this->lines[0]['manual_book_id'] = (int) $query['book'];
             $this->lines[0]['full_packages'] = max(0, (int) ($query['packages'] ?? 0));
         }
@@ -300,5 +314,36 @@ class CreateShipment extends Component
                 'teacher' => (int) $rows->firstWhere('edition', ManualBook::EDITION_TEACHER)?->on_hand,
             ])
             ->all();
+    }
+
+    private function sourceScope(): ScopedLocation
+    {
+        return ScopedLocation::for(Auth::user());
+    }
+
+    // Schools only receive, so they are never offered as a source
+    private function sources()
+    {
+        return $this->sourceScope()->organizations($this->source)
+            ->whereDoesntHave('organizationType', fn ($type) => $type->where('name', 'School'));
+    }
+
+    private function validSource($organizationId): string
+    {
+        $id = $this->sourceScope()->organization($this->source, $organizationId);
+
+        return $id !== '' && $this->sources()->whereKey($id)->exists() ? $id : '';
+    }
+
+    private function destinationScope(): ScopedLocation
+    {
+        return $this->sendsAnywhere() ? ScopedLocation::open() : ScopedLocation::destinationFor(Auth::user());
+    }
+
+    private function sendsAnywhere(): bool
+    {
+        $source = $this->from_organization_id ? Organization::query()->with('organizationType')->find($this->from_organization_id) : null;
+
+        return app(ManualShipmentService::class)->isSupplySource($source);
     }
 }
