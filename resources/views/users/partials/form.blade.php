@@ -32,13 +32,20 @@ $roleNames = collect($roles)->map(fn ($role) => is_string($role) ? $role : $role
         </div>
     </x-admin.form-section>
 
-    <x-admin.form-section title="Roles" description="Roles decide which screens and actions are available. Pick at least one.">
+    <x-admin.form-section title="Roles" description="Roles decide which screens and actions are available. Pick at least one. Only roles within your own permissions are listed.">
         <div class="grid gap-2 sm:grid-cols-2 xl:grid-cols-3">
             @foreach ($roleNames as $role)
             <x-multi-checkbox name="roles[]" value="{{ $role }}" title="{{ $role }}"
                 :checked="in_array($role, $selectedRoles, true)" />
             @endforeach
+            @foreach ($keptRoles ?? [] as $role)
+            <x-multi-checkbox name="roles[]" value="{{ $role }}" title="{{ $role }}" checked disabled
+                reason="Has permissions you do not hold, so only someone who holds them can change it" />
+            @endforeach
         </div>
+        @if (! empty($keptRoles))
+        <p class="mt-2 form-hint">Greyed-out roles have permissions you do not hold. They stay as they are.</p>
+        @endif
         @error('roles')
         <p class="mt-1.5 text-xs font-semibold text-rose-600 dark:text-rose-400">{{ $message }}</p>
         @enderror

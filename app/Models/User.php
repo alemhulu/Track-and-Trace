@@ -5,9 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Collection;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -161,6 +163,27 @@ class User extends Authenticatable
 
         return $this->effectiveAccessLevel() === self::ACCESS_LEVEL_ORGANIZATION
             && $this->organization?->organizationType?->name === 'School';
+    }
+
+    /**
+     * Roles this user may give to others: every permission in the role must be one this user
+     * already holds, and the role's scope must be within this user's access level.
+     *
+     * @return Collection<int, Role>
+     */
+    public function assignableRoles(): Collection
+    {
+        $roles = Role::query()->with('permissions:id')->orderBy('name')->get();
+
+        if ($this->hasRole('Super-Admin')) {
+            return $roles;
+        }
+
+        $held = $this->getAllPermissions()->pluck('id');
+
+        return $roles->filter(fn (Role $role) => $role->permissions->pluck('id')->diff($held)->isEmpty()
+            && $this->canManageAccessLevel(config('access_hierarchy.role_scope.' . $role->name, config('access_hierarchy.default_role_scope'))))
+            ->values();
     }
 
     // Book titles are national reference data

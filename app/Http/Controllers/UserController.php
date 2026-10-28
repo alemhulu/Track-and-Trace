@@ -80,10 +80,11 @@ class UserController extends Controller
     public function create()
     {
         $actor = Auth::user();
-        $roles = Role::query()->orderBy('name')->pluck('name', 'name')->all();
+        $roles = $actor->assignableRoles()->pluck('name')->all();
+        $keptRoles = [];
 
         return view('users.create', array_merge(
-            compact('roles'),
+            compact('roles', 'keptRoles'),
             $this->formContext($actor)
         ));
     }
@@ -100,11 +101,12 @@ class UserController extends Controller
         $input = $request->validate($this->rules());
 
         $this->validateAccessPayload($request, $actor);
+        $roles = $this->rolesToSync($request, $actor);
         $input = $this->normalizeLocationPayload($input);
         $input['password'] = Hash::make($input['password']);
 
         $user = User::create($input);
-        $user->syncRoles($request->input('roles', []));
+        $user->syncRoles($roles);
 
         return redirect()->route('users.index')
             ->with('success', 'user has been created successfully.');
@@ -136,11 +138,13 @@ class UserController extends Controller
     {
         $actor = Auth::user();
         $user = User::query()->accessibleBy($actor)->findOrFail($id);
-        $roles = Role::query()->orderBy('name')->get();
+        $roles = $actor->assignableRoles()->pluck('name')->all();
         $userRole = $user->roles->pluck('name', 'name')->all();
+        // Roles the user holds that this manager cannot give: shown, but left as they are
+        $keptRoles = array_values(array_diff(array_keys($userRole), $roles));
 
         return view('users.edit', array_merge(
-            compact('user', 'roles', 'userRole'),
+            compact('user', 'roles', 'userRole', 'keptRoles'),
             $this->formContext($actor)
         ));
     }
@@ -159,6 +163,7 @@ class UserController extends Controller
 
         $input = $request->validate($this->rules($id));
         $this->validateAccessPayload($request, $actor, $user);
+        $roles = $this->rolesToSync($request, $actor, $user);
 
         if (!empty($input['password'])) {
             $input['password'] = Hash::make($input['password']);
@@ -170,7 +175,7 @@ class UserController extends Controller
 
         if ($actor->can('role-edit')) {
             $user->update($input);
-            $user->syncRoles($request->input('roles', []));
+            $user->syncRoles($roles);
         } else {
             return back()->with('error', 'You are not allowed to edit this role.');
         }
@@ -208,7 +213,8 @@ class UserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', Rule::unique('users', 'email')->ignore($id)],
             'password' => [$id ? 'nullable' : 'required', 'same:confirm-password'],
-            'roles' => ['required', 'array', 'min:1'],
+            // An edited user may keep only roles the manager cannot give, so the count is checked in rolesToSync()
+            'roles' => [$id ? 'nullable' : 'required', 'array'],
             'roles.*' => ['required', Rule::exists('roles', 'name')],
             'access_level' => ['required', Rule::in(config('access_hierarchy.levels', []))],
             'organization_id' => ['nullable', Rule::exists('organizations', 'id')],
@@ -282,6 +288,29 @@ class UserController extends Controller
         if ($target && $target->id === $actor->id && !$actor->canManageAccessLevel($level)) {
             $this->failValidation('access_level', 'You cannot reduce your own access to a conflicting scope.');
         }
+    }
+
+    /**
+     * The chosen roles the manager may give, plus any roles the user already holds that the
+     * manager cannot give (those are kept, never added or removed by this manager).
+     */
+    private function rolesToSync(Request $request, User $actor, ?User $target = null): array
+    {
+        $assignable = $actor->assignableRoles()->pluck('name');
+        $chosen = collect($request->input('roles', []));
+        $kept = $target ? $target->roles->pluck('name')->diff($assignable) : collect();
+
+        if ($chosen->diff($assignable)->diff($kept)->isNotEmpty()) {
+            $this->failValidation('roles', 'You can only give roles whose permissions you already have.');
+        }
+
+        $roles = $chosen->intersect($assignable)->merge($kept)->unique()->values()->all();
+
+        if (empty($roles)) {
+            $this->failValidation('roles', 'Pick at least one role.');
+        }
+
+        return $roles;
     }
 
     private function validateRoleScopeCompatibility(array $roles, User $actor, string $targetLevel): void

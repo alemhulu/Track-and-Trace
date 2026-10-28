@@ -8,6 +8,7 @@ use App\Models\Region;
 use App\Models\User;
 use App\Models\Woreda;
 use App\Models\Zone;
+use App\Support\ScopedLocation;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
@@ -177,13 +178,45 @@ class LocationCascade extends Component
         return $this->accessLevel === User::ACCESS_LEVEL_ORGANIZATION;
     }
 
+    // A level fixed by the manager's own access level: shown filled in and disabled
+    public function isLocked(string $key): bool
+    {
+        $shown = [
+            'region_id' => $this->showsRegion(),
+            'zone_id' => $this->showsZone(),
+            'woreda_id' => $this->showsWoreda(),
+            'organization_id' => $this->showsOrganization(),
+        ];
+
+        return ($shown[$key] ?? false) && array_key_exists($key, $this->locks());
+    }
+
     public function render()
     {
         return view('livewire.users.location-cascade');
     }
 
+    private function locks(): array
+    {
+        return ScopedLocation::for($this->currentActor())->locked();
+    }
+
+    // Puts the manager's own levels back, whatever was chosen or sent from the browser
+    private function enforceLocks(): void
+    {
+        $properties = ['region_id' => 'regionId', 'zone_id' => 'zoneId', 'woreda_id' => 'woredaId', 'organization_id' => 'organizationId'];
+        $locks = $this->locks();
+
+        foreach ($properties as $key => $property) {
+            if ($this->isLocked($key)) {
+                $this->{$property} = $this->toNullableInt($locks[$key]);
+            }
+        }
+    }
+
     private function refreshCascade(bool $preserveChoice): void
     {
+        $this->enforceLocks();
         $this->regions = $this->fetchRegions();
 
         if (! $this->inList($this->regionId, $this->regions)) {
