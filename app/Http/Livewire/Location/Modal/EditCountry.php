@@ -2,11 +2,14 @@
 
 namespace App\Http\Livewire\Location\Modal;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use Livewire\Component;
 use App\Models\Country;
 
 class EditCountry extends Component
 {
+    use AuthorizesPermissions;
+
     public country $country;
 
     function rules(){
@@ -53,4 +56,14 @@ class EditCountry extends Component
         unset($this->country);
     }
 
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'locations.countries.view',
+            'actions' => [
+                'editCountry' => 'locations.countries.edit',
+                'submit' => 'locations.countries.edit',
+            ],
+        ];
+    }
 }

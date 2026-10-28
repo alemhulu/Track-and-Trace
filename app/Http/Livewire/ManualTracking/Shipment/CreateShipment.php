@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Shipment;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualDistribution;
 use App\Models\ManualTracking\ManualScan;
@@ -19,6 +20,8 @@ use Livewire\Component;
 
 class CreateShipment extends Component
 {
+    use AuthorizesPermissions;
+
     // Where the books leave from and go to; levels fixed by the user's access level stay locked
     public $source = ['region_id' => '', 'zone_id' => '', 'woreda_id' => ''];
     public $from_organization_id = '';
@@ -345,5 +348,10 @@ class CreateShipment extends Component
         $source = $this->from_organization_id ? Organization::query()->with('organizationType')->find($this->from_organization_id) : null;
 
         return app(ManualShipmentService::class)->isSupplySource($source);
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'manual-tracking.shipments.dispatch'];
     }
 }

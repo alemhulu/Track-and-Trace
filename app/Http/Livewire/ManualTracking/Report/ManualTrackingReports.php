@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Report;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualDistribution;
 use App\Models\ManualTracking\ManualDistributionLine;
@@ -15,6 +16,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ManualTrackingReports extends Component
 {
+    use AuthorizesPermissions;
+
     public function render()
     {
         $locationSummary = $this->shipments()
@@ -213,5 +216,10 @@ class ManualTrackingReports extends Component
     {
         return DB::table('manual_audits')
             ->whereIn('manual_audits.user_id', User::query()->accessibleBy($this->actor())->select('id'));
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'manual-tracking.reports.view'];
     }
 }

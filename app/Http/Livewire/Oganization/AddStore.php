@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Oganization;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Organization;
 use App\Models\User;
 use App\Models\WareHouse;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class AddStore extends Component
 {
+    use AuthorizesPermissions;
+
     // Form fields
     public $organizaton_id = '', $store_id = '', $name = '', $description = '';
     public $organizations = [];
@@ -208,5 +211,15 @@ class AddStore extends Component
     {
         $this->loadStores();
         return view('livewire.oganization.add-store')->extends('main.organization.index');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'warehouses.create',
+            'actions' => [
+                'addStore' => 'warehouses.create',
+            ],
+        ];
     }
 }

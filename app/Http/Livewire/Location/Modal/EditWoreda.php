@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Location\Modal;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Country;
 use App\Models\Region;
 use App\Models\Woreda;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class EditWoreda extends Component
 {
+    use AuthorizesPermissions;
+
     public $countries;
     public $regions;
     public $zones;
@@ -70,5 +73,16 @@ class EditWoreda extends Component
     public function render()
     {
         return view('livewire.location.modal.edit-woreda');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'locations.woredas.view',
+            'actions' => [
+                'editWoreda' => 'locations.woredas.edit',
+                'submit' => 'locations.woredas.edit',
+            ],
+        ];
     }
 }

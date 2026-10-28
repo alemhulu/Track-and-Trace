@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Distribution;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Distribution;
 use App\Models\DistributionRoute;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,8 @@ use Livewire\Component;
 
 class AddDistribution extends Component
 {
+    use AuthorizesPermissions;
+
     public $editingDistributionId = null;
     public $steps = [];
     public $routes = [];
@@ -214,5 +217,16 @@ class AddDistribution extends Component
             'alert',
             ['type' => 'error',  'message' => $name]
         );
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'distributions.create|distributions.edit',
+            'actions' => [
+                'save' => fn () => $this->editingDistributionId ? 'distributions.edit' : 'distributions.create',
+                'loadDistributionForEdit' => 'distributions.edit',
+            ],
+        ];
     }
 }

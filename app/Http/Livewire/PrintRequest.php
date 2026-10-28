@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Book;
 use App\Models\Package;
 use App\Models\PrintOrder;
@@ -14,6 +15,7 @@ use Livewire\WithPagination;
 class PrintRequest extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $order, $clearid;
     public $packagesPerPage = 5;
@@ -104,4 +106,14 @@ class PrintRequest extends Component
 
     // Clear input variables
     public function clearid() {}
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'print-orders.view',
+            'actions' => [
+                'status' => 'print-orders.edit',
+            ],
+        ];
+    }
 }

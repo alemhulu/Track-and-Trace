@@ -1,6 +1,7 @@
 <div x-data="{ deleteId: ''}" class="lg:grid lg:grid-cols-12 lg:gap-x-5">
+    @can('locations.woredas.create')
     <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white dark:bg-gray-800 sm:rounded-md">
-        <x-form.card function="addWoreda" title="Add New Woreda">
+        <x-form.card function="addWoreda" can="locations.woredas.create" title="Add New Woreda">
             <div>
                 <x-jet-label for="country_id" value=" {{__('Country')}}" />
                 <x-form.select wire:model="country_id" id="country_id" class="block w-full">
@@ -37,6 +38,7 @@
             </div>
         </x-form.card>
     </aside>
+    @endcan
 
     <x-form.table title="Country List">
         <x-slot name="tableHeaders">
@@ -77,7 +79,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record->id }}" edit="editWoreda" delete="deleteWoreda" />
+                    <x-action.table-button id="{{ $record->id }}" edit="editWoreda" delete="deleteWoreda" edit-can="locations.woredas.edit" delete-can="locations.woredas.delete" />
                 </td>
             </x-data-table.tr>
             @empty

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Wearhouse;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Package;
 use App\Models\WareHouse;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 class ListWearhouse extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $totalWarehouses = 0;
     public $totalStores = 0;
@@ -128,5 +130,16 @@ class ListWearhouse extends Component
             'type' => 'error',
             'message' => $name
         ]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'warehouses.view',
+            'actions' => [
+                'editWarehouse' => 'warehouses.edit',
+                'deleteId' => 'warehouses.delete',
+            ],
+        ];
     }
 }

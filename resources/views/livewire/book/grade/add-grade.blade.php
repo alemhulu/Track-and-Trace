@@ -1,6 +1,7 @@
 <div>
+    @can($editingGradeId ? 'books.grades.edit' : 'books.grades.create')
     <aside class="px-5 py-6 bg-white sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 dark:bg-gray-800 sm:rounded-md">
-        <x-form.card function="addGrade" title="{{ $editingGradeId ? 'Edit Grade' : 'Add New Grade' }}"
+        <x-form.card function="addGrade" :can="$editingGradeId ? 'books.grades.edit' : 'books.grades.create'" title="{{ $editingGradeId ? 'Edit Grade' : 'Add New Grade' }}"
             submitLabel="{{ $editingGradeId ? 'Update' : 'Add' }}">
             <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
@@ -33,6 +34,7 @@
             </div>
         </x-form.card>
     </aside>
+    @endcan
 
     <x-form.table title="Grade List">
         <x-slot name="tableHeaders">
@@ -73,7 +75,7 @@
 </td>
 
 <td class="px-5 py-2">
-    <x-action.table-button id="{{$record->id}}" edit="editGrade" delete="deleteGrade">
+    <x-action.table-button id="{{$record->id}}" edit="editGrade" delete="deleteGrade" edit-can="books.grades.edit" delete-can="books.grades.delete">
     </x-action.table-button>
 </td>
 </x-data-table.tr>

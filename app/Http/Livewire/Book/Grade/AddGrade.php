@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Book\Grade;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Grade;
 use App\Models\Subject;
 use Illuminate\Support\Facades\DB;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class AddGrade extends Component
 {
+    use AuthorizesPermissions;
+
     public $subjects = [];
 
     public $editingGradeId = null;
@@ -148,5 +151,17 @@ class AddGrade extends Component
             'type' => 'success',
             'message' => $message,
         ]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'books.grades.view',
+            'actions' => [
+                'addGrade' => fn () => $this->editingGradeId ? 'books.grades.edit' : 'books.grades.create',
+                'editGrade' => 'books.grades.edit',
+                'deleteGrade' => 'books.grades.delete',
+            ],
+        ];
     }
 }

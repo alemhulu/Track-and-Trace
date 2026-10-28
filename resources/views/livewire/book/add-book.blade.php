@@ -1,5 +1,5 @@
 <div>
-    <x-form.card function="addBook" title="{{ $editingBookId ? 'Edit Book' : 'Add New Book' }}"
+    <x-form.card function="addBook" :can="$editingBookId ? 'books.edit' : 'books.create'" title="{{ $editingBookId ? 'Edit Book' : 'Add New Book' }}"
         submitLabel="{{ $editingBookId ? 'Update' : 'Add' }}">
         <form class=" space-y-8 divide-y divide-gray-200">
             <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">

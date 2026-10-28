@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Trace;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Book;
 use App\Models\Grade;
 use App\Models\Package;
@@ -14,6 +15,8 @@ use Livewire\Component;
 
 class TraceBookInfo extends Component
 {
+    use AuthorizesPermissions;
+
     public $gradeId = null;
     public $subjectId = null;
 
@@ -150,5 +153,10 @@ class TraceBookInfo extends Component
             'totalInStock',
             'totalOnStudentHand'
         ));
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'trace.view'];
     }
 }

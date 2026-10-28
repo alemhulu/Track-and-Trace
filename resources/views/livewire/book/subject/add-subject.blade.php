@@ -1,6 +1,7 @@
 <div>
+    @can($editingSubjectId ? 'books.subjects.edit' : 'books.subjects.create')
     <aside class="px-5 py-6 bg-white sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 dark:bg-gray-800 sm:rounded-md">
-        <x-form.card function="addSubject" title="{{ $editingSubjectId ? 'Edit Subject' : 'Add New Subject' }}"
+        <x-form.card function="addSubject" :can="$editingSubjectId ? 'books.subjects.edit' : 'books.subjects.create'" title="{{ $editingSubjectId ? 'Edit Subject' : 'Add New Subject' }}"
             submitLabel="{{ $editingSubjectId ? 'Update' : 'Add' }}">
             <div>
                 <x-jet-label for="name" value="{{ __('Name') }}" />
@@ -21,6 +22,7 @@
             </div>
         </x-form.card>
     </aside>
+    @endcan
 
     <x-form.table title="Subject List">
         <x-slot name="tableHeaders">
@@ -60,7 +62,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{$record->id}}" edit="editSubject" delete="deleteSubject">
+                    <x-action.table-button id="{{$record->id}}" edit="editSubject" delete="deleteSubject" edit-can="books.subjects.edit" delete-can="books.subjects.delete">
                     </x-action.table-button>
                 </td>
             </x-data-table.tr>

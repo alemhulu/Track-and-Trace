@@ -27,6 +27,15 @@ class RouteDistributionFlowTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->grantModuleAccessToNewUsers();
+
+        // Every screen sits behind the login, so the components run for a signed-in user
+        $this->actingAs(User::factory()->create());
+    }
+
     public function test_route_can_be_updated_in_edit_mode(): void
     {
         $fromWarehouse = $this->createWarehouse('Printer Warehouse', 101);

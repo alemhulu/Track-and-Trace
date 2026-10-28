@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Print;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\PrintOrder;
 use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 class ListPrintOrder extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
     //variables
     public $recordes = 10;
     public $sortType = 'desc';
@@ -98,5 +100,10 @@ class ListPrintOrder extends Component
     public function updated()
     {
         $this->resetPage();
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'print-orders.view'];
     }
 }

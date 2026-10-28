@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Book;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\ManualTracking\ManualBook;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 class ListManualBook extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $recordes = 10;
 
@@ -25,21 +27,23 @@ class ListManualBook extends Component
 
         return view('livewire.manual-tracking.book.list-manual-book', [
             'books' => $books,
-            'canManage' => Auth::user()->canManageBookTitles(),
+            'canCreate' => Auth::user()->canManageBookTitles('create'),
+            'canEdit' => Auth::user()->canManageBookTitles('edit'),
+            'canDelete' => Auth::user()->canManageBookTitles('delete'),
         ])->extends('main.manual-tracking.index');
     }
 
     public function editBook($id)
     {
-        abort_unless(Auth::user()->canManageBookTitles(), 403);
+        abort_unless(Auth::user()->canManageBookTitles('edit'), 403);
 
         return redirect()->route('manual-tracking.books.add', ['edit' => $id]);
     }
 
     public function deleteBook($id)
     {
-        if (! Auth::user()->canManageBookTitles()) {
-            return $this->alertError('Only administrators can delete titles.');
+        if (! Auth::user()->canManageBookTitles('delete')) {
+            return $this->alertError('You are not allowed to delete titles.');
         }
 
         $book = ManualBook::query()->withCount(['stockLedgers', 'distributionLines'])->find($id);
@@ -75,5 +79,17 @@ class ListManualBook extends Component
             'type' => 'success',
             'message' => $message,
         ]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.view',
+            'actions' => [
+                'editBook' => 'manual-tracking.titles.edit',
+                'deleteBook' => 'manual-tracking.titles.delete',
+                'deleteId' => 'manual-tracking.titles.delete',
+            ],
+        ];
     }
 }

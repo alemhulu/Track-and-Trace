@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Location;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Country;
 use App\Models\Region;
 use App\Models\Zone as zones;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 class Zone extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $country;
     public $country_id;
@@ -195,4 +197,17 @@ class Zone extends Component
         public function clearid(){
             $this->name="";
         }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'locations.zones.view',
+            'actions' => [
+                'addZone' => 'locations.zones.create',
+                'editZone' => 'locations.zones.edit',
+                'deleteId' => 'locations.zones.delete',
+                'deleteZone' => 'locations.zones.delete',
+            ],
+        ];
+    }
 }

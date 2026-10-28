@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Scan;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualScan;
 use App\Models\Organization;
@@ -18,6 +19,8 @@ use Livewire\Component;
  */
 class SortPackages extends Component
 {
+    use AuthorizesPermissions;
+
     public $area = ['region_id' => '', 'zone_id' => '', 'woreda_id' => ''];
     public $organizationId = '';
     public $titleId = '';
@@ -145,5 +148,10 @@ class SortPackages extends Component
         if ($error) {
             $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => $error]);
         }
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'manual-tracking.scan.sort'];
     }
 }

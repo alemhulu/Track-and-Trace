@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Book;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Grade;
 use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualBookCode;
@@ -14,6 +15,8 @@ use Livewire\Component;
 
 class AddManualBook extends Component
 {
+    use AuthorizesPermissions;
+
     public $code;
     public $title;
     public $region_id;
@@ -161,10 +164,10 @@ class AddManualBook extends Component
         }
     }
 
-    // Only Admin and Super-Admin register or change titles
+    // Registering a title and changing one are granted separately
     private function ensureCanManageTitles(): void
     {
-        abort_unless(Auth::user()?->canManageBookTitles(), 403);
+        abort_unless(Auth::user()?->canManageBookTitles($this->editingBookId || request()->query('edit') ? 'edit' : 'create'), 403);
     }
 
     private function loadForEdit(int $id): void
@@ -208,5 +211,15 @@ class AddManualBook extends Component
             'type' => 'success',
             'message' => $message,
         ]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.titles.create|manual-tracking.titles.edit',
+            'actions' => [
+                'saveBook' => fn () => $this->editingBookId ? 'manual-tracking.titles.edit' : 'manual-tracking.titles.create',
+            ],
+        ];
     }
 }

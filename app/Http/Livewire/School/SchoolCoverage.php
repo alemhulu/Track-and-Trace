@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\School;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Http\Livewire\School\Concerns\LoadsSchool;
 use App\Services\School\SchoolAllocationService;
 use Livewire\Component;
@@ -9,6 +10,7 @@ use Livewire\Component;
 class SchoolCoverage extends Component
 {
     use LoadsSchool;
+    use AuthorizesPermissions;
 
     protected $listeners = ['schoolRecordsChanged' => '$refresh'];
 
@@ -20,5 +22,10 @@ class SchoolCoverage extends Component
             'rows' => $rows,
             'totals' => $allocations->totals($rows),
         ]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'manual-tracking.schools.view'];
     }
 }

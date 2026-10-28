@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Shipment;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\ManualTracking\ManualDistribution;
 use App\Models\ManualTracking\ManualScan;
 use App\Services\ManualTracking\ManualScanService;
@@ -13,6 +14,8 @@ use Livewire\Component;
 
 class ShowShipment extends Component
 {
+    use AuthorizesPermissions;
+
     public $shipmentId;
 
     // Receive form, keyed by line id
@@ -53,7 +56,8 @@ class ShowShipment extends Component
         $shipment = $this->shipment();
         $actor = Auth::user();
 
-        $canReceive = $shipment->isInTransit()
+        $canReceive = $actor->can('manual-tracking.shipments.receive')
+            && $shipment->isInTransit()
             && $shipment->destinationOrganization
             && (int) $shipment->distributed_by !== (int) $actor->id
             && $stock->canActFor($actor, $shipment->destinationOrganization);
@@ -234,5 +238,18 @@ class ShowShipment extends Component
                 'receiver:id,name',
             ])
             ->findOrFail($this->shipmentId);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.view',
+            'actions' => [
+                'receive' => 'manual-tracking.shipments.receive',
+                'scan' => 'manual-tracking.shipments.receive',
+                'voidScan' => 'manual-tracking.shipments.receive',
+                'applyScans' => 'manual-tracking.shipments.receive',
+            ],
+        ];
     }
 }

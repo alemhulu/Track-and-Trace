@@ -17,7 +17,7 @@ class ViewLogs
      */
     public function handle(Request $request, Closure $next)
     {
-        if (Auth::check() && Auth::user()->hasPermissionTo('view-logs')) {
+        if (Auth::check() && Auth::user()->can('logs.view')) {
             return $next($request);
         }
 

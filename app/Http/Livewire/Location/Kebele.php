@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Location;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Country;
 use App\Models\Kebele as ModelsKebele;
 use App\Models\Region;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 class Kebele extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $country;
     public $country_id;
@@ -219,4 +221,16 @@ class Kebele extends Component
         $this->woreda_id="";
     }
 
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'locations.kebeles.view',
+            'actions' => [
+                'addKebele' => 'locations.kebeles.create',
+                'editKebele' => 'locations.kebeles.edit',
+                'deleteId' => 'locations.kebeles.delete',
+                'deleteKebele' => 'locations.kebeles.delete',
+            ],
+        ];
+    }
 }

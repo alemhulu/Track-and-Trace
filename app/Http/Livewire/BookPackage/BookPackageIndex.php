@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\BookPackage;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Package;
 use App\Models\User;
 use Carbon\Carbon;
@@ -12,6 +13,7 @@ use Livewire\WithPagination;
 class BookPackageIndex extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
     //variables
     public $packages = [], $subjects = [];
     public $column, $recordes, $sortType;
@@ -221,5 +223,10 @@ class BookPackageIndex extends Component
         $this->loadPackageSummary();
 
         return view('livewire.book-package.book-package-index')->extends('main.book-package.index');
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'packages.view'];
     }
 }

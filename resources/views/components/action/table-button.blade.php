@@ -1,6 +1,16 @@
+@props(['editCan' => null, 'deleteCan' => null])
 @aware(['id' => '', 'view', 'edit', 'delete', 'add', 'text'=>'Add' , 'link'=>false])
+{{-- edit-can / delete-can name the permission ("a|b" for any of several) a button needs; without it the button is left out. --}}
 
 @php
+$allowed = fn ($permission) => ! $permission || auth()->user()?->canAny(explode('|', $permission));
+if (! $allowed($editCan)) {
+    $edit = null;
+}
+if (! $allowed($deleteCan)) {
+    $delete = null;
+}
+
 $btn = "icon-btn-add";
 
 $info = "icon-btn-view";

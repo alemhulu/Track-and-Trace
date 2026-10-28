@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\BookPackage;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Package;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 class AvialableBookPackage extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
     //variables
     public $packages = [];
     public $column, $recordes, $sortType;
@@ -51,5 +53,10 @@ class AvialableBookPackage extends Component
     public function viewAvailableInfo($id)
     {
         return redirect()->route('packages.available.info', compact('id'));
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'packages.view'];
     }
 }

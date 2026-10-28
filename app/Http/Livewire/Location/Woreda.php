@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Location;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Country;
 use App\Models\Region;
 use App\Models\Woreda as woredas;
@@ -13,6 +14,7 @@ use Livewire\WithPagination;
 class Woreda extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $country;
     public $country_id;
@@ -207,5 +209,18 @@ class Woreda extends Component
     public function clearid()
     {
         $this->name = "";
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'locations.woredas.view',
+            'actions' => [
+                'addWoreda' => 'locations.woredas.create',
+                'editWoreda' => 'locations.woredas.edit',
+                'deleteId' => 'locations.woredas.delete',
+                'deleteWoreda' => 'locations.woredas.delete',
+            ],
+        ];
     }
 }

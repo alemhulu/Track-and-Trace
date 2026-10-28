@@ -194,6 +194,16 @@ class FieldSyncService
             throw new ManualTrackingException('The time this was recorded is missing or more than ' . self::MAX_OFFLINE_DAYS . ' days old. Enter it again online.');
         }
 
+        // The same permissions as the online screens
+        $permission = match ($type) {
+            FieldSyncAction::TYPE_RECEIVE_SHIPMENT => 'manual-tracking.shipments.receive',
+            FieldSyncAction::TYPE_ISSUE_BOOKS, FieldSyncAction::TYPE_RETURN_BOOK => 'manual-tracking.schools.issue',
+            default => null,
+        };
+        if ($permission && ! $actor->can($permission)) {
+            throw new ManualTrackingException('You are not allowed to do this. Ask an administrator for access.');
+        }
+
         return match ($type) {
             FieldSyncAction::TYPE_RECEIVE_SHIPMENT => $this->receiveShipment($actor, $data, $recordedAt),
             FieldSyncAction::TYPE_ISSUE_BOOKS => $this->issueBooks($actor, $data, $recordedAt),

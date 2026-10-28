@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Oversight;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Organization;
 use App\Models\School\Student;
 use App\Services\ManualTracking\ManualTrackingException;
@@ -15,6 +16,8 @@ use Livewire\Component;
  */
 class RecordVisit extends Component
 {
+    use AuthorizesPermissions;
+
     public $schoolId;
     public $year;
     public $sample = [];
@@ -82,5 +85,10 @@ class RecordVisit extends Component
     private function school($id): Organization
     {
         return Organization::query()->accessibleBy(Auth::user())->findOrFail($id);
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'manual-tracking.visits.record'];
     }
 }

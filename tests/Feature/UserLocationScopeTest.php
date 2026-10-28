@@ -29,8 +29,8 @@ class UserLocationScopeTest extends TestCase
     {
         parent::setUp();
 
-        foreach (['user-create', 'user-edit'] as $permission) {
-            Permission::create(['name' => $permission, 'guard_name' => 'web']);
+        foreach (['users.create', 'users.edit'] as $permission) {
+            Permission::findOrCreate($permission, 'web');
         }
         foreach (['Woreda Officer', 'Organization User'] as $role) {
             Role::create(['name' => $role, 'guard_name' => 'web']);
@@ -162,7 +162,7 @@ class UserLocationScopeTest extends TestCase
         };
 
         $manager = User::factory()->create(['access_level' => $level, 'country_id' => $this->places['country']->id] + $location);
-        $manager->givePermissionTo(['user-create', 'user-edit']);
+        $manager->givePermissionTo(['users.create', 'users.edit']);
 
         return $manager;
     }

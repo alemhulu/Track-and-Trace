@@ -1,5 +1,5 @@
 <div>
-    <x-form.card function="save" :title="$editingDistributionId ? 'Edit Distribution' : 'Add New Distribution'">
+    <x-form.card function="save" :can="$editingDistributionId ? 'distributions.edit' : 'distributions.create'" :title="$editingDistributionId ? 'Edit Distribution' : 'Add New Distribution'">
         <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
             <div>
                 @if($editingDistributionId)

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Trace;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Distribution;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Schema;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 class TraceBookDistribution extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $search = '';
     public $gradeId = null;
@@ -117,5 +119,10 @@ class TraceBookDistribution extends Component
         $distributions = $query->paginate(10);
 
         return view('livewire.trace.trace-book-distribution', compact('distributions'));
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'trace.view'];
     }
 }

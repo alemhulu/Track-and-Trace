@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Route;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\DistributionStep;
 use App\Models\DistributionRoute;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 class ListRoute extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     protected $listeners = ['routeUpdated' => '$refresh'];
 
@@ -96,5 +98,16 @@ class ListRoute extends Component
             ->paginate(10);
 
         return view('livewire.route.list-route', compact('routes'))->extends('main.route.index');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'routes.view',
+            'actions' => [
+                'editRoute' => 'routes.edit',
+                'deleteId' => 'routes.delete',
+            ],
+        ];
     }
 }

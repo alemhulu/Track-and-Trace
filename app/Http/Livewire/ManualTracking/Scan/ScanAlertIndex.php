@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Scan;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\ManualTracking\ManualScan;
 use App\Services\ManualTracking\ManualScanService;
 use App\Services\ManualTracking\ManualTrackingException;
@@ -16,6 +17,7 @@ use Livewire\WithPagination;
 class ScanAlertIndex extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $statusFilter = ManualScan::ALERT_OPEN;
 
@@ -63,5 +65,15 @@ class ScanAlertIndex extends Component
 
         unset($this->notes[$id]);
         $this->dispatchBrowserEvent('alert', ['type' => 'success', 'message' => 'Alert closed.']);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.view',
+            'actions' => [
+                'resolve' => 'manual-tracking.alerts.resolve',
+            ],
+        ];
     }
 }

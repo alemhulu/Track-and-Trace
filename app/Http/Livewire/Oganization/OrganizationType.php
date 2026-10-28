@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Livewire\Oganization;
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\OrganizationType as ModelsOrganizationType;
 
 use Livewire\Component;
@@ -10,6 +11,7 @@ class OrganizationType extends Component
 {
     
     use WithPagination;
+    use AuthorizesPermissions;
 
     // Input Variables
     public $name;
@@ -156,5 +158,17 @@ class OrganizationType extends Component
         $this->code=null;
         $this->description=null;
     }
-    
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'organizations.types.view',
+            'actions' => [
+                'addOrganizationType' => 'organizations.types.create',
+                'editType' => 'organizations.types.edit',
+                'deleteOrganizationType' => 'organizations.types.delete',
+                'deleteId' => 'organizations.types.delete',
+            ],
+        ];
+    }
 }

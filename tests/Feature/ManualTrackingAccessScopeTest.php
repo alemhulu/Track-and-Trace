@@ -16,6 +16,7 @@ use App\Models\Zone;
 use App\Services\ManualTracking\ManualShipmentService;
 use App\Services\ManualTracking\ManualStockService;
 use App\Services\ManualTracking\ManualTrackingException;
+use App\Support\PermissionCatalog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
@@ -37,6 +38,7 @@ class ManualTrackingAccessScopeTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->grantModuleAccessToNewUsers();
 
         $this->shipments = app(ManualShipmentService::class);
 
@@ -226,7 +228,7 @@ class ManualTrackingAccessScopeTest extends TestCase
         // National access alone is not enough to change titles
         $this->actingAs($this->national)->get(route('manual-tracking.books.add'))->assertForbidden();
 
-        Role::query()->create(['name' => 'Admin', 'guard_name' => 'web']);
+        Role::query()->create(['name' => 'Admin', 'guard_name' => 'web'])->givePermissionTo(PermissionCatalog::namesOf('manual-tracking.titles'));
         $admin = User::factory()->create(['access_level' => User::ACCESS_LEVEL_NATIONAL]);
         $admin->assignRole('Admin');
 

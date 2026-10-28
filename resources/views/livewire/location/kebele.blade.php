@@ -1,6 +1,7 @@
 <div x-data="{ deleteId: ''}" class="lg:grid lg:grid-cols-12 lg:gap-x-5">
+    @can('locations.kebeles.create')
     <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white dark:bg-gray-800 sm:rounded-md">
-        <x-form.card function="addKebele" title="Add New Kebele">
+        <x-form.card function="addKebele" can="locations.kebeles.create" title="Add New Kebele">
             <div>
                 <x-jet-label for="country_id" value=" {{__('Country')}}" />
                 <x-form.select wire:model="country_id" id="country_id" class="block w-full">
@@ -47,6 +48,7 @@
             </div>
         </x-form.card>
     </aside>
+    @endcan
 
     <x-form.table title="Kebele List">
         <x-slot name="tableHeaders">
@@ -92,7 +94,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record->id }}" edit="editKebele" delete="deleteKebele" />
+                    <x-action.table-button id="{{ $record->id }}" edit="editKebele" delete="deleteKebele" edit-can="locations.kebeles.edit" delete-can="locations.kebeles.delete" />
                 </td>
             </x-data-table.tr>
             @empty

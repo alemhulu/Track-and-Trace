@@ -8,7 +8,7 @@
         <x-supply-chain-steps class="mb-3" />
         <x-page.nav col='2'>
             <x-page.nav-link class="bg-green-500" title="List" link="route.list" icon="fi fi-rr-list" total="0" />
-            <x-page.nav-link class="bg-green-700" title="Add New Route" link="route.add" icon="fi fi-rr-plus" />
+            <x-page.nav-link class="bg-green-700" title="Add New Route" link="route.add" can="routes.create" icon="fi fi-rr-plus" />
         </x-page.nav>
 
         <div class="mt-6  tab mb-6">

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Location\Modal;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Country;
 use App\Models\Kebele;
 use App\Models\Region;
@@ -11,6 +12,8 @@ use Livewire\Component;
 
 class EditKebele extends Component
 {
+    use AuthorizesPermissions;
+
     public $countries;
     public $regions;
     public $zones;
@@ -75,5 +78,16 @@ class EditKebele extends Component
     public function render()
     {
         return view('livewire.location.modal.edit-kebele');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'locations.kebeles.view',
+            'actions' => [
+                'editKebele' => 'locations.kebeles.edit',
+                'submit' => 'locations.kebeles.edit',
+            ],
+        ];
     }
 }

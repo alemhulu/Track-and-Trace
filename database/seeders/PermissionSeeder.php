@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use App\Support\PermissionCatalog;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -19,197 +20,90 @@ class PermissionSeeder extends Seeder
     {
         app()[PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $permissionNames = [
-            'view-dashboard',
-            'view-users',
-            'create-users',
-            'edit-users',
-            'delete-users',
-            'view-roles',
-            'create-roles',
-            'edit-roles',
-            'delete-roles',
-            'view-locations',
-            'manage-locations',
-            'view-organizations',
-            'manage-organizations',
-            'view-manual-tracking',
-            'view-books',
-            'create-books',
-            'edit-books',
-            'delete-books',
-            'view-print-orders',
-            'create-print-orders',
-            'manage-print-orders',
-            'view-packages',
-            'create-packages',
-            'update-package-status',
-            'view-warehouses',
-            'manage-warehouses',
-            'view-routes',
-            'manage-routes',
-            'view-distributions',
-            'create-distributions',
-            'update-distributions',
-            'view-trace',
-            'view-logs',
-        ];
+        $permissionNames = PermissionCatalog::names();
 
         foreach ($permissionNames as $permissionName) {
             Permission::firstOrCreate(['name' => $permissionName, 'guard_name' => 'web']);
         }
 
+        // Every screen's view permission (sub-modules included), without the admin screens
+        $views = array_values(array_filter($permissionNames, fn ($permission) => str_ends_with($permission, '.view')
+            && ! in_array($permission, ['users.view', 'roles.view', 'logs.view'], true)));
+        $locationViews = array_values(array_filter(PermissionCatalog::namesOf('locations'), fn ($permission) => str_ends_with($permission, '.view')));
+
+        // Everything in manual tracking except registering titles, which stays with admins
+        $titles = PermissionCatalog::namesOf('manual-tracking.titles');
+        $manualTracking = array_values(array_diff(PermissionCatalog::namesOf('manual-tracking'), $titles));
+
         $roles = [
-            'Super-Admin' => array_values($permissionNames),
-            'National Admin' => array_values(array_filter($permissionNames, fn ($permission) => ! in_array($permission, [
-                'view-dashboard',
-            ], true))),
+            'Super-Admin' => $permissionNames,
+            'Admin' => $permissionNames,
+            'National Admin' => array_values(array_diff($permissionNames, $titles)),
             'Region Officer' => [
-                'view-dashboard',
-                'view-users',
-                'view-books',
-                'view-manual-tracking',
-                'view-print-orders',
-                'view-packages',
-                'view-warehouses',
-                'view-routes',
-                'view-distributions',
-                'view-trace',
-                'view-organizations',
-                'view-locations',
+                ...$views,
+                ...$manualTracking,
+                'users.view',
             ],
             'Zone Officer' => [
-                'view-dashboard',
-                'view-users',
-                'view-books',
-                'view-manual-tracking',
-                'view-print-orders',
-                'view-packages',
-                'view-warehouses',
-                'view-routes',
-                'view-distributions',
-                'view-trace',
-                'view-organizations',
-                'view-locations',
+                ...$views,
+                ...$manualTracking,
+                'users.view',
             ],
             'Woreda Officer' => [
-                'view-dashboard',
-                'view-users',
-                'view-books',
-                'view-manual-tracking',
-                'view-print-orders',
-                'view-packages',
-                'create-packages',
-                'update-package-status',
-                'view-warehouses',
-                'view-routes',
-                'view-distributions',
-                'create-distributions',
-                'update-distributions',
-                'view-trace',
-                'view-organizations',
-                'view-locations',
+                ...$views,
+                ...$manualTracking,
+                'users.view',
+                'packages.request',
+                'packages.send',
+                'distributions.create',
+                'distributions.edit',
             ],
             'Organization User' => [
-                'view-dashboard',
-                'view-books',
-                'view-manual-tracking',
-                'view-packages',
-                'view-distributions',
-                'view-warehouses',
-                'view-organizations',
-                'view-locations',
+                'dashboard.view',
+                'books.view',
+                'packages.view',
+                'distributions.view',
+                'warehouses.view',
+                'organizations.view',
+                ...$locationViews,
+                ...$manualTracking,
             ],
             'School User' => [
-                'view-dashboard',
-                'view-books',
-                'view-manual-tracking',
-                'view-packages',
-                'view-distributions',
-                'view-warehouses',
-                'view-organizations',
-            ],
-            'Admin' => [
-                'view-dashboard',
-                'view-users',
-                'create-users',
-                'edit-users',
-                'delete-users',
-                'view-roles',
-                'create-roles',
-                'edit-roles',
-                'delete-roles',
-                'view-locations',
-                'manage-locations',
-                'view-organizations',
-                'manage-organizations',
-                'view-manual-tracking',
-                'view-books',
-                'create-books',
-                'edit-books',
-                'delete-books',
-                'view-print-orders',
-                'create-print-orders',
-                'manage-print-orders',
-                'view-packages',
-                'create-packages',
-                'update-package-status',
-                'view-warehouses',
-                'manage-warehouses',
-                'view-routes',
-                'manage-routes',
-                'view-distributions',
-                'create-distributions',
-                'update-distributions',
-                'view-trace',
-                'view-logs',
+                'dashboard.view',
+                'dashboard.inventory.view',
+                'dashboard.distribution.view',
+                'books.view',
+                'manual-tracking.view',
+                'manual-tracking.shipments.receive',
+                'manual-tracking.schools.view',
+                'manual-tracking.schools.enrol',
+                'manual-tracking.schools.issue',
+                'manual-tracking.reports.view',
             ],
             'Org-Manager' => [
-                'view-dashboard',
-                'view-users',
-                'view-books',
-                'create-books',
-                'edit-books',
-                'view-manual-tracking',
-                'view-print-orders',
-                'create-print-orders',
-                'view-packages',
-                'create-packages',
-                'update-package-status',
-                'view-warehouses',
-                'view-routes',
-                'view-distributions',
-                'create-distributions',
-                'view-organizations',
-                'view-locations',
+                'dashboard.view',
+                'users.view',
+                'books.view',
+                'books.create',
+                'books.edit',
+                'print-orders.view',
+                'print-orders.create',
+                'packages.view',
+                'packages.request',
+                'packages.send',
+                'warehouses.view',
+                'routes.view',
+                'distributions.view',
+                'distributions.create',
+                'organizations.view',
+                ...$locationViews,
+                ...$manualTracking,
             ],
         ];
 
-        // Names checked by UserController, RoleController and the side navigation;
-        // each is granted wherever its canonical permission is granted
-        $aliases = [
-            'view-users' => ['view-user', 'user-list'],
-            'create-users' => ['user-create'],
-            'edit-users' => ['user-edit'],
-            'delete-users' => ['user-delete'],
-            'view-roles' => ['view-role', 'role-list'],
-            'create-roles' => ['role-create'],
-            'edit-roles' => ['role-edit'],
-            'delete-roles' => ['role-delete'],
-        ];
-
-        foreach (array_merge(...array_values($aliases)) as $aliasName) {
-            Permission::firstOrCreate(['name' => $aliasName, 'guard_name' => 'web']);
-        }
-
         foreach ($roles as $roleName => $permissions) {
-            $withAliases = $permissions;
-            foreach ($permissions as $permission) {
-                array_push($withAliases, ...($aliases[$permission] ?? []));
-            }
-
             $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
-            $role->syncPermissions($withAliases);
+            $role->syncPermissions($permissions);
         }
 
         $this->seedDemoUsers();

@@ -20,11 +20,11 @@ class UserController extends Controller
 {
     function __construct()
     {
-        $this->middleware('permission:user-list|user-create|user-edit|user-delete', ['only' => ['index', 'show']]);
+        $this->middleware('permission:users.view|users.create|users.edit|users.delete', ['only' => ['index', 'show']]);
 
-        $this->middleware('permission:user-create', ['only' => ['create', 'store']]);
-        $this->middleware('permission:user-edit', ['only' => ['edit', 'update']]);
-        $this->middleware('permission:user-delete', ['only' => ['destroy']]);
+        $this->middleware('permission:users.create', ['only' => ['create', 'store']]);
+        $this->middleware('permission:users.edit', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:users.delete', ['only' => ['destroy']]);
     }
 
     public function index(Request $request)
@@ -173,7 +173,7 @@ class UserController extends Controller
 
         $input = $this->normalizeLocationPayload($input);
 
-        if ($actor->can('role-edit')) {
+        if ($actor->can('roles.edit')) {
             $user->update($input);
             $user->syncRoles($roles);
         } else {

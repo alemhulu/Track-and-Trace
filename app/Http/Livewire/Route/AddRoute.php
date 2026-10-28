@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Route;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\DistributionRoute;
 use App\Models\WareHouse;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +11,8 @@ use Livewire\Component;
 
 class AddRoute extends Component
 {
+    use AuthorizesPermissions;
+
     public $editingRouteId = null;
     public $name;
     public $description;
@@ -162,5 +165,16 @@ class AddRoute extends Component
     public function render()
     {
         return view('livewire.route.add-route')->extends('main.route.index');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'routes.create|routes.edit',
+            'actions' => [
+                'addRoute' => fn () => $this->editingRouteId ? 'routes.edit' : 'routes.create',
+                'loadRouteForEdit' => 'routes.edit',
+            ],
+        ];
     }
 }

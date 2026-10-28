@@ -1,4 +1,6 @@
-@props(['function'=>'', 'title' ,'buttons'=> true, 'submitLabel' => 'Add'])
+@props(['function'=>'', 'title' ,'buttons'=> true, 'submitLabel' => 'Add', 'can' => null])
+{{-- `can` hides the whole form from users without that permission ("a|b" for any of several). --}}
+@if (! $can || auth()->user()?->canAny(explode('|', $can)))
 <form wire:submit.prevent={{ $function }} class="h-auto">
     <div class="relative mb-6 lg:col-span-8 card">
         <x-form.header>
@@ -25,3 +27,4 @@
         @endif
     </div>
 </form>
+@endif

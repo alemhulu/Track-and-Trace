@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Oversight;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Organization;
 use App\Models\Oversight\VerificationVisit;
 use App\Support\AcademicYear;
@@ -12,6 +13,7 @@ use Livewire\WithPagination;
 class VisitIndex extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $year;
     public $schoolId = '';
@@ -53,5 +55,15 @@ class VisitIndex extends Component
         $this->validate(['schoolId' => 'required|integer'], [], ['schoolId' => 'school']);
 
         return redirect()->route('manual-tracking.visits.create', $this->schoolId);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.view',
+            'actions' => [
+                'startVisit' => 'manual-tracking.visits.record',
+            ],
+        ];
     }
 }
