@@ -8,8 +8,8 @@
         <x-supply-chain-steps class="mb-3" />
         <x-page.nav col='4'>
             <x-page.nav-link class="bg-blue-500" title="Info" link="book-packages" icon="fi fi-rr-info" />
-            <x-page.nav-link class="bg-red-600" title="Request" link="packages.request" icon="fi fi-rr-inbox" />
-            <x-page.nav-link class="bg-yellow-500" title="Send" link="packages.send" icon="fi fi-rr-paper-plane" />
+            <x-page.nav-link class="bg-red-600" title="Request" link="packages.request" can="packages.request" icon="fi fi-rr-inbox" />
+            <x-page.nav-link class="bg-yellow-500" title="Send" link="packages.send" can="packages.send" icon="fi fi-rr-paper-plane" />
             <x-page.nav-link class="bg-green-700" title="Available" link="packages.available" icon="fi fi-rr-box" />
         </x-page.nav>
 

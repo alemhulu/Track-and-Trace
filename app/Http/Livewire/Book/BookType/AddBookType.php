@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Book\BookType;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Book;
 use App\Models\BookType;
 use Illuminate\Validation\Rule;
@@ -9,6 +10,8 @@ use Livewire\Component;
 
 class AddBookType extends Component
 {
+    use AuthorizesPermissions;
+
     public $bookTypes = [];
     public $editingBookTypeId = null;
     public $name = '';
@@ -133,5 +136,17 @@ class AddBookType extends Component
             'type' => 'success',
             'message' => $message,
         ]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'books.types.view',
+            'actions' => [
+                'addBookType' => fn () => $this->editingBookTypeId ? 'books.types.edit' : 'books.types.create',
+                'editBookType' => 'books.types.edit',
+                'deleteBookType' => 'books.types.delete',
+            ],
+        ];
     }
 }

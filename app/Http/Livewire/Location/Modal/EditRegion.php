@@ -2,12 +2,15 @@
 
 namespace App\Http\Livewire\Location\Modal;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Region;
 use App\Models\Country;
 use Livewire\Component;
 
 class EditRegion extends Component
 {
+    use AuthorizesPermissions;
+
     public $countries;
     public region $region;
 
@@ -64,5 +67,16 @@ class EditRegion extends Component
     public function render()
     {
         return view('livewire.location.modal.edit-region');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'locations.regions.view',
+            'actions' => [
+                'editRegion' => 'locations.regions.edit',
+                'submit' => 'locations.regions.edit',
+            ],
+        ];
     }
 }

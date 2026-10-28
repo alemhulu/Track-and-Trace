@@ -1,5 +1,7 @@
-@props(['title', 'total' => null, 'tabLink' => '', 'icon' => '', 'link' => '#'])
-{{-- The per-link colour class callers pass is ignored on purpose: every module uses the brand palette. --}}
+@props(['title', 'total' => null, 'tabLink' => '', 'icon' => '', 'link' => '#', 'can' => null])
+{{-- The per-link colour class callers pass is ignored on purpose: every module uses the brand palette.
+     `can` hides the link from users without that permission ("a|b" for any of several). --}}
+@if (! $can || auth()->user()?->canAny(explode('|', $can)))
 @php
 $active = $link != '#' && request()->routeIs($link . '*');
 $href = $link != '#' ? route($link) : null;
@@ -30,3 +32,4 @@ $href = $link != '#' ? route($link) : null;
         @endif
     </a>
 </li>
+@endif

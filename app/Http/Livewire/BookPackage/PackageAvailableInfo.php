@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\BookPackage;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Package;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 class PackageAvailableInfo extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     //variables
     public $packages = [];
@@ -44,5 +46,10 @@ class PackageAvailableInfo extends Component
     public function render()
     {
         return view('livewire.book-package.package-available-info')->extends('main.book-package.index');
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'packages.view'];
     }
 }

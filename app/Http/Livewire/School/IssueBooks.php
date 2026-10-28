@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\School;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Http\Livewire\School\Concerns\LoadsSchool;
 use App\Models\Grade;
 use App\Models\ManualTracking\ManualBook;
@@ -18,6 +19,7 @@ use Livewire\Component;
 class IssueBooks extends Component
 {
     use LoadsSchool;
+    use AuthorizesPermissions;
 
     public $gradeId = '';
     public $section = '';
@@ -231,5 +233,18 @@ class IssueBooks extends Component
             ->where(fn ($query) => $query->whereNull('region_id')->orWhere('region_id', $school->region_id))
             ->orderBy('title')
             ->get(['id', 'title']);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.schools.view',
+            'actions' => [
+                'scan' => 'manual-tracking.schools.issue',
+                'issue' => 'manual-tracking.schools.issue',
+                'startReturn' => 'manual-tracking.schools.issue',
+                'confirmReturn' => 'manual-tracking.schools.issue',
+            ],
+        ];
     }
 }

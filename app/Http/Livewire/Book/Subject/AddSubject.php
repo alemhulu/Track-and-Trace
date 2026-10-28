@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Book\Subject;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Subject;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 class AddSubject extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $recordes = 5;
     public $column = 'name';
@@ -168,5 +170,17 @@ class AddSubject extends Component
             'type' => 'success',
             'message' => $message,
         ]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'books.subjects.view',
+            'actions' => [
+                'addSubject' => fn () => $this->editingSubjectId ? 'books.subjects.edit' : 'books.subjects.create',
+                'editSubject' => 'books.subjects.edit',
+                'deleteSubject' => 'books.subjects.delete',
+            ],
+        ];
     }
 }

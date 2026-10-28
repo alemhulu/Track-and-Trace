@@ -1,5 +1,5 @@
 <div>
-    <x-form.card function="addRoute" :title="$editingRouteId ? 'Edit Route' : 'Add New Route'">
+    <x-form.card function="addRoute" :can="$editingRouteId ? 'routes.edit' : 'routes.create'" :title="$editingRouteId ? 'Edit Route' : 'Add New Route'">
         <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
             <div>
                 @if($editingRouteId)

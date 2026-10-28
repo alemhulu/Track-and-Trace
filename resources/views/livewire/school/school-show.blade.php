@@ -18,7 +18,8 @@
     </div>
 
     <div role="tablist" aria-label="School records" class="flex flex-wrap gap-1 p-1 mb-4 bg-gray-100 rounded-lg dark:bg-gray-800 w-fit">
-        @foreach (['coverage' => 'Coverage', 'enrolment' => 'Enrolment', 'students' => 'Students', 'issue' => 'Issue Books', 'guides' => 'Teacher Guides'] as $key => $label)
+        @foreach (array_filter(['coverage' => 'Coverage', 'enrolment' => 'Enrolment', 'students' => 'Students',
+            'issue' => auth()->user()->can('manual-tracking.schools.issue') ? 'Issue Books' : null, 'guides' => 'Teacher Guides']) as $key => $label)
         <button type="button" role="tab" :aria-selected="(tab === '{{ $key }}').toString()" @click="tab = '{{ $key }}'"
             :class="tab === '{{ $key }}' ? 'bg-white text-gray-900 shadow dark:bg-gray-700 dark:text-white' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400'"
             class="px-4 py-2 text-sm font-semibold rounded-md">{{ $label }}</button>
@@ -29,6 +30,8 @@
     <div x-show="tab === 'coverage'">@livewire('school.school-coverage', ['schoolId' => $schoolId, 'year' => $year], key('coverage-' . $year))</div>
     <div x-show="tab === 'enrolment'" style="display: none">@livewire('school.enrolment-editor', ['schoolId' => $schoolId, 'year' => $year], key('enrolment-' . $year))</div>
     <div x-show="tab === 'students'" style="display: none">@livewire('school.student-register', ['schoolId' => $schoolId, 'year' => $year], key('students-' . $year))</div>
+    @can('manual-tracking.schools.issue')
     <div x-show="tab === 'issue'" style="display: none">@livewire('school.issue-books', ['schoolId' => $schoolId, 'year' => $year], key('issue-' . $year))</div>
+    @endcan
     <div x-show="tab === 'guides'" style="display: none">@livewire('school.teacher-guides', ['schoolId' => $schoolId, 'year' => $year], key('guides-' . $year))</div>
 </div>

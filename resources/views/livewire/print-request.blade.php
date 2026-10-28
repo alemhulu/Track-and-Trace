@@ -58,7 +58,7 @@
                         <x-button type="button" btnType="secondary">CANCEL</x-button>
                     </a>
 
-                    @if ($order->request_status !=2 && $order->request_status != 3)
+                    @if ($order->request_status !=2 && $order->request_status != 3 && auth()->user()->can('print-orders.edit'))
                     @if ($order->request_status !=4)
                     <a href="#confirmModal">
                         <x-button type="button" btnType="danger" wire:click="status(4)">REJECT</x-button>

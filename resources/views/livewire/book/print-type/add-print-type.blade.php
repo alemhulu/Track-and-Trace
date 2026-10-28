@@ -1,6 +1,7 @@
 <div>
+    @can($editingPrintTypeId ? 'books.print-types.edit' : 'books.print-types.create')
     <aside class="px-5 py-6 bg-white sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 dark:bg-gray-800 sm:rounded-md">
-        <x-form.card function="addPrintType"
+        <x-form.card function="addPrintType" :can="$editingPrintTypeId ? 'books.print-types.edit' : 'books.print-types.create'"
             title="{{ $editingPrintTypeId ? 'Edit Print Type' : 'Add New Print Type' }}"
             submitLabel="{{ $editingPrintTypeId ? 'Update' : 'Add' }}">
             <div>
@@ -22,6 +23,7 @@
             </div>
         </x-form.card>
     </aside>
+    @endcan
 
     <x-form.table title="Print Type List">
         <x-slot name="tableHeaders">
@@ -53,7 +55,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{$record->id}}" edit="editPrintType" delete="deletePrintType">
+                    <x-action.table-button id="{{$record->id}}" edit="editPrintType" delete="deletePrintType" edit-can="books.print-types.edit" delete-can="books.print-types.delete">
                     </x-action.table-button>
                 </td>
             </x-data-table.tr>

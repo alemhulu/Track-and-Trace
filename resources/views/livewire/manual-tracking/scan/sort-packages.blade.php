@@ -54,7 +54,7 @@
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-200">{{ number_format($row->packages) }}</td>
                     <td class="px-4 py-2 {{ $row->alerts ? 'text-red-600 font-semibold' : 'text-gray-400' }}">{{ (int) $row->alerts }}</td>
                     <td class="px-4 py-2 text-right">
-                        @if ($row->zone && $row->book && ! $row->alerts)
+                        @if ($row->zone && $row->book && ! $row->alerts && auth()->user()->can('manual-tracking.shipments.dispatch'))
                         <a href="{{ route('manual-tracking.distribution.add', ['from' => $place->id, 'zone' => $row->zone_id, 'book' => $row->manual_book_id, 'packages' => $row->packages]) }}"
                             class="text-sm link">Ship to zone</a>
                         @endif

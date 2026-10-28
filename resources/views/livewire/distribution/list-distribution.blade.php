@@ -43,7 +43,7 @@
 
                 <td class="px-5 py-2">
                     <x-action.table-button id="{{ $record->id }}" view="viewDistribution" edit="editDistribution"
-                        delete="deleteId" />
+                        delete="deleteId" edit-can="distributions.edit" delete-can="distributions.delete" />
                 </td>
             </x-data-table.tr>
             @empty

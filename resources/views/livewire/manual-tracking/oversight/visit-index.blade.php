@@ -18,6 +18,7 @@
                 @endforeach
             </x-form.select>
         </div>
+        @can('manual-tracking.visits.record')
         <form wire:submit.prevent="startVisit" class="flex items-end gap-2">
             <div class="w-64">
                 <x-jet-label for="visit-school" value="Visit a school" />
@@ -31,6 +32,7 @@
             </div>
             <button type="submit" class="btn-success">Start visit</button>
         </form>
+        @endcan
         <a href="{{ route('manual-tracking.exports', ['type' => 'visits', 'year' => $year]) }}"
             class="btn-secondary">Export CSV</a>
     </div>

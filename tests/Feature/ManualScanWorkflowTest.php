@@ -42,6 +42,7 @@ class ManualScanWorkflowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->grantModuleAccessToNewUsers();
 
         $this->scanner = app(ManualScanService::class);
 

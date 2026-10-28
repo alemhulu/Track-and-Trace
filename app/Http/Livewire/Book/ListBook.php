@@ -2,12 +2,14 @@
 
 namespace App\Http\Livewire\Book;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Book;
 use Livewire\Component;
 use Livewire\WithPagination;
 class ListBook extends Component
 { 
     use WithPagination;
+    use AuthorizesPermissions;
     //variables
     public $column, $recordes, $sortType;
     public function mount()
@@ -72,4 +74,16 @@ class ListBook extends Component
     }
 
     public function clearid() {}
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'books.view',
+            'actions' => [
+                'editBook' => 'books.edit',
+                'deleteBook' => 'books.delete',
+                'deleteId' => 'books.delete',
+            ],
+        ];
+    }
 }

@@ -8,11 +8,11 @@
         <x-page.nav col='4'>
             <x-page.nav-link class="bg-yellow-500" title="List" link="organization.list" icon="fi fi-rr-list"
                 total="0" />
-            <x-page.nav-link class="bg-yellow-600" title="Add Organization" link="organization.add"
+            <x-page.nav-link class="bg-yellow-600" title="Add Organization" link="organization.add" can="organizations.create"
                 icon="fi fi-rr-plus" />
-            <x-page.nav-link class="bg-yellow-700" title="Add Store" link="organization.store-add"
+            <x-page.nav-link class="bg-yellow-700" title="Add Store" link="organization.store-add" can="warehouses.create"
                 icon="fi fi-rr-plus" />
-            <x-page.nav-link class="bg-yellow-800" title="Type" link="organization.type" icon="fi fi-rr-settings"
+            <x-page.nav-link class="bg-yellow-800" title="Type" link="organization.type" can="organizations.types.view" icon="fi fi-rr-settings"
                 total="0" />
         </x-page.nav>
 

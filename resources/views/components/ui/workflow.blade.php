@@ -1,7 +1,8 @@
 @props(['steps' => [], 'label' => 'Workflow'])
 {{-- Numbered process strip that doubles as navigation.
      Each step: ['title', 'link' => route name, 'icon', 'hint', 'match' => route pattern(s), defaults to link*].
-     The step matching the current route is highlighted and earlier steps show as done. --}}
+     The step matching the current route is highlighted and earlier steps show as done.
+     A step with 'can' => permission stays visible but is not a link for users without it. --}}
 @php
 $current = collect($steps)->search(fn ($step) => request()->routeIs(...(array) ($step['match'] ?? $step['link'] . '*')));
 @endphp
@@ -11,13 +12,17 @@ $current = collect($steps)->search(fn ($step) => request()->routeIs(...(array) (
         @foreach ($steps as $i => $step)
         @php
         $state = $current === false ? 'todo' : ($i < $current ? 'done' : ($i === $current ? 'current' : 'todo'));
+        $locked = ! empty($step['can']) && ! auth()->user()?->canAny(explode('|', $step['can']));
         @endphp
         <li class="flex items-center flex-1 min-w-[9.5rem]">
-            <a href="{{ route($step['link']) }}" @if ($state === 'current') aria-current="step" @endif
+            <{{ $locked ? 'div' : 'a' }} @unless ($locked) href="{{ route($step['link']) }}" @endunless
+                @if ($state === 'current') aria-current="step" @endif
+                @if ($locked) title="{{ __('You do not have access to this step') }}" aria-disabled="true" @endif
                 @class([
                     'group flex items-center flex-1 gap-3 px-3 py-2.5 rounded-xl transition',
                     'bg-brand-600 shadow-brand' => $state === 'current',
-                    'hover:bg-brand-50 dark:hover:bg-slate-800' => $state !== 'current',
+                    'hover:bg-brand-50 dark:hover:bg-slate-800' => $state !== 'current' && ! $locked,
+                    'opacity-50 cursor-not-allowed' => $locked,
                 ])>
                 <span @class([
                     'flex items-center justify-center shrink-0 w-9 h-9 rounded-full text-sm font-extrabold ring-1 ring-inset transition',
@@ -52,7 +57,7 @@ $current = collect($steps)->search(fn ($step) => request()->routeIs(...(array) (
                     ])>{{ $step['hint'] }}</span>
                     @endif
                 </span>
-            </a>
+            </{{ $locked ? 'div' : 'a' }}>
             @if (! $loop->last)
             <i class="flex px-1 text-xs fi fi-rr-angle-small-right shrink-0 text-slate-300 dark:text-slate-600" aria-hidden="true"></i>
             @endif

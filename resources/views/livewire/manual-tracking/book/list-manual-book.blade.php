@@ -1,5 +1,5 @@
 <div>
-    @if ($canManage)
+    @if ($canCreate)
     <div class="mb-3 flex justify-end">
         <a href="{{ route('manual-tracking.books.add') }}"
             class="btn-primary">
@@ -51,8 +51,8 @@
                     {{ $book->has_teacher_guide ? number_format((int) $book->teacher_on_hand) : '—' }}
                 </td>
                 <td class="px-5 py-2">
-                    @if ($canManage)
-                    <x-action.table-button id="{{ $book->id }}" edit="editBook" delete="deleteBook" link />
+                    @if ($canEdit || $canDelete)
+                    <x-action.table-button id="{{ $book->id }}" :edit="$canEdit ? 'editBook' : null" :delete="$canDelete ? 'deleteBook' : null" link />
                     @endif
                 </td>
             </x-data-table.tr>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Oganization;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Country;
 use App\Models\Organization;
 use App\Models\OrganizationType;
@@ -18,6 +19,7 @@ use Livewire\WithFileUploads;
 class AddOrganization extends Component
 {
     use WithFileUploads;
+    use AuthorizesPermissions;
     // Search User To Select  START--------------------------------
     public $users = [], $user = null, $user_id, $userName = '';
     public $select, $selectList;
@@ -340,5 +342,15 @@ class AddOrganization extends Component
             $woredas->where('zone_id', $this->zone_id);
         }
         $this->woredas = $woredas->orderBy('name')->get();
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'organizations.create',
+            'actions' => [
+                'addOrganization' => 'organizations.create',
+            ],
+        ];
     }
 }

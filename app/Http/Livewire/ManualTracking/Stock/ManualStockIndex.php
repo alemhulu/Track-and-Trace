@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Stock;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualStockBalance;
 use App\Models\Organization;
@@ -16,6 +17,7 @@ use Livewire\WithPagination;
 class ManualStockIndex extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $area = ['region_id' => '', 'zone_id' => '', 'woreda_id' => ''];
     public $organizationFilter = '';
@@ -87,14 +89,15 @@ class ManualStockIndex extends Component
             'locationPicker' => $this->location()->picker($this->area),
             'organizations' => Organization::query()->accessibleBy($actor)->orderBy('name')->get(['id', 'name']),
             'books' => ManualBook::query()->accessibleBy($actor)->orderBy('title')->get(['id', 'title', 'has_teacher_guide', 'students_per_package']),
-            'canRecordOpening' => $actor->hasNationalAccess() || $actor->hasRole('Admin')
-                || $actor->effectiveAccessLevel() === User::ACCESS_LEVEL_REGION,
+            'canRecordOpening' => $this->canRecordOpening($actor),
             'openingCopies' => $this->openingCopies(),
         ])->extends('main.manual-tracking.index');
     }
 
     public function recordOpeningStock(ManualStockService $stock)
     {
+        abort_unless($this->canRecordOpening(Auth::user()), 403);
+
         $this->validate([
             'opening.organization_id' => 'required|exists:organizations,id',
             'opening.manual_book_id' => 'required|exists:manual_books,id',
@@ -124,6 +127,16 @@ class ManualStockIndex extends Component
     }
 
     /**
+     * Opening balances need the stock permission and national, admin or regional reach.
+     */
+    private function canRecordOpening(User $actor): bool
+    {
+        return $actor->can('manual-tracking.stock.manage')
+            && ($actor->hasNationalAccess() || $actor->hasRole('Admin')
+                || $actor->effectiveAccessLevel() === User::ACCESS_LEVEL_REGION);
+    }
+
+    /**
      * @return array{student: int, teacher: int}
      */
     private function openingCopies(): array
@@ -143,5 +156,15 @@ class ManualStockIndex extends Component
     private function location(): ScopedLocation
     {
         return ScopedLocation::for(Auth::user());
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.view',
+            'actions' => [
+                'recordOpeningStock' => 'manual-tracking.stock.manage',
+            ],
+        ];
     }
 }

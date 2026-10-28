@@ -41,6 +41,7 @@ class SchoolScreensTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->grantModuleAccessToNewUsers();
 
         $this->year = AcademicYear::current();
         $country = Country::query()->create(['name' => 'Ethiopia', 'code' => 'ET']);

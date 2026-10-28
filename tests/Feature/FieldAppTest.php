@@ -39,6 +39,7 @@ class FieldAppTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->grantModuleAccessToNewUsers();
 
         $country = Country::query()->create(['name' => 'Ethiopia', 'code' => 'ET']);
         $region = Region::query()->create(['name' => 'Oromia', 'code' => 'OR', 'country_id' => $country->id]);
@@ -151,6 +152,21 @@ class FieldAppTest extends TestCase
         ]])->json('results.0');
 
         $this->assertSame('rejected', $result['status']);
+        $this->assertSame(0, StudentBookIssue::query()->count());
+    }
+
+    public function test_offline_actions_need_the_same_permission_as_online(): void
+    {
+        $this->shipToSchool(40);
+        app(ManualStockService::class)->recordOpeningStock($this->national, $this->school, $this->math, ['student' => 5, 'teacher' => 0]);
+        $this->director->revokePermissionTo('manual-tracking.schools.issue');
+
+        $result = $this->actingAs($this->director->fresh())->postJson(route('field.sync'), ['actions' => [
+            $this->action('issue_books', ['student_id' => $this->student->id, 'title_ids' => [$this->math->id]]),
+        ]])->json('results.0');
+
+        $this->assertSame('rejected', $result['status']);
+        $this->assertStringContainsString('not allowed', $result['message']);
         $this->assertSame(0, StudentBookIssue::query()->count());
     }
 

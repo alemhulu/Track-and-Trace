@@ -39,7 +39,9 @@
                     {{ $discrepancy->created_at->format('Y-m-d') }}<br>by {{ $discrepancy->raisedBy->name ?? '—' }}
                 </td>
                 <td class="px-5 py-2 text-sm">
-                    @if ($discrepancy->status === 'open')
+                    @if ($discrepancy->status === 'open' && ! auth()->user()->can('manual-tracking.discrepancies.resolve'))
+                    <span class="text-xs text-gray-500">Awaiting resolution</span>
+                    @elseif ($discrepancy->status === 'open')
                     <div class="flex flex-col gap-2 md:flex-row md:items-center">
                         <x-form.select wire:model.defer="resolutions.{{ $discrepancy->id }}" class="md:w-56">
                             <option value="">Choose resolution</option>

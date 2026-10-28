@@ -26,7 +26,10 @@
                 </thead>
                 <tbody>
                     @forelse ($roles as $role)
-                    @php $permissionNames = $role->permissions->pluck('name'); @endphp
+                    @php
+                    $permissionNames = $role->permissions->pluck('name');
+                    $modules = \App\Support\PermissionCatalog::moduleLabelsFor($permissionNames);
+                    @endphp
                     <tr>
                         <td class="w-1/4">
                             <div class="flex items-center gap-3">
@@ -39,11 +42,11 @@
                         <td>
                             <div class="flex flex-wrap items-center gap-1">
                                 <x-ui.badge tone="brand">{{ $permissionNames->count() }} {{ \Illuminate\Support\Str::plural('permission', $permissionNames->count()) }}</x-ui.badge>
-                                @foreach ($permissionNames->take(4) as $name)
-                                <x-ui.badge tone="neutral">{{ $name }}</x-ui.badge>
+                                @foreach (array_slice($modules, 0, 4) as $module)
+                                <x-ui.badge tone="neutral">{{ $module }}</x-ui.badge>
                                 @endforeach
-                                @if ($permissionNames->count() > 4)
-                                <span class="text-xs font-semibold text-slate-500">+{{ $permissionNames->count() - 4 }} more</span>
+                                @if (count($modules) > 4)
+                                <span class="text-xs font-semibold text-slate-500">+{{ count($modules) - 4 }} more {{ \Illuminate\Support\Str::plural('module', count($modules) - 4) }}</span>
                                 @endif
                             </div>
                         </td>

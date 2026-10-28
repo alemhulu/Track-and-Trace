@@ -9,7 +9,7 @@
         <x-page.nav col='2'>
             <x-page.nav-link class="bg-green-500" title="List" link="distribution.list" icon="fi fi-rr-list"
                 total="0" />
-            <x-page.nav-link class="bg-green-700" title="Add Distribution" link="distribution.add"
+            <x-page.nav-link class="bg-green-700" title="Add Distribution" link="distribution.add" can="distributions.create"
                 icon="fi fi-rr-plus" />
         </x-page.nav>
 

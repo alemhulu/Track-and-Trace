@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\School;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Organization;
 use App\Services\School\SchoolAllocationService;
 use App\Support\AcademicYear;
@@ -12,6 +13,7 @@ use Livewire\WithPagination;
 class SchoolIndex extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $year;
     public $search = '';
@@ -45,5 +47,10 @@ class SchoolIndex extends Component
             'totals' => $totals,
             'years' => AcademicYear::options(),
         ])->extends('main.manual-tracking.index');
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'manual-tracking.schools.view'];
     }
 }

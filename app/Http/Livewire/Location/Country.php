@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Location;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use Livewire\Component;
 use App\Models\Country as ModelsCountry;
 use Livewire\WithPagination;
@@ -9,6 +10,7 @@ use Livewire\WithPagination;
 class Country extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     // Input Variables
     public $name;
@@ -153,5 +155,18 @@ class Country extends Component
     public function resetFields()
     {
         $this->name="";
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'locations.countries.view',
+            'actions' => [
+                'addCountry' => 'locations.countries.create',
+                'editCountry' => 'locations.countries.edit',
+                'deleteId' => 'locations.countries.delete',
+                'deleteCountry' => 'locations.countries.delete',
+            ],
+        ];
     }
 }

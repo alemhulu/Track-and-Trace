@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Book;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Book;
 use App\Models\BookType;
 use App\Models\Grade;
@@ -13,6 +14,7 @@ use Livewire\WithFileUploads;
 class AddBook extends Component
 {
     use WithFileUploads;
+    use AuthorizesPermissions;
     //variables
     public $grades = [], $subjects = [], $bookTypes = [], $printTypes = [], $paperSizes = [];
     public $grade_id, $subject_id, $book_type, $edition, $volume, $isbn, $paper_size, $file, $front_cover, $back_cover, $print_type;
@@ -189,5 +191,16 @@ class AddBook extends Component
             'alert',
             ['type' => 'warning', 'message' => 'Book will be deleted after save !!']
         );
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'books.create|books.edit',
+            'actions' => [
+                'addBook' => fn () => $this->editingBookId ? 'books.edit' : 'books.create',
+                'loadBookForEdit' => 'books.edit',
+            ],
+        ];
     }
 }

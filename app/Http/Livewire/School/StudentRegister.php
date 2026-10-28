@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\School;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Http\Livewire\School\Concerns\LoadsSchool;
 use App\Models\Grade;
 use App\Models\School\Student;
@@ -17,6 +18,7 @@ use Livewire\WithPagination;
 class StudentRegister extends Component
 {
     use LoadsSchool;
+    use AuthorizesPermissions;
     use WithFileUploads;
     use WithPagination;
 
@@ -143,5 +145,17 @@ class StudentRegister extends Component
 
             return false;
         }
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.schools.view',
+            'actions' => [
+                'saveStudent' => 'manual-tracking.schools.enrol',
+                'editStudent' => 'manual-tracking.schools.enrol',
+                'import' => 'manual-tracking.schools.enrol',
+            ],
+        ];
     }
 }

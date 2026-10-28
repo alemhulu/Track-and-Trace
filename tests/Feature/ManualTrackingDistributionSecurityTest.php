@@ -20,6 +20,7 @@ use App\Models\Woreda;
 use App\Models\Zone;
 use App\Services\ManualTracking\ManualShipmentService;
 use App\Services\ManualTracking\ManualStockService;
+use App\Support\PermissionCatalog;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
@@ -39,6 +40,7 @@ class ManualTrackingDistributionSecurityTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->grantModuleAccessToNewUsers();
 
         $country = Country::query()->create(['name' => 'Ethiopia', 'code' => 'ET']);
         $region = Region::query()->create(['name' => 'Oromia', 'code' => 'OR', 'country_id' => $country->id]);
@@ -143,7 +145,7 @@ class ManualTrackingDistributionSecurityTest extends TestCase
         $region = Region::query()->firstOrFail();
         $grade = Grade::query()->create(['name' => '8']);
         $subject = Subject::query()->create(['name' => 'Social Studies']);
-        Role::query()->create(['name' => 'Admin', 'guard_name' => 'web']);
+        Role::query()->create(['name' => 'Admin', 'guard_name' => 'web'])->givePermissionTo(PermissionCatalog::namesOf('manual-tracking.titles'));
         $admin = User::factory()->create(['access_level' => User::ACCESS_LEVEL_NATIONAL]);
         $admin->assignRole('Admin');
 

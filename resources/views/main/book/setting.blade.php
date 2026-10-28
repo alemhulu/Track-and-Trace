@@ -11,18 +11,38 @@
     <div class="tab">
         <x-page.vTab>
             <x-page.aside title="Book Setting" sticky>
+                @can('books.subjects.view')
                 <x-page.tabLink name="Subject" link="Subject" />
+                @endcan
+                @can('books.grades.view')
                 <x-page.tabLink name="Grade" link="Grade" />
+                @endcan
+                @can('books.types.view')
                 <x-page.tabLink name="Book Type" link="BookType" />
+                @endcan
+                @can('books.print-types.view')
                 <x-page.tabLink name="Print Type" link="PrintType" />
+                @endcan
+                @can('books.paper-sizes.view')
                 <x-page.tabLink name="Paper Size" link="PaperSize" />
+                @endcan
             </x-page.aside>
 
+            @can('books.subjects.view')
             <x-page.vLinkPage link="Subject" component="book.subject.add-subject" />
+            @endcan
+            @can('books.grades.view')
             <x-page.vLinkPage link="Grade" component="book.grade.add-grade" />
+            @endcan
+            @can('books.types.view')
             <x-page.vLinkPage link="BookType" component="book.book-type.add-book-type" />
+            @endcan
+            @can('books.print-types.view')
             <x-page.vLinkPage link="PrintType" component="book.print-type.add-print-type" />
+            @endcan
+            @can('books.paper-sizes.view')
             <x-page.vLinkPage link="PaperSize" component="book.paper-size.add-paper-size" />
+            @endcan
         </x-page.vTab>
     </div>
 </div>

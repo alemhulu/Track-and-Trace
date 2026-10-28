@@ -1,5 +1,6 @@
 <div class="space-y-4">
     <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        @can('manual-tracking.schools.enrol')
         <form wire:submit.prevent="saveStudent" class="p-5 card">
             <h4 class="mb-3 text-sm font-semibold text-gray-800 dark:text-gray-100">{{ $editingId ? 'Edit student' : 'Add student' }}</h4>
             <div class="grid grid-cols-2 gap-3">
@@ -50,7 +51,9 @@
                 <button type="submit" class="btn-success">Save</button>
             </div>
         </form>
+        @endcan
 
+        @can('manual-tracking.schools.enrol')
         <form wire:submit.prevent="import" class="p-5 card">
             <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Import from CSV</h4>
             <p class="mt-1 mb-3 text-xs text-gray-500 dark:text-gray-400">
@@ -70,6 +73,7 @@
             </ul>
             @endif
         </form>
+        @endcan
     </div>
 
     <div class="grid grid-cols-1 gap-3 md:grid-cols-3">
@@ -111,7 +115,9 @@
                     <td class="px-4 py-2 {{ $student->status === 'active' ? 'text-gray-700 dark:text-gray-300' : 'text-amber-600' }}">{{ \App\Models\School\Student::STATUSES[$student->status] ?? $student->status }}</td>
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{ $student->held_books_count }}</td>
                     <td class="px-4 py-2 text-right">
+                        @can('manual-tracking.schools.enrol')
                         <button type="button" wire:click="editStudent({{ $student->id }})" class="link">Edit</button>
+                        @endcan
                     </td>
                 </tr>
                 @empty

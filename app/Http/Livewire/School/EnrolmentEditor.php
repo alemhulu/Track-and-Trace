@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\School;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Http\Livewire\School\Concerns\LoadsSchool;
 use App\Models\Grade;
 use App\Models\School\SchoolEnrolment;
@@ -15,6 +16,7 @@ use Livewire\Component;
 class EnrolmentEditor extends Component
 {
     use LoadsSchool;
+    use AuthorizesPermissions;
 
     // grade id => [male, female, sections]
     public $rows = [];
@@ -93,5 +95,15 @@ class EnrolmentEditor extends Component
     private function grades()
     {
         return Grade::query()->orderByRaw('CAST(name AS UNSIGNED)')->get(['id', 'name']);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.schools.view',
+            'actions' => [
+                'save' => 'manual-tracking.schools.enrol',
+            ],
+        ];
     }
 }

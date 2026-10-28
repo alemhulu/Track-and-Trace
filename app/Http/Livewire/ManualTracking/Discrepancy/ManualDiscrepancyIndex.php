@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Discrepancy;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\ManualTracking\ManualDiscrepancy;
 use App\Services\ManualTracking\ManualShipmentService;
 use App\Services\ManualTracking\ManualTrackingException;
@@ -12,6 +13,7 @@ use Livewire\WithPagination;
 class ManualDiscrepancyIndex extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $statusFilter = ManualDiscrepancy::STATUS_OPEN;
 
@@ -66,5 +68,15 @@ class ManualDiscrepancyIndex extends Component
     private function alert(string $type, string $message): void
     {
         $this->dispatchBrowserEvent('alert', ['type' => $type, 'message' => $message]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.view',
+            'actions' => [
+                'resolve' => 'manual-tracking.discrepancies.resolve',
+            ],
+        ];
     }
 }

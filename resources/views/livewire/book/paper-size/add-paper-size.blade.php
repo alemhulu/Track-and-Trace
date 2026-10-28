@@ -1,6 +1,7 @@
 <div>
+    @can($editingPaperSizeId ? 'books.paper-sizes.edit' : 'books.paper-sizes.create')
     <aside class="px-5 py-6 bg-white sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 dark:bg-gray-800 sm:rounded-md">
-        <x-form.card function="addPaperSize"
+        <x-form.card function="addPaperSize" :can="$editingPaperSizeId ? 'books.paper-sizes.edit' : 'books.paper-sizes.create'"
             title="{{ $editingPaperSizeId ? 'Edit Paper Size' : 'Add New Paper Size' }}"
             submitLabel="{{ $editingPaperSizeId ? 'Update' : 'Add' }}">
             <div>
@@ -28,6 +29,7 @@
 
         </x-form.card>
     </aside>
+    @endcan
 
     <x-form.table title="Paper Size List">
         <x-slot name="tableHeaders">
@@ -61,7 +63,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{$record->id}}" edit="editPaperSize" delete="deletePaperSize">
+                    <x-action.table-button id="{{$record->id}}" edit="editPaperSize" delete="deletePaperSize" edit-can="books.paper-sizes.edit" delete-can="books.paper-sizes.delete">
                     </x-action.table-button>
                 </td>
             </x-data-table.tr>

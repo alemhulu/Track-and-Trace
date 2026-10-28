@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\School;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Http\Livewire\School\Concerns\LoadsSchool;
 use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualStockBalance;
@@ -14,6 +15,7 @@ use Livewire\Component;
 class TeacherGuides extends Component
 {
     use LoadsSchool;
+    use AuthorizesPermissions;
 
     public $form = ['manual_book_id' => '', 'teacher_name' => '', 'section' => '', 'quantity' => 1];
 
@@ -87,5 +89,16 @@ class TeacherGuides extends Component
 
         $this->emit('schoolRecordsChanged');
         $this->alert('success', 'Return recorded.');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'manual-tracking.schools.view',
+            'actions' => [
+                'issue' => 'manual-tracking.schools.issue',
+                'returnGuides' => 'manual-tracking.schools.issue',
+            ],
+        ];
     }
 }

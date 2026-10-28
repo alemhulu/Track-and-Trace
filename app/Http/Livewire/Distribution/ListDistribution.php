@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Distribution;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Distribution;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 class ListDistribution extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     protected $listeners = ['distributionUpdated' => '$refresh'];
 
@@ -107,5 +109,16 @@ class ListDistribution extends Component
 
         return view('livewire.distribution.list-distribution', compact('distributions'))
             ->extends('main.distribution.index');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'distributions.view',
+            'actions' => [
+                'editDistribution' => 'distributions.edit',
+                'deleteId' => 'distributions.delete',
+            ],
+        ];
     }
 }

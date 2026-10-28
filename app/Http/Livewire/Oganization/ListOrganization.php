@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Oganization;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Organization;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 class ListOrganization extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $search = '';
     public $recordes = 5;
@@ -144,5 +146,16 @@ class ListOrganization extends Component
     {
         $this->resetErrorBag();
         $this->resetValidation();
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'organizations.view',
+            'actions' => [
+                'deleteOrganization' => 'organizations.delete',
+                'deleteId' => 'organizations.delete',
+            ],
+        ];
     }
 }

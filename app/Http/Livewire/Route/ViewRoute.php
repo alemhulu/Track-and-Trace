@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Route;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\DistributionRoute;
 use App\Models\DistributionStep;
 use Illuminate\Support\Facades\Auth;
@@ -9,6 +10,8 @@ use Livewire\Component;
 
 class ViewRoute extends Component
 {
+    use AuthorizesPermissions;
+
     public $routeId;
 
     public function mount($id)
@@ -39,5 +42,10 @@ class ViewRoute extends Component
 
         return view('livewire.route.view-route', compact('routeRecord', 'stepUsages'))
             ->extends('main.route.index');
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'routes.view'];
     }
 }

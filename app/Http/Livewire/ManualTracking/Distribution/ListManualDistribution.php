@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\ManualTracking\Distribution;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\ManualTracking\ManualDistribution;
 use App\Support\ScopedLocation;
 use Illuminate\Support\Facades\Auth;
@@ -16,6 +17,7 @@ use Livewire\WithPagination;
 class ListManualDistribution extends Component
 {
     use WithPagination;
+    use AuthorizesPermissions;
 
     public $recordes = 10;
     public $statusFilter = '';
@@ -103,5 +105,10 @@ class ListManualDistribution extends Component
     private function location(): ScopedLocation
     {
         return ScopedLocation::for(Auth::user());
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'manual-tracking.view'];
     }
 }

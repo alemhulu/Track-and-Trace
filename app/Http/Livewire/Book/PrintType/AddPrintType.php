@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Book\PrintType;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Book;
 use App\Models\PrintType;
 use Illuminate\Validation\Rule;
@@ -9,6 +10,8 @@ use Livewire\Component;
 
 class AddPrintType extends Component
 {
+    use AuthorizesPermissions;
+
     public $printTypes = [];
     public $editingPrintTypeId = null;
     public $name = '';
@@ -133,5 +136,17 @@ class AddPrintType extends Component
             'type' => 'success',
             'message' => $message,
         ]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'books.print-types.view',
+            'actions' => [
+                'addPrintType' => fn () => $this->editingPrintTypeId ? 'books.print-types.edit' : 'books.print-types.create',
+                'editPrintType' => 'books.print-types.edit',
+                'deletePrintType' => 'books.print-types.delete',
+            ],
+        ];
     }
 }

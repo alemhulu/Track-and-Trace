@@ -27,12 +27,12 @@ class UserRoleAssignmentTest extends TestCase
     {
         parent::setUp();
 
-        foreach (['user-list', 'user-create', 'user-edit', 'role-edit', 'school-manage', 'stock-manage', 'title-manage'] as $permission) {
-            Permission::create(['name' => $permission, 'guard_name' => 'web']);
+        foreach (['users.view', 'users.create', 'users.edit', 'roles.edit', 'school-manage', 'stock-manage', 'title-manage'] as $permission) {
+            Permission::findOrCreate($permission, 'web');
         }
 
         Role::create(['name' => 'Woreda Officer', 'guard_name' => 'web'])
-            ->givePermissionTo(['user-list', 'user-create', 'user-edit', 'role-edit', 'school-manage', 'stock-manage']);
+            ->givePermissionTo(['users.view', 'users.create', 'users.edit', 'roles.edit', 'school-manage', 'stock-manage']);
         Role::create(['name' => 'School User', 'guard_name' => 'web'])->givePermissionTo('school-manage');
         // Organization scope, but holds a permission the woreda officer does not have
         Role::create(['name' => 'Data Clerk', 'guard_name' => 'web'])->givePermissionTo(['school-manage', 'title-manage']);

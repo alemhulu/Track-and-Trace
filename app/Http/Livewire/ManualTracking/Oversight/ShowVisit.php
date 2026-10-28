@@ -2,12 +2,15 @@
 
 namespace App\Http\Livewire\ManualTracking\Oversight;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Oversight\VerificationVisit;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 class ShowVisit extends Component
 {
+    use AuthorizesPermissions;
+
     public $visitId;
 
     public function mount($visit)
@@ -26,5 +29,10 @@ class ShowVisit extends Component
             'stockItems' => $visit->items->where('kind', 'stock')->values(),
             'studentItems' => $visit->items->where('kind', 'student')->groupBy('student_id'),
         ])->extends('main.manual-tracking.index');
+    }
+
+    protected function permissionMap(): array
+    {
+        return ['view' => 'manual-tracking.view'];
     }
 }

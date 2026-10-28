@@ -2,12 +2,15 @@
 
 namespace App\Http\Livewire\Location\Modal;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Country;
 use App\Models\Region;
 use Livewire\Component;
 use App\Models\zone;
 class EditZone extends Component
 {
+    use AuthorizesPermissions;
+
     public $countries;
     public $regions;
     public zone $zone;
@@ -82,5 +85,16 @@ class EditZone extends Component
     public function render()
     {
         return view('livewire.location.modal.edit-zone');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'locations.zones.view',
+            'actions' => [
+                'editZone' => 'locations.zones.edit',
+                'submit' => 'locations.zones.edit',
+            ],
+        ];
     }
 }

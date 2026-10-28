@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Print;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Book;
 use App\Models\Grade;
 use App\Models\Organization;
@@ -18,6 +19,7 @@ use Milon\Barcode\DNS2D;
 class AddPrintOrder extends Component
 {
     use WithFileUploads;
+    use AuthorizesPermissions;
     //variables
     public $grades = [], $subjects = [], $books = [], $book_codes = [[]], $organizations = [];
     public $grade_id, $subject_id, $book_id, $grade, $subject, $barcode_start, $barcode_end, $qrcode_start, $qrcode_end, $number_of_copies, $expected_print_date, $actual_print_date, $organization_id, $organization_type_id, $book_per_package, $prefix, $sufix, $path, $path2, $no_of_packages;
@@ -203,5 +205,15 @@ class AddPrintOrder extends Component
             'alert',
             ['type' => 'success',  'message' => 'Book Added Successfully!']
         );
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'print-orders.create',
+            'actions' => [
+                'addPrintOrder' => 'print-orders.create',
+            ],
+        ];
     }
 }

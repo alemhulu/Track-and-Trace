@@ -38,6 +38,8 @@
     <x-jet-input-error for="rows.*" class="mt-2" />
 
     <div class="flex justify-end mt-4">
+        @can('manual-tracking.schools.enrol')
         <button type="submit" class="btn-success">Save Enrolment</button>
+        @endcan
     </div>
 </form>

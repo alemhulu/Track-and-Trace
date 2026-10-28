@@ -1,6 +1,7 @@
 <div x-data="{ deleteId: ''}" class="lg:grid lg:grid-cols-12 lg:gap-x-5">
+    @can('locations.regions.create')
     <aside class="py-6 px-5 sm:px-6 lg:py-0 lg:px-0 lg:col-span-4 bg-white dark:bg-gray-800 sm:rounded-md">
-        <x-form.card function="addRegion" title="Add New Region / City">
+        <x-form.card function="addRegion" can="locations.regions.create" title="Add New Region / City">
             <div>
                 <x-jet-label for="country_id" value=" {{__('Select Country')}}" />
                 <x-form.select wire:model="country_id" id="country_id">
@@ -29,6 +30,7 @@
             </div>
         </x-form.card>
     </aside>
+    @endcan
 
     <x-form.table title="Country List">
         <x-slot name="tableHeaders">
@@ -62,7 +64,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{$record->id}}" edit="editRegion" delete="deleteRegion" />
+                    <x-action.table-button id="{{$record->id}}" edit="editRegion" delete="deleteRegion" edit-can="locations.regions.edit" delete-can="locations.regions.delete" />
                 </td>
             </x-data-table.tr>
             @empty

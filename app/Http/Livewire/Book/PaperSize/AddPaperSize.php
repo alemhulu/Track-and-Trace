@@ -2,6 +2,7 @@
 
 namespace App\Http\Livewire\Book\PaperSize;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\Book;
 use App\Models\PaperSize;
 use Illuminate\Validation\Rule;
@@ -9,6 +10,8 @@ use Livewire\Component;
 
 class AddPaperSize extends Component
 {
+    use AuthorizesPermissions;
+
     public $paperSizes = [];
     public $editingPaperSizeId = null;
     public $name = '';
@@ -138,5 +141,17 @@ class AddPaperSize extends Component
             'type' => 'success',
             'message' => $message,
         ]);
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'books.paper-sizes.view',
+            'actions' => [
+                'addPaperSize' => fn () => $this->editingPaperSizeId ? 'books.paper-sizes.edit' : 'books.paper-sizes.create',
+                'editPaperSize' => 'books.paper-sizes.edit',
+                'deletePaperSize' => 'books.paper-sizes.delete',
+            ],
+        ];
     }
 }

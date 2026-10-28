@@ -1,4 +1,5 @@
 <div class="space-y-4">
+    @can('manual-tracking.schools.issue')
     <form wire:submit.prevent="issue" class="grid grid-cols-1 gap-3 p-5 bg-white rounded-lg shadow-sm md:grid-cols-5 dark:bg-gray-800">
         <div class="md:col-span-2">
             <x-jet-label for="guide-title" value="Title" />
@@ -26,6 +27,7 @@
             <button type="submit" class="btn-success">Issue</button>
         </div>
     </form>
+    @endcan
 
     <div class="overflow-x-auto card">
         <table class="table-ui">
@@ -51,7 +53,9 @@
                         @if ($issue->returned_at)
                         <span class="text-gray-500">{{ $issue->returned_at->format('Y-m-d') }}</span>
                         @else
+                        @can('manual-tracking.schools.issue')
                         <button type="button" wire:click="returnGuides({{ $issue->id }})" class="text-xs link">Record return</button>
+                        @endcan
                         @endif
                     </td>
                 </tr>

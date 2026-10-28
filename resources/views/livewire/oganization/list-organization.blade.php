@@ -45,7 +45,7 @@
                 </td>
 
                 <td class="px-5 py-2">
-                    <x-action.table-button id="{{ $record->id }}" edit="editOrganization" delete="deleteOrganization" />
+                    <x-action.table-button id="{{ $record->id }}" delete="deleteOrganization" delete-can="organizations.delete" />
                 </td>
             </x-data-table.tr>
             @empty

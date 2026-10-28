@@ -23,7 +23,7 @@ class UserIndexFiltersTest extends TestCase
     {
         parent::setUp();
 
-        Permission::create(['name' => 'user-list', 'guard_name' => 'web']);
+        Permission::findOrCreate('users.view', 'web');
         $officer = Role::create(['name' => 'Region Officer', 'guard_name' => 'web']);
         $schoolUser = Role::create(['name' => 'School User', 'guard_name' => 'web']);
 
@@ -33,7 +33,7 @@ class UserIndexFiltersTest extends TestCase
         $school = Organization::query()->create(['name' => 'Ifa Bula Primary School', 'country_id' => $country->id, 'region_id' => $this->oromia->id]);
 
         $this->admin = User::factory()->create(['name' => 'National Admin', 'email' => 'admin@example.test', 'access_level' => User::ACCESS_LEVEL_NATIONAL]);
-        $this->admin->givePermissionTo('user-list');
+        $this->admin->givePermissionTo('users.view');
 
         User::factory()->create([
             'name' => 'Abebe Kebede', 'email' => 'oromia.officer@example.test', 'access_level' => User::ACCESS_LEVEL_REGION,
@@ -97,7 +97,7 @@ class UserIndexFiltersTest extends TestCase
     public function test_region_filter_cannot_widen_a_regional_users_scope(): void
     {
         $regional = User::query()->where('email', 'oromia.officer@example.test')->firstOrFail();
-        $regional->givePermissionTo('user-list');
+        $regional->givePermissionTo('users.view');
 
         $this->actingAs($regional)->get(route('users.index', ['region_id' => $this->amhara->id]))
             ->assertOk()

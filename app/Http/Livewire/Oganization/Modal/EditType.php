@@ -2,10 +2,13 @@
 
 namespace App\Http\Livewire\Oganization\Modal;
 
+use App\Http\Livewire\Concerns\AuthorizesPermissions;
 use App\Models\OrganizationType;
 use Livewire\Component;
 class EditType extends Component
 {
+    use AuthorizesPermissions;
+
     public $Name;
     public $Code;
     public $Description;
@@ -70,5 +73,16 @@ class EditType extends Component
     public function render()
     {
         return view('livewire.oganization.modal.edit-type');
+    }
+
+    protected function permissionMap(): array
+    {
+        return [
+            'view' => 'organizations.types.view',
+            'actions' => [
+                'editType' => 'organizations.types.edit',
+                'submit' => 'organizations.types.edit',
+            ],
+        ];
     }
 }

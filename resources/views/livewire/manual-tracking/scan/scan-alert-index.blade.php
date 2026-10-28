@@ -52,7 +52,9 @@
                         @endif
                     </td>
                     <td class="px-4 py-2 min-w-[16rem]">
-                        @if ($alert->alert_status === 'open')
+                        @if ($alert->alert_status === 'open' && ! auth()->user()->can('manual-tracking.alerts.resolve'))
+                        <span class="text-xs text-gray-500">Open</span>
+                        @elseif ($alert->alert_status === 'open')
                         <div class="flex gap-2">
                             <x-jet-input wire:model.defer="notes.{{ $alert->id }}" type="text" placeholder="What was done, e.g. sent on to Arsi Zone" class="flex-1 text-sm" />
                             <button type="button" wire:click="resolve({{ $alert->id }})"

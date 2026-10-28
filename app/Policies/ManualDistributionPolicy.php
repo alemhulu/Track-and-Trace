@@ -9,18 +9,19 @@ class ManualDistributionPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->can('manual-tracking.view');
     }
 
     public function view(User $user, ManualDistribution $distribution): bool
     {
-        return ManualDistribution::query()->accessibleBy($user)->whereKey($distribution->id)->exists();
+        return $user->can('manual-tracking.view')
+            && ManualDistribution::query()->accessibleBy($user)->whereKey($distribution->id)->exists();
     }
 
     public function create(User $user): bool
     {
         // Schools only receive. Which source others may dispatch from is checked per shipment
-        if ($user->isSchoolUser()) {
+        if ($user->isSchoolUser() || ! $user->can('manual-tracking.shipments.dispatch')) {
             return false;
         }
 

@@ -37,6 +37,7 @@ class ShipmentTotalsEntryTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        $this->grantModuleAccessToNewUsers();
 
         $country = Country::query()->create(['name' => 'Ethiopia', 'code' => 'ET']);
         $region = Region::query()->create(['name' => 'Oromia', 'code' => 'OR', 'country_id' => $country->id]);

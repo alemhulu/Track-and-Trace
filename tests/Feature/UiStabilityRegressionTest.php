@@ -14,24 +14,24 @@ class UiStabilityRegressionTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_permission_aliases_used_by_navigation_are_created(): void
+    public function test_permissions_used_by_navigation_are_created(): void
     {
         $this->seed(PermissionSeeder::class);
 
-        $this->assertTrue(Permission::where('name', 'view-user')->exists());
-        $this->assertTrue(Permission::where('name', 'view-role')->exists());
-        $this->assertTrue(Permission::where('name', 'user-list')->exists());
-        $this->assertTrue(Permission::where('name', 'role-list')->exists());
+        $this->assertTrue(Permission::where('name', 'users.view')->exists());
+        $this->assertTrue(Permission::where('name', 'roles.view')->exists());
+        $this->assertFalse(Permission::where('name', 'user-list')->exists());
     }
 
     public function test_organization_user_selection_uses_real_user_name(): void
     {
+        $this->grantModuleAccessToNewUsers();
         $user = User::factory()->create([
             'name' => 'Jane Doe',
             'email' => 'jane@example.com',
         ]);
 
-        $component = Livewire::test(AddOrganization::class)
+        $component = Livewire::actingAs($user)->test(AddOrganization::class)
             ->set('user_id', $user->id)
             ->call('selectUser');
 

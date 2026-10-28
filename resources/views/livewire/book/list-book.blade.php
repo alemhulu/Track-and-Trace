@@ -45,7 +45,7 @@
 
                 <td class="px-5 py-2">
                     <x-action.table-button id="{{ $book->id }}" view="#viewBook{{ $book->id }}" edit="editBook"
-                        delete="deleteBook" link />
+                        delete="deleteBook" edit-can="books.edit" delete-can="books.delete" link />
 
                     <x-data-table.modal name="viewBook{{ $book->id }}" maxWidth="3xl" :buttons="false">
                         <x-slot name="title">

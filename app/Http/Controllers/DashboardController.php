@@ -11,15 +11,25 @@ use App\Models\User;
 use App\Models\WareHouse;
 use App\Services\Oversight\OversightService;
 use App\Support\AcademicYear;
+use App\Support\PermissionCatalog;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Http\RedirectResponse;
 
 class DashboardController extends Controller
 {
-    public function __invoke(): View
+    public function __invoke(): View|RedirectResponse
     {
         /** @var User|null $actor */
         $actor = auth()->user();
+
+        // Everyone lands here after signing in; send roles without the dashboard to their first module
+        if ($actor && ! $actor->can('dashboard.view')) {
+            $home = PermissionCatalog::homeRouteFor($actor);
+            abort_unless($home, 403);
+
+            return redirect()->route($home);
+        }
 
         return view('dashboard', [
             'dashboardData' => [

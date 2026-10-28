@@ -186,10 +186,12 @@ class User extends Authenticatable
             ->values();
     }
 
-    // Book titles are national reference data
-    public function canManageBookTitles(): bool
+    /**
+     * Whether the user may create, edit or delete manual tracking titles (national reference data).
+     */
+    public function canManageBookTitles(string $action = 'create'): bool
     {
-        return $this->hasAnyRole(['Super-Admin', 'Admin']);
+        return $this->can("manual-tracking.titles.$action");
     }
 
     /**
