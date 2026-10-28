@@ -23,7 +23,7 @@
             <x-data-table.tr wire:key="discrepancy-{{ $discrepancy->id }}">
                 <td class="px-5 py-2 text-sm whitespace-nowrap">
                     <a href="{{ route('manual-tracking.shipments.show', $shipment->id) }}"
-                        class="font-semibold text-blue-700 hover:underline dark:text-blue-300">{{ $shipment->reference }}</a>
+                        class="font-semibold link">{{ $shipment->reference }}</a>
                     <div class="text-xs text-gray-500">
                         {{ $shipment->organization->name ?? '—' }} → {{ $shipment->destinationOrganization->name ?? '—' }}
                     </div>
@@ -49,7 +49,7 @@
                         </x-form.select>
                         <x-jet-input wire:model.defer="notes.{{ $discrepancy->id }}" type="text" placeholder="Notes" class="md:w-48" />
                         <button type="button" wire:click="resolve({{ $discrepancy->id }})"
-                            class="px-3 py-2 text-xs font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Resolve</button>
+                            class="btn-primary btn-sm">Resolve</button>
                     </div>
                     @else
                     <div class="text-gray-700 dark:text-gray-200">

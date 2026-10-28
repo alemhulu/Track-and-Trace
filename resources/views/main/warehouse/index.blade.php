@@ -1,8 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
-            {{ __('Warehouse') }}
-        </h2>
+        <h2>{{ __('Warehouse') }}</h2>
+        <p class="page-subtitle">Warehouses and their current holdings.</p>
     </x-slot>
 
     <livewire:wearhouse.list-wearhouse>

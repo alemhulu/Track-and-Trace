@@ -1,8 +1,6 @@
 <div>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-            {{ __('Print Order Detail') }}
-        </h2>
+        <h2>{{ __('Print Order Detail') }}</h2>
     </x-slot>
     <div>
         <x-form.card title="Packages Request Info" buttons="">
@@ -128,7 +126,7 @@
                         </td>
 
                         {{-- <td class="px-5 py-2 whitespace-nowrap">
-                            <x-button btnType="secondary" class="">Unchecked</x-button>
+                            <span class="badge-neutral"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Unchecked</span>
                         </td>
 
                         <td class="px-5 py-2 whitespace-nowrap">

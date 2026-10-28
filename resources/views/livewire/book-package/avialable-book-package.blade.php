@@ -2,7 +2,7 @@
 use Carbon\Carbon;
 @endphp
 <div>
-    <x-form.table title="Request List">
+    <x-form.table title="Available Packages">
         <x-slot name="tableHeaders">
             <x-data-table.th scope="col">#</x-data-table.th>
             <x-data-table.th scope="col"> {{__('Name') }}</x-data-table.th>
@@ -46,7 +46,7 @@ use Carbon\Carbon;
             </td>
 
             <td class="px-5 py-2 whitespace-nowrap">
-                <x-button btnType="info" class="">Stored</x-button>
+                <span class="badge-brand"><span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>Stored</span>
             </td>
 
             <td class="px-5 py-2">

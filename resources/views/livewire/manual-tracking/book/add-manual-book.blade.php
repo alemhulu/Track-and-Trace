@@ -54,7 +54,7 @@
             <div class="flex items-end pb-2">
                 <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
                     <input type="checkbox" wire:model="has_teacher_guide"
-                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        class="rounded border-slate-300 text-brand-600 focus:ring-brand-500">
                     Each package includes 1 teacher guide
                 </label>
             </div>
@@ -94,7 +94,7 @@
         <div class="mt-4">
             <x-jet-label for="notes" value="Notes" />
             <textarea wire:model.defer="notes" id="notes" rows="3"
-                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"></textarea>
+                class="mt-1 form-control"></textarea>
             <x-jet-input-error for="notes" class="mt-2" />
         </div>
     </x-form.card>

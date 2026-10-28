@@ -1,7 +1,7 @@
 <div>
     <form wire:submit.prevent="dispatchShipment"
-        class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">New Shipment</h3>
+        class="p-5 card">
+        <h3 class="section-title">New Shipment</h3>
         <p class="mb-5 text-sm text-gray-500 dark:text-gray-400">
             Dispatching removes the books from the source's stock. They are added to the destination when it confirms receipt.
         </p>
@@ -36,7 +36,7 @@
                 @if ($zoneFilter)
                 <p class="mt-1 text-xs text-gray-500">
                     Showing {{ $zoneFilter->name }} only ·
-                    <button type="button" wire:click="clearZoneFilter" class="text-blue-700 hover:underline dark:text-blue-300">show all</button>
+                    <button type="button" wire:click="clearZoneFilter" class="link">show all</button>
                 </p>
                 @endif
             </div>
@@ -74,22 +74,22 @@
                     <h4 class="text-sm font-semibold text-gray-800 dark:text-gray-100">Titles</h4>
                     <x-shipment.entry-mode model="entryMode" :value="$entryMode" />
                 </div>
-                <button type="button" wire:click="addLine" class="text-sm font-medium text-blue-700 hover:underline dark:text-blue-300">+ Add title</button>
+                <button type="button" wire:click="addLine" class="text-sm link">+ Add title</button>
             </div>
             <x-jet-input-error for="lines" class="mb-2" />
 
             <x-scan.scanner class="mb-3" placeholder="Scan a book to pick its title, then scan each full package" />
             @if ($scanWarnings)
-            <ul class="p-3 mb-3 space-y-1 text-sm text-amber-800 bg-amber-50 rounded-md dark:bg-amber-900/30 dark:text-amber-200">
+            <ul class="block mb-3 space-y-1 alert-warning">
                 @foreach ($scanWarnings as $warning)
                 <li>{{ $warning }}</li>
                 @endforeach
             </ul>
             @endif
 
-            <div class="overflow-x-auto border border-gray-200 rounded-lg dark:border-gray-700">
-                <table class="w-full text-sm text-left">
-                    <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+            <div class="table-shell">
+                <table class="table-ui">
+                    <thead>
                         <tr>
                             <th class="px-3 py-2">Title</th>
                             @if ($entryMode === 'totals')
@@ -106,7 +106,7 @@
                             <th class="px-3 py-2"><span class="sr-only">Remove</span></th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody>
                         @foreach ($lines as $index => $line)
                         @php
                             $book = $books[$line['manual_book_id']] ?? null;
@@ -184,14 +184,14 @@
         <div class="mt-4">
             <x-jet-label for="remarks" value="Remarks" />
             <textarea wire:model.defer="remarks" id="remarks" rows="2"
-                class="block w-full mt-1 border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"></textarea>
+                class="mt-1 form-control"></textarea>
         </div>
 
         <div class="flex justify-end gap-3 mt-5">
             <a href="{{ route('manual-tracking.distribution.list') }}"
                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200">Cancel</a>
             <button type="submit" wire:loading.attr="disabled"
-                class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">Dispatch Shipment</button>
+                class="btn-success">Dispatch Shipment</button>
         </div>
     </form>
 </div>

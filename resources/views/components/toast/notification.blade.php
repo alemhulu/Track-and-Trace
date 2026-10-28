@@ -1,4 +1,4 @@
-<div class="fixed inset-0 px-4 py-6 pointer-events-none sm:p-6 sm:items-start z-50 space-y-3 h-screen w-screen">
+<div class="fixed inset-x-0 top-0 z-[60] px-4 py-6 pointer-events-none sm:p-6 space-y-3">
     <div x-data="{ show: false, messages: [], 
       remove(message) {this.messages.splice(this.messages.indexOf(message), 1)},}"
         x-on:alert.window="show = true;  let message =$event.detail; messages.push(message); setTimeout(() => { remove(message)}, 4950)"
@@ -10,17 +10,19 @@
             <template x-for="(message, messageIndex) in messages" :key="messageIndex">
                 <div class="w-full flex items-center space-y-4 sm:items-end flex-row-reverse">
                     <div :class="{
-             'bg-red-700/90 shadow-red-800/60  ring-red-900 hover:bg-red-700': message.type === 'error',
-             'bg-green-700/90 shadow-green-800/60  ring-green-900 hover:bg-green-700': message.type === 'success',
-             'bg-blue-500/90 shadow-blue-800/60  ring-blue-900 hover:bg-blue-500': message.type === 'info',
-             'bg-yellow-600/90 shadow-yellow-800/60  ring-yellow-900 hover:bg-yellow-600': message.type === 'warning',
-             }" class="relative max-w-xs w-full shadow-lg rounded-md pointer-events-auto ring-1 ring-opacity-5 overflow-hidden backdrop-blur-sm">
-                        <div class=" px-2 py-3">
+             'bg-rose-600 shadow-rose-900/30': message.type === 'error',
+             'bg-emerald-600 shadow-emerald-900/30': message.type === 'success',
+             'bg-brand-600 shadow-brand-900/30': message.type === 'info',
+             'bg-amber-500 shadow-amber-900/30': message.type === 'warning',
+             }" class="relative w-full max-w-sm overflow-hidden shadow-xl pointer-events-auto rounded-xl ring-1 ring-black/5">
+                        <div class="px-4 py-3">
                             <div class="flex items-center">
                                 <div class="flex-shrink-0 flex">
-                                    <i :class="{'fi-rr-shield-exclamation text-2xl' : message.type === 'error', 
-                        'fi-rr-shield-check text-2xl' : message.type === 'success'}"
-                                        class="flex text-white py-auto fi "></i>
+                                    <i :class="{'fi-rr-shield-exclamation' : message.type === 'error',
+                        'fi-rr-shield-check' : message.type === 'success',
+                        'fi-rr-info' : message.type === 'info',
+                        'fi-rr-exclamation' : message.type === 'warning'}"
+                                        class="flex text-xl text-white fi"></i>
                                 </div>
 
                                 <div class="ml-3 w-0 flex-1 ">
@@ -36,11 +38,7 @@
                                 </div>
                             </div>
                         </div>
-                        <span :class="{'bg-red-800' : message.type==='error',
-                    'bg-green-800' : message.type==='success',
-                    'bg-blue-800' : message.type==='info',
-                    'bg-yellow-800' : message.type==='warning'}"
-                            class="absolute inset-x-0  bottom-0 h-1.5 animate-life rounded-t-lg"></span>
+                        <span class="absolute inset-x-0 bottom-0 h-1 bg-white/40 animate-life"></span>
                     </div>
                 </div>
             </template>

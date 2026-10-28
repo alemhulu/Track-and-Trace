@@ -1,21 +1,18 @@
 @if ($errors->any())
-<div x-data="{ showAlert: true }">
-    <div x-cloak x-show="showAlert" x-init="setTimeout(() => showAlert = false, 5000)"
-        class="relative mb-4 bg-red-50 rounded-lg px-5 py-3 shadow-sm">
-        <button class="absolute top-2 right-3 z-20" @click="showAlert = false" aria-label="Close">
-            <i class="fi fi-rr-cross text-red-700"></i>
-        </button>
-
-        <div class=" font-semibold text-red-700">
-            {{ __('Whoops! Something went wrong.') }}
-        </div>
-
-        <ul class="mt-3 list-disc list-inside text-sm text-red-700">
+<div x-data="{ showAlert: true }" x-cloak x-show="showAlert" x-transition.opacity
+    class="relative flex items-start gap-3 px-4 py-3 border rounded-xl bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-950/40 dark:border-rose-900 dark:text-rose-200"
+    role="alert">
+    <i class="flex mt-0.5 text-lg fi fi-rr-shield-exclamation"></i>
+    <div class="flex-1">
+        <p class="text-sm font-semibold">{{ __('Please fix the following:') }}</p>
+        <ul class="mt-1.5 text-sm list-disc list-inside space-y-0.5">
             @foreach ($errors->all() as $error)
             <li>{{ $error }}</li>
             @endforeach
         </ul>
-        <span class="absolute inset-x-0  top-0 h-1.5 bg-red-500 animate-life rounded-t-lg"></span>
     </div>
+    <button type="button" class="opacity-60 hover:opacity-100" @click="showAlert = false" aria-label="Close">
+        <i class="flex fi fi-rr-cross-small"></i>
+    </button>
 </div>
 @endif

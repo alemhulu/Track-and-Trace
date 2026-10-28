@@ -1,8 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
-            {{ __('Print Order') }}
-        </h2>
+        <h2>{{ __('Print Order') }}</h2>
+        <p class="page-subtitle">Place print orders and follow them through production.</p>
     </x-slot>
 
     <div class="mb-6">

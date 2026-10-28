@@ -38,7 +38,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="success" class="">Received</x-button>
+                    <span class="badge-success"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Received</span>
                 </td>
 
                 <td class="px-5 py-2">
@@ -73,7 +73,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="warning" class="">Sent</x-button>
+                    <span class="badge-gold"><span class="w-1.5 h-1.5 rounded-full bg-gold-500"></span>Sent</span>
                 </td>
 
                 <td class="px-5 py-2">
@@ -108,7 +108,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="info" class="">Stored</x-button>
+                    <span class="badge-brand"><span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>Stored</span>
                 </td>
 
                 <td class="px-5 py-2">

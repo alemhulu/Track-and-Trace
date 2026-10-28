@@ -1,25 +1,17 @@
-<div>
-    <!-- This example requires Tailwind CSS v2.0+ -->
-    <div class="flex flex-col">
-        <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-            <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-                <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
-                            <tr>
-                                {{ $header ?? " " }}
-                                <th scope="col" class="relative px-6 py-3">
-                                    <span class="sr-only">Action</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
-                            {{ $row ?? $slot}}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
+<div class="overflow-hidden card">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-slate-200 dark:divide-slate-800">
+            <thead class="bg-slate-50 dark:bg-slate-800/60">
+                <tr>
+                    {{ $header ?? " " }}
+                    <th scope="col" class="relative px-6 py-3">
+                        <span class="sr-only">Action</span>
+                    </th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-slate-100 dark:bg-slate-900 dark:divide-slate-800">
+                {{ $row ?? $slot}}
+            </tbody>
+        </table>
     </div>
-
 </div>

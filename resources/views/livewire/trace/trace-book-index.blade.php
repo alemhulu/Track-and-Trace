@@ -4,11 +4,11 @@
             <div class="space-y-8 divide-y divide-gray-200 sm:space-y-5">
                 <div>
                     <div>
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-50">
+                        <h3 class="text-base font-semibold text-slate-900 dark:text-white">
                             Filter Book
                         </h3>
-                        <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                            Filter Book By Selecting Grade and Subject
+                        <p class="max-w-2xl mt-1 text-sm text-slate-500 dark:text-slate-400">
+                            Pick a grade and subject to follow those books through the supply chain.
                         </p>
                     </div>
 
@@ -16,7 +16,7 @@
                         <div class="col-span-1">
                             <x-jet-label value="Grade" />
                             <x-form.select wire:model="grade_id" id="grade_id" class="max-w-md">
-                                <option value="">select</option>
+                                <option value="">All grades</option>
                                 @foreach($grades as $grade)
                                 <option value="{{ $grade->id }}">{{ $grade->name }}</option>
                                 @endforeach
@@ -26,7 +26,7 @@
                         <div class="col-span-1">
                             <x-jet-label value="Subject" />
                             <x-form.select wire:model="subject_id" id="subject_id" class="max-w-md">
-                                <option value="">select</option>
+                                <option value="">All subjects</option>
                                 @foreach($subjects as $subject)
                                 <option value="{{ $subject->id }}">{{ $subject->name }}</option>
                                 @endforeach

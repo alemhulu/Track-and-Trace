@@ -18,72 +18,68 @@
                 'columns' => ['Warehouse', 'Region', 'Status'],
             ],
         ];
+        $kpiIcon = fn ($label) => collect(['region' => 'fi-rr-map-marker-home', 'trend' => 'fi-rr-chart-histogram', 'transit' => 'fi-rr-truck-side', 'deliver' => 'fi-rr-shield-check', 'shipment' => 'fi-rr-truck-side', 'cop' => 'fi-rr-book', 'book' => 'fi-rr-book', 'hub' => 'fi-rr-home-location-alt', 'warehouse' => 'fi-rr-home-location-alt'])->first(fn ($icon, $word) => str_contains(strtolower($label), $word)) ?? 'fi-rr-chart-histogram';
     @endphp
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-            {{ __('Distribution Dashboard') }}
-        </h2>
+        <h2>{{ __('Distribution Dashboard') }}</h2>
+        <p class="page-subtitle">How books are moving between hubs, regions and schools.</p>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8" x-data="{ tab: 'manual' }"
+    <div class="pb-8">
+        <div x-data="{ tab: 'manual' }"
             x-init="renderDashboardCharts(tab); $watch('tab', value => $nextTick(() => renderDashboardCharts(value)))">
-            <x-dashboard.source-tabs class="mb-6" />
+            <x-dashboard.source-tabs class="mb-5" />
 
             @foreach ($sections as $key => $section)
             @php $sectionData = $distributionData[$key]; @endphp
             <section id="panel-{{ $key }}" role="tabpanel" aria-labelledby="tab-{{ $key }}"
                 x-show="tab === '{{ $key }}'" @if ($key !== 'manual') style="display: none" @endif>
-                <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">{{ $section['subtitle'] }}</p>
+                <p class="mb-3 text-sm text-slate-500 dark:text-slate-400">{{ $section['subtitle'] }}</p>
 
                 <!-- KPI Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 gap-4 mb-6 md:grid-cols-3">
                     @foreach($sectionData['kpiCards'] as $card)
-                    <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg p-6">
-                        <div class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ $card['label'] }}</div>
-                        <div class="text-3xl font-bold text-gray-900 dark:text-white">{{ number_format($card['value']) }}</div>
-                        <div class="text-xs text-gray-400 mt-1">{{ $card['hint'] }}</div>
-                        <div class="mt-2 w-2 h-2 rounded-full bg-{{ $card['style'] }}-500"></div>
-                    </div>
+                    <x-kpi-card :label="$card['label']" :value="number_format($card['value'])" :hint="$card['hint']"
+                        :tone="$card['style']" :icon="$kpiIcon($card['label'])" />
                     @endforeach
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="bg-white dark:bg-gray-800 p-6 shadow-sm rounded-lg">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ $section['regionalTitle'] }}</h3>
+                <div class="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                    <div class="p-5 card">
+                        <h3 class="mb-4 card-title">{{ $section['regionalTitle'] }}</h3>
                         <div id="{{ $key }}RegionalChart"></div>
                     </div>
 
-                    <div class="bg-white dark:bg-gray-800 p-6 shadow-sm rounded-lg">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">
+                    <div class="p-5 card">
+                        <h3 class="mb-4 card-title">
                             {{ $section['trendsTitle'] }} ({{ $distributionData['trendDays'] }} Days)
                         </h3>
                         <div id="{{ $key }}TrendsChart"></div>
                     </div>
 
-                    <div class="bg-white dark:bg-gray-800 p-6 shadow-sm rounded-lg lg:col-span-2">
-                        <h3 class="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-200">{{ $section['recentTitle'] }}</h3>
+                    <div class="p-5 card lg:col-span-2">
+                        <h3 class="mb-4 card-title">{{ $section['recentTitle'] }}</h3>
                         <div class="overflow-x-auto">
                             <table class="w-full text-left text-sm">
-                                <thead class="bg-gray-50 dark:bg-gray-700 text-gray-600 dark:text-gray-300">
+                                <thead class="text-xs font-semibold tracking-wider uppercase bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400">
                                     <tr>
                                         @foreach ($section['columns'] as $column)
-                                        <th class="px-4 py-2">{{ $column }}</th>
+                                        <th class="px-4 py-2.5">{{ $column }}</th>
                                         @endforeach
                                     </tr>
                                 </thead>
-                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                <tbody class="divide-y divide-slate-100 dark:divide-slate-800">
                                     @forelse($sectionData['recent'] as $row)
                                     <tr>
-                                        <td class="px-4 py-2 text-gray-900 dark:text-gray-100">{{ $row['name'] }}</td>
-                                        <td class="px-4 py-2 text-gray-600 dark:text-gray-300">{{ $row['detail'] }}</td>
-                                        <td class="px-4 py-2">
-                                            <span class="px-2 py-1 text-xs rounded-full {{ $key === 'digital' ? 'bg-green-100 text-green-700' : 'bg-teal-100 text-teal-700' }}">{{ $row['status'] }}</span>
+                                        <td class="px-4 py-2.5 font-medium text-slate-900 dark:text-slate-100">{{ $row['name'] }}</td>
+                                        <td class="px-4 py-2.5 text-slate-600 dark:text-slate-300">{{ $row['detail'] }}</td>
+                                        <td class="px-4 py-2.5">
+                                            <span class="{{ $key === 'digital' ? 'badge-success' : 'badge-brand' }}">{{ $row['status'] }}</span>
                                         </td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="3" class="px-4 py-6 text-center text-gray-500 dark:text-gray-400">Nothing recorded yet.</td>
+                                        <td colspan="3" class="px-4 py-10 text-center text-slate-500 dark:text-slate-400">Nothing recorded yet.</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -98,8 +94,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <script>
+        const isDark = () => document.body.classList.contains('dark');
+        const baseChart = (type) => ({ type, height: 350, fontFamily: 'Nunito, sans-serif', toolbar: { show: false }, background: 'transparent', foreColor: isDark() ? '#94a3b8' : '#64748b' });
+        const baseGrid = () => ({ borderColor: isDark() ? '#1e293b' : '#e2e8f0', strokeDashArray: 4 });
+    </script>
+    <script>
         const data = @json($distributionData);
-        const colors = { digital: '#2048a1', manual: '#0f766e' };
+        const colors = { digital: '#1e4ea2', manual: '#c67b03' };
 
         const renderedDashboardTabs = new Set();
 
@@ -114,7 +115,7 @@
             const section = data[key];
 
             new ApexCharts(document.querySelector(`#${key}RegionalChart`), {
-                chart: { type: 'bar', height: 350 },
+                chart: baseChart('bar'), grid: baseGrid(),
                 series: section.regionalChart.series,
                 xaxis: { categories: section.regionalChart.categories },
                 colors: [color],
@@ -122,7 +123,7 @@
             }).render();
 
             new ApexCharts(document.querySelector(`#${key}TrendsChart`), {
-                chart: { type: 'line', height: 350 },
+                chart: baseChart('area'), grid: baseGrid(), fill: { type: 'gradient', gradient: { opacityFrom: 0.35, opacityTo: 0.02 } }, dataLabels: { enabled: false },
                 series: section.trendsChart.series,
                 xaxis: { categories: section.trendsChart.categories, type: 'datetime' },
                 colors: [color],

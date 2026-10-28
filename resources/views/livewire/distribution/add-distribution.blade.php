@@ -81,7 +81,7 @@
                                 <td class="px-5 py-2 w-80">
                                     <x-form.select wire:model="steps.{{ $index }}.route_id" id="route_id"
                                         class="max-w-xl min-w-max">
-                                        <option value="">select</option>
+                                        <option value="">Select a route</option>
                                         @foreach($routes as $route)
                                         <option value="{{ $route->id }}">{{ $route->name }}</option>
                                         @endforeach

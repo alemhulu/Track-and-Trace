@@ -1,13 +1,13 @@
 <form wire:submit.prevent="save" class="space-y-4">
-    <div class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="p-5 card">
         <p class="text-xs text-gray-500 uppercase">Verification visit</p>
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $school->name }}</h3>
+        <h3 class="section-title">{{ $school->name }}</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400">
             Nothing here changes stock. Differences are recorded so they can be followed up.
         </p>
     </div>
 
-    <div class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="p-5 card">
         <h4 class="font-semibold text-gray-800 dark:text-gray-100">1. Count the student books on the shelf</h4>
         <p class="mb-3 text-xs text-gray-500">Count before looking at any record; the system figure is shown after saving. Leave a title blank if you did not count it.</p>
         <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
@@ -23,7 +23,7 @@
         <x-jet-input-error for="shelf.*" class="mt-2" />
     </div>
 
-    <div class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="p-5 card">
         <h4 class="font-semibold text-gray-800 dark:text-gray-100">2. Ask these students to show their books</h4>
         <p class="mb-3 text-xs text-gray-500">The system picked {{ count($sample) }} students at random. Tick each book the student shows you; leave it unticked if they cannot.</p>
         @forelse ($students as $student)
@@ -45,13 +45,13 @@
         @endforelse
     </div>
 
-    <div class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="p-5 card">
         <x-jet-label for="visit-notes" value="Notes (storage conditions, who was present, follow-up needed)" />
         <textarea wire:model.defer="notes" id="visit-notes" rows="3"
-            class="block w-full mt-1 border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"></textarea>
+            class="mt-1 form-control"></textarea>
         <div class="flex justify-end gap-3 mt-4">
             <a href="{{ route('manual-tracking.visits.index') }}" class="px-4 py-2 text-sm text-gray-700 bg-gray-100 rounded-md dark:bg-gray-700 dark:text-gray-200">Cancel</a>
-            <button type="submit" wire:loading.attr="disabled" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">Save visit</button>
+            <button type="submit" wire:loading.attr="disabled" class="btn-success">Save visit</button>
         </div>
     </div>
 </form>

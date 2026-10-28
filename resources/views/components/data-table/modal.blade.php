@@ -16,7 +16,7 @@ $maxWidth = [
 @endphp
 
 <div x-data="{ show: false }" x-show="show" @hashchange.window=" show = (location.hash === '#{{ $name }}');"
-    class="fixed inset-0 z-50 visible transition-all ease-in-out bg-lime-900 bg-opacity-70 target:delay-75 target:duration-75 "
+    class="fixed inset-0 z-50 visible transition-all ease-in-out bg-slate-900/60 backdrop-blur-sm"
     style="display: none">
 
     <a href="#" class="absolute w-full h-full" wire:click='clearid'></a>
@@ -25,16 +25,16 @@ $maxWidth = [
         x-transition:enter-start="opacity-0 scale-90" x-transition:enter-end="opacity-100 scale-100"
         x-transition:leave="transition ease-in duration-300" x-transition:leave-start="opacity-100 scale-100"
         x-transition:leave-end="opacity-0 scale-90"
-        class="fixed inset-0 {{ $maxWidth }} bg-white rounded-lg py-3 p-4 m-auto max-h-[90vh] overflow-hidden">
-        <form wire:ignore.self wire:submit.prevent="submit">
-            <aside class="flex flex-col h-full">
+        class="fixed inset-x-4 inset-y-0 sm:inset-0 {{ $maxWidth }} bg-white dark:bg-slate-900 rounded-2xl shadow-2xl m-auto h-fit max-h-[90vh] overflow-hidden flex flex-col ring-1 ring-slate-900/5 dark:ring-slate-700">
+        <form wire:ignore.self wire:submit.prevent="submit" class="flex flex-col min-h-0 max-h-[90vh]">
+            <aside class="flex flex-col min-h-0">
                 {{-- Form Title --}}
                 <div
-                    class="sticky top-0 z-10 mb-4 bg-white border-b border-gray-200 dark:border-gray-700 sm:px-4 dark:bg-gray-800">
+                    class="sticky top-0 z-10 px-5 py-3 pr-14 bg-white border-b border-slate-100 dark:border-slate-800 dark:bg-slate-900">
                     <div class="flex flex-wrap items-center justify-between py-1">
                         <header class="flex-shrink-0">
                             <div class="py-1 ">
-                                <h2 class="text-lg font-semibold leading-tight text-lime-800">
+                                <h2 class="text-lg font-semibold leading-tight text-slate-900 dark:text-white">
                                     {{ $title }}
                                 </h2>
                             </div>
@@ -43,7 +43,7 @@ $maxWidth = [
                 </div>
 
                 {{-- Form Body --}}
-                <div class="flex-1 px-4 pb-5 space-y-4 overflow-y-auto">
+                <div class="flex-1 px-5 py-5 space-y-4 overflow-y-auto">
                     @isset($body)
                     {{ $body }}
                     @endisset
@@ -52,7 +52,7 @@ $maxWidth = [
                 @if($buttons)
                 {{-- Form Footer --}}
                 <div
-                    class="sticky bottom-0 z-10 px-4 py-3 text-right bg-white border-t border-gray-200 sm:px-6 dark:bg-gray-800 dark:border-gray-700">
+                    class="sticky bottom-0 z-10 flex justify-end gap-3 px-5 py-3 border-t bg-slate-50 border-slate-100 dark:bg-slate-800/60 dark:border-slate-800">
                     <a href="#" wire:click='clearid'>
                         <x-jet-secondary-button class="">
                             @isset($type)
@@ -62,7 +62,7 @@ $maxWidth = [
                             @endisset
                         </x-jet-secondary-button>
                     </a>
-                    <x-jet-button onclick="location.href='#';" type="submit" class="flex ml-4 disabled:opacity-40">
+                    <x-jet-button onclick="location.href='#';" type="submit" class="disabled:opacity-40">
                         <x-action.button-loader wire:loading />
                         Save
                     </x-jet-button>
@@ -72,14 +72,8 @@ $maxWidth = [
             {{-- <x-action.cardloader /> --}}
         </form>
 
-        <a href="#" class="absolute top-4 right-4 text-lime-800" wire:click='clearid'>
-            <button class="flex justify-center items-center px-1 p-1 transition
-                delay-75 ease-out transform hover:-translate-y-0.5 hover:scale-105 gap-2  rounded-md
-                border border-red-600 hover:bg-red-500 mx-1 border-opacity-30 hover:text-white
-                active:bg-red-600 active:hover:scale-110 focus:scale-105 focus:-translate-y-0.5 focus:text-lime-900
-                focus:bg-red-400">
-                <i class="flex fi fi-rr-cross-small"></i>
-            </button>
+        <a href="#" class="absolute z-20 top-3 right-3 btn-ghost !p-2 !rounded-full" wire:click='clearid' aria-label="Close">
+            <i class="flex text-lg fi fi-rr-cross-small"></i>
         </a>
     </div>
 </div>

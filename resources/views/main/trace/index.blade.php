@@ -1,8 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
-            {{ __('Trace') }}
-        </h2>
+        <h2>{{ __('Trace') }}</h2>
+        <p class="page-subtitle">Look up any book and see where it has travelled.</p>
     </x-slot>
 
     <div class="">

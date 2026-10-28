@@ -1,8 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight dark:text-gray-200">
-            {{ __('Distributions') }}
-        </h2>
+        <h2>{{ __('Distributions') }}</h2>
+        <p class="page-subtitle">Plan and record book distributions along each route.</p>
     </x-slot>
 
     <div class="mb-6">
@@ -10,7 +9,7 @@
             <x-page.nav-link class="bg-green-500" title="List" link="distribution.list" icon="fi fi-rr-list"
                 total="0" />
             <x-page.nav-link class="bg-green-700" title="Add Distribution" link="distribution.add"
-                icon="fi fi-rr-print" />
+                icon="fi fi-rr-plus" />
         </x-page.nav>
 
         <div class="mt-6  tab mb-6">

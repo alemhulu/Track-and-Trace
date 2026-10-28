@@ -13,7 +13,7 @@
         </div>
     </div>
 
-    <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200 dark:bg-gray-800 dark:border-gray-700">
+    <div class="p-4 card dark:bg-gray-800 dark:border-gray-700">
         <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Ministry exports</p>
         <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">CSV files for Excel, limited to your area, for the current academic year ({{ \App\Support\AcademicYear::label(\App\Support\AcademicYear::current()) }}).</p>
         <div class="flex flex-wrap gap-2">
@@ -25,7 +25,7 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200">
+        <div class="p-4 card">
             <p class="text-sm text-slate-500">Books</p>
             <div class="flex items-end justify-between mt-2">
                 <h3 class="text-3xl font-bold text-slate-900">{{ number_format($summary['total_books']) }}</h3>
@@ -33,7 +33,7 @@
             </div>
         </div>
 
-        <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200">
+        <div class="p-4 card">
             <p class="text-sm text-slate-500">Packages Dispatched</p>
             <div class="flex items-end justify-between mt-2">
                 <h3 class="text-3xl font-bold text-slate-900">{{ number_format($summary['total_packages']) }}</h3>
@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200">
+        <div class="p-4 card">
             <p class="text-sm text-slate-500">Distributed Qty</p>
             <div class="flex items-end justify-between mt-2">
                 <h3 class="text-3xl font-bold text-slate-900">
@@ -51,7 +51,7 @@
             </div>
         </div>
 
-        <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200">
+        <div class="p-4 card">
             <p class="text-sm text-slate-500">Active Users</p>
             <div class="flex items-end justify-between mt-2">
                 <h3 class="text-3xl font-bold text-slate-900">{{ number_format($summary['active_users']) }}</h3>
@@ -61,17 +61,17 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
-        <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200">
+        <div class="p-4 card">
             <div class="flex items-center justify-between mb-3">
-                <h3 class="text-lg font-semibold text-slate-800">Monthly Distribution Trend</h3>
+                <h3 class="section-title">Monthly Distribution Trend</h3>
                 <span class="text-xs font-medium tracking-wide uppercase text-slate-400">Last 12 months</span>
             </div>
             <div id="manual-tracking-trend-chart" class="h-72"></div>
         </div>
 
-        <div class="p-4 bg-white border shadow-sm rounded-xl border-slate-200">
+        <div class="p-4 card">
             <div class="flex items-center justify-between mb-3">
-                <h3 class="text-lg font-semibold text-slate-800">Top Distribution Regions</h3>
+                <h3 class="section-title">Top Distribution Regions</h3>
                 <span class="text-xs font-medium tracking-wide uppercase text-slate-400">Volume</span>
             </div>
             <div id="manual-tracking-location-chart" class="h-72"></div>
@@ -79,7 +79,7 @@
     </div>
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div class="p-4 bg-white rounded-md shadow-sm dark:bg-gray-800">
+        <div class="p-4 card">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="font-semibold text-gray-700 dark:text-gray-100">Location-wise Distribution Summary</h3>
                 <x-jet-button wire:click="exportLocationSummaryCsv" type="button">Export CSV</x-jet-button>
@@ -112,7 +112,7 @@
             </div>
         </div>
 
-        <div class="p-4 bg-white rounded-md shadow-sm dark:bg-gray-800">
+        <div class="p-4 card">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="font-semibold text-gray-700 dark:text-gray-100">Book Stock In/Out Balance</h3>
                 <x-jet-button wire:click="exportBookBalanceCsv" type="button">Export CSV</x-jet-button>
@@ -147,7 +147,7 @@
     </div>
 
     <div class="space-y-4">
-        <div class="p-4 bg-white rounded-md shadow-sm dark:bg-gray-800">
+        <div class="p-4 card">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="font-semibold text-gray-700 dark:text-gray-100">Package Movement History</h3>
                 <x-jet-button wire:click="exportMovementHistoryCsv" type="button">Export CSV</x-jet-button>
@@ -183,7 +183,7 @@
                 </table>
             </div>
         </div>
-        <div class="p-4 bg-white rounded-md shadow-sm dark:bg-gray-800">
+        <div class="p-4 card">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="font-semibold text-gray-700 dark:text-gray-100">User Activity Audit</h3>
                 <x-jet-button wire:click="exportUserActivityCsv" type="button">Export CSV</x-jet-button>

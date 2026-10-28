@@ -1,3 +1,3 @@
-<div class="py-2 border-none horizontal-btn-active dark:bg-gray-700">
-    <p class="text-xs text-blue-800/70 text-center tracking-wider dark:text-gray-400">Version: 2.23</p>
+<div class="px-4 py-3 border-t border-white/10">
+    <p class="text-[11px] tracking-wide text-brand-300/70">Track &amp; Trace · v2.23</p>
 </div>

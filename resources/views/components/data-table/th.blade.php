@@ -1,23 +1,14 @@
-<th {{ $attributes ->merge(['class' => 'px-5 py-3 text-left text-xs font-bold text-gray-700 dark:text-gray-300 uppercase
-    tracking-wider
-    cursor-pointer '])
+<th {{ $attributes ->merge(['class' => 'px-5 py-3 text-left text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase
+    tracking-wider whitespace-nowrap select-none'])
     }}>
-    <div class="flex items-center">
+    <div class="flex items-center gap-1.5 {{ $attributes->has('id') ? 'cursor-pointer hover:text-brand-700 dark:hover:text-brand-300' : '' }}">
         {{ $slot }}
 
         @if ($attributes->has('id'))
-        <span class="pl-2 inline-flex py-0 relative">
-            <div class="flex items-center ">
-                <div class="absolute text-lg -bottom-5 pb-2">
-                    <i class="fi fi-rr-caret-up text-lime-300 upcart"></i>
-                </div>
-
-                <div class="absolute text-lg -top-2">
-                    <i class="fi fi-rr-caret-down text-lime-300 upcart"></i>
-                </div>
-            </div>
+        <span class="flex flex-col text-[9px] leading-[6px] text-slate-300 dark:text-slate-600">
+            <i class="flex fi fi-rr-caret-up upcart"></i>
+            <i class="flex fi fi-rr-caret-down upcart"></i>
         </span>
         @endif
-
     </div>
 </th>

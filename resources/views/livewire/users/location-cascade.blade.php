@@ -3,7 +3,7 @@
         <x-label for="access_level" value="Access Level" />
         <div class="mt-1 sm:mt-0 sm:col-span-2">
             <select wire:model="accessLevel" name="access_level" id="access_level"
-                class="w-full border-gray-300 rounded-md" required>
+                class="form-control" required>
                 @foreach($accessLevelOptions as $level)
                 <option value="{{ $level }}">{{ ucfirst($level) }}</option>
                 @endforeach
@@ -29,7 +29,7 @@
         class="hidden sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5" id="region-row">
         <x-label for="region_id" value="Region" />
         <div class="mt-1 sm:mt-0 sm:col-span-2">
-            <select wire:model="regionId" name="region_id" id="region_id" class="w-full border-gray-300 rounded-md">
+            <select wire:model="regionId" name="region_id" id="region_id" class="form-control">
                 <option value="">Select Region</option>
                 @foreach($regions as $region)
                 <option value="{{ $region['id'] }}">{{ $region['name'] }}</option>
@@ -43,7 +43,7 @@
         class="hidden  sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5" id="zone-row">
         <x-label for="zone_id" value="Zone" />
         <div class="mt-1 sm:mt-0 sm:col-span-2">
-            <select wire:model="zoneId" name="zone_id" id="zone_id" class="w-full border-gray-300 rounded-md">
+            <select wire:model="zoneId" name="zone_id" id="zone_id" class="form-control">
                 <option value="">Select Zone</option>
                 @foreach($zones as $zone)
                 <option value="{{ $zone['id'] }}">{{ $zone['name'] }}</option>
@@ -57,7 +57,7 @@
         class="hidden sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-gray-200 sm:pt-5" id="woreda-row">
         <x-label for="woreda_id" value="Woreda" />
         <div class="mt-1 sm:mt-0 sm:col-span-2">
-            <select wire:model="woredaId" name="woreda_id" id="woreda_id" class="w-full border-gray-300 rounded-md">
+            <select wire:model="woredaId" name="woreda_id" id="woreda_id" class="form-control">
                 <option value="">Select Woreda</option>
                 @foreach($woredas as $woreda)
                 <option value="{{ $woreda['id'] }}">{{ $woreda['name'] }}</option>
@@ -72,7 +72,7 @@
         <x-label for="organization_id" value="Organization" />
         <div class="mt-1 sm:mt-0 sm:col-span-2">
             <select wire:model="organizationId" name="organization_id" id="organization_id"
-                class="w-full border-gray-300 rounded-md">
+                class="form-control">
                 <option value="">Select Organization</option>
                 @foreach($organizations as $organization)
                 <option value="{{ $organization['id'] }}">{{ $organization['name'] }}</option>

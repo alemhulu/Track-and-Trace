@@ -27,7 +27,7 @@
 
             <div class="">
                 <x-jet-label class="text-gray-400" value="Status"></x-jet-label>
-                <x-button btnType="warning" class="animate-pulse hover:animate-none">Pending</x-button>
+                <span class="badge-gold"><span class="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse"></span>Pending</span>
             </div>
         </div>
 

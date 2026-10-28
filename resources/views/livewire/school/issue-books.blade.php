@@ -1,10 +1,10 @@
 <div class="space-y-4">
     @if ($grades->isEmpty())
-    <div class="p-5 text-sm bg-white rounded-lg shadow-sm text-amber-700 dark:bg-gray-800">
+    <div class="p-5 text-sm card text-amber-700 dark:text-amber-300">
         Register this year's students first; books are issued to individual students.
     </div>
     @else
-    <div class="flex flex-wrap items-end gap-3 p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="flex flex-wrap items-end gap-3 p-5 card">
         <div class="w-40">
             <x-jet-label for="issue-grade" value="Grade" />
             <x-form.select wire:model="gradeId" id="issue-grade">
@@ -32,16 +32,16 @@
         </div>
         <div class="flex flex-wrap items-center gap-2 ml-auto">
             <a href="{{ route('manual-tracking.schools.print', ['school' => $schoolId, 'grade' => $gradeId, 'section' => $section, 'year' => $year]) }}" target="_blank"
-                class="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200">Print class sheet</a>
+                class="btn-secondary">Print class sheet</a>
             <button type="button" wire:click="selectMissing" class="px-3 py-2 text-sm font-medium text-blue-700 bg-blue-50 rounded-md hover:bg-blue-100 dark:bg-gray-700 dark:text-blue-300">Select everyone missing a book</button>
-            <button type="button" wire:click="clearSelection" class="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-md dark:bg-gray-700 dark:text-gray-200">Clear</button>
-            <button type="button" wire:click="issue" wire:loading.attr="disabled" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">
+            <button type="button" wire:click="clearSelection" class="btn-secondary">Clear</button>
+            <button type="button" wire:click="issue" wire:loading.attr="disabled" class="btn-success">
                 Issue selected
             </button>
         </div>
     </div>
 
-    <div class="p-4 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="p-4 card">
         @if ($scanStudent)
         <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
             <p class="text-sm text-gray-800 dark:text-gray-100">
@@ -68,14 +68,14 @@
                 @endforeach
             </x-form.select>
         </div>
-        <button type="button" wire:click="confirmReturn" class="px-3 py-2 text-sm font-medium text-white bg-amber-600 rounded-md hover:bg-amber-700">Record return</button>
+        <button type="button" wire:click="confirmReturn" class="btn-warning">Record return</button>
         <button type="button" wire:click="cancelReturn" class="px-3 py-2 text-sm text-gray-700">Cancel</button>
     </div>
     @endif
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+    <div class="overflow-x-auto card">
+        <table class="table-ui">
+            <thead>
                 <tr>
                     <th class="px-4 py-2">Student</th>
                     @foreach ($titles as $title)
@@ -86,7 +86,7 @@
                     @endforeach
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody>
                 @forelse ($students as $student)
                 <tr wire:key="issue-row-{{ $student->id }}" class="{{ $scanStudentId === $student->id ? 'bg-blue-50 dark:bg-blue-900/20' : '' }}">
                     <td class="px-4 py-2">
@@ -103,7 +103,7 @@
                         <button type="button" wire:click="startReturn({{ $held[$key] }})" class="block mx-auto text-xs text-gray-500 hover:underline">Return</button>
                         @else
                         <input type="checkbox" wire:model.defer="selected.{{ $key }}" aria-label="Issue {{ $title->title }} to {{ $student->name }}"
-                            class="text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                            class="rounded border-slate-300 text-brand-600 focus:ring-brand-500">
                         @endif
                     </td>
                     @endforeach

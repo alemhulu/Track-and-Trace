@@ -1,24 +1,58 @@
-<div class="w-full min-h-screen flex justify-center items-center pt-6 sm:pt-0 bg-no-repeat bg-left bg-cover"
-    style="background-image: url('https://flevix.com/wp-content/uploads/2019/12/Live-Background-1.svg')">
+<div class="flex min-h-screen bg-white">
+    {{-- Brand panel --}}
+    <div class="relative hidden w-1/2 overflow-hidden lg:flex bg-brand-900">
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-700 via-brand-900 to-brand-950"></div>
+        <div class="absolute rounded-full -top-24 -right-24 w-96 h-96 bg-brand-500/30 blur-3xl"></div>
+        <div class="absolute rounded-full -bottom-32 -left-16 w-[28rem] h-[28rem] bg-gold-400/20 blur-3xl"></div>
+        <svg class="absolute inset-0 w-full h-full opacity-[0.07]" aria-hidden="true">
+            <defs>
+                <pattern id="auth-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+                    <path d="M32 0H0v32" fill="none" stroke="white" stroke-width="1" />
+                </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#auth-grid)" />
+        </svg>
 
-    <div class="flex justify-center flex-col md:flex-row h-auto drop-shadow-2xl rounded-2xl shadow-2xl shadow-indigo-200  w-7/12 backdrop-filter backdrop-blur-3xl backdrop-opacity-90 "
-        style=" backdrop-filter: blur(14px);">
-        <div class="w-full hidden px-6 py-4 md:block bg-gray-100/70  rounded-l-2xl bg-no-repeat bg-cover bg-center"
-            style="background-image: url('https://img.freepik.com/free-vector/cloud-computing-security-abstract-concept-illustration_335657-2105.jpg?w=2000">
-            <div class="flex items-center justify-center h-full ">
-                {{ $logo }}
+        <div class="relative flex flex-col justify-between w-full p-12 text-white">
+            <div class="flex items-center gap-3">
+                <span class="flex items-center justify-center w-12 h-12 bg-white rounded-full">
+                    <img src="/logom.png" alt="" class="w-11 h-11">
+                </span>
+                <span class="text-sm font-semibold tracking-wide uppercase text-brand-100">
+                    Federal Democratic Republic of Ethiopia<br>Ministry of Education
+                </span>
             </div>
-        </div>
 
-        <div class="w-full  px-8 py-10 backdrop-brightness-150 md:rounded-r-2xl rounded-md md:rounded-none"
-            style="background-color: #f9f9f9; ">
-            <h1 class="flex md:px-8 md:text-2xl text-center font-black mb-8 font-sans text-lime-800">
-                Welcome to MoE Books {{ config('app.name', 'Track and Trace') }}
-            </h1>
-            <div class="pt-15 md:px-8">
-                {{ $slot }}
+            <div class="max-w-md">
+                <h2 class="text-4xl font-bold leading-tight tracking-tight">
+                    Every textbook,<br>from press to <span class="text-gold-400">pupil</span>.
+                </h2>
+                <p class="mt-4 text-brand-100/90">
+                    Plan print orders, move packages through regional, zone and woreda stores, and confirm
+                    delivery at every school — all in one place.
+                </p>
+
+                <ol class="mt-10 space-y-3 text-sm">
+                    @foreach (['Print & package', 'Store & route', 'Distribute to schools', 'Trace every copy'] as $step)
+                    <li class="flex items-center gap-3">
+                        <span class="flex items-center justify-center text-xs font-bold rounded-full w-7 h-7 bg-white/10 ring-1 ring-white/20 text-gold-300">{{ $loop->iteration }}</span>
+                        <span class="text-brand-50">{{ $step }}</span>
+                    </li>
+                    @endforeach
+                </ol>
             </div>
+
+            <div class="brand-stripe max-w-[10rem] rounded-full"></div>
         </div>
     </div>
 
+    {{-- Form panel --}}
+    <div class="flex flex-col items-center justify-center flex-1 px-6 py-12 bg-slate-50 sm:px-12">
+        <div class="w-full max-w-sm">
+            <div class="mb-10">
+                {{ $logo }}
+            </div>
+            {{ $slot }}
+        </div>
+    </div>
 </div>

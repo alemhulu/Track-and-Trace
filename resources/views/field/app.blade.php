@@ -7,9 +7,10 @@
     <title>Field App · {{ config('app.name') }}</title>
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="apple-touch-icon" href="/icons/icon-192.png">
+    <x-fonts />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen text-gray-900 bg-gray-100 dark:bg-gray-900 dark:text-gray-100">
+<body class="min-h-screen font-sans antialiased text-gray-900 bg-gray-100 dark:bg-gray-900 dark:text-gray-100">
 <div x-data="fieldApp(@js([
         'userId' => auth()->id(),
         'csrf' => csrf_token(),
@@ -29,7 +30,7 @@
                 :class="online ? 'bg-green-100 text-green-800' : 'bg-amber-100 text-amber-800'"
                 x-text="online ? 'Online' : 'Offline'"></span>
             <button type="button" x-on:click="sync()" :disabled="busy || !online || !queue.length"
-                class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-md disabled:opacity-40">
+                class="btn-primary btn-sm">
                 Sync <span x-text="queue.length"></span>
             </button>
         </div>
@@ -39,7 +40,7 @@
         :class="{ 'bg-red-100 text-red-800': noticeType === 'error', 'bg-green-100 text-green-800': noticeType === 'success', 'bg-blue-100 text-blue-800': noticeType === 'info' }"></p>
 
     {{-- Download --}}
-    <section class="p-4 mb-4 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <section class="p-4 mb-4 card">
         <div class="flex flex-wrap items-end gap-2">
             <div class="flex-1 min-w-[12rem]">
                 <label for="field-org" class="block text-xs text-gray-500">Organization</label>
@@ -51,7 +52,7 @@
                 </select>
             </div>
             <button type="button" x-on:click="download()" :disabled="busy || !online"
-                class="px-3 py-2 text-sm font-medium text-white bg-green-600 rounded-md disabled:opacity-40">Download for offline use</button>
+                class="btn-success">Download for offline use</button>
         </div>
         <p class="mt-2 text-xs text-gray-500" x-show="pack">
             Data from <span x-text="pack && new Date(pack.generated_at).toLocaleString()"></span>.
@@ -81,7 +82,7 @@
                         <p x-show="!shipments().length" class="p-4 text-sm text-gray-500 bg-white rounded-lg dark:bg-gray-800">No shipments on the way to you.</p>
                         <template x-for="item in shipments()" :key="item.id">
                             <button type="button" x-on:click="!isQueued(item.id) && openShipment(item.id)"
-                                class="block w-full p-4 text-left bg-white rounded-lg shadow-sm dark:bg-gray-800">
+                                class="block w-full p-4 text-left card">
                                 <span class="font-semibold" x-text="item.reference"></span>
                                 <span class="block text-sm text-gray-500" x-text="'From ' + item.from + ' · sent ' + item.dispatched_at"></span>
                                 <span class="block text-sm" x-text="item.lines.length + ' titles'"></span>
@@ -92,7 +93,7 @@
                 </template>
 
                 <template x-if="shipmentId">
-                    <div class="p-4 space-y-3 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+                    <div class="p-4 space-y-3 card">
                         <div class="flex items-center justify-between">
                             <p class="font-semibold" x-text="shipment().reference + ' from ' + shipment().from"></p>
                             <button type="button" x-on:click="shipmentId = null" class="text-sm text-gray-500 underline">Back</button>
@@ -121,7 +122,7 @@
                         <label class="block text-xs">Notes
                             <textarea x-model="receiptNotes" rows="2" class="block w-full mt-1 text-sm border-gray-300 rounded-md dark:bg-gray-900 dark:border-gray-600"></textarea>
                         </label>
-                        <button type="button" x-on:click="saveReceipt()" class="w-full py-3 font-semibold text-white bg-green-600 rounded-md">Save receipt</button>
+                        <button type="button" x-on:click="saveReceipt()" class="w-full btn-success btn-lg">Save receipt</button>
                     </div>
                 </template>
             </section>
@@ -176,7 +177,7 @@
                             </div>
                         </template>
                         <div class="flex flex-wrap items-center gap-2">
-                            <button type="button" x-on:click="issuePicked()" class="flex-1 py-3 font-semibold text-white bg-green-600 rounded-md">Give ticked books</button>
+                            <button type="button" x-on:click="issuePicked()" class="flex-1 btn-success btn-lg">Give ticked books</button>
                             <label class="text-xs">Return condition
                                 <select x-model="returnCondition" class="block mt-1 text-sm border-gray-300 rounded-md dark:bg-gray-900 dark:border-gray-600">
                                     @foreach (\App\Models\School\StudentBookIssue::CONDITIONS + \App\Models\School\StudentBookIssue::UNUSABLE_RETURN_CONDITIONS as $value => $label)
@@ -188,7 +189,7 @@
                     </div>
                 </template>
 
-                <div x-show="gradeId" class="overflow-hidden bg-white rounded-lg shadow-sm dark:bg-gray-800">
+                <div x-show="gradeId" class="overflow-hidden card">
                     <template x-for="item in classList()" :key="item.id">
                         <button type="button" x-on:click="chooseStudent(item.id)"
                             class="flex items-center justify-between w-full px-4 py-2 text-sm text-left border-b border-gray-100 dark:border-gray-700"
@@ -202,7 +203,7 @@
 
             {{-- Outbox --}}
             <section x-show="tab === 'outbox'" class="space-y-3">
-                <div class="bg-white rounded-lg shadow-sm dark:bg-gray-800">
+                <div class="card">
                     <p class="px-4 pt-3 text-sm font-semibold">Waiting to sync</p>
                     <p x-show="!queue.length" class="px-4 py-3 text-sm text-gray-500">Nothing waiting.</p>
                     <template x-for="action in queue" :key="action.uuid">
@@ -212,7 +213,7 @@
                         </div>
                     </template>
                 </div>
-                <div class="bg-white rounded-lg shadow-sm dark:bg-gray-800">
+                <div class="card">
                     <div class="flex items-center justify-between px-4 pt-3">
                         <p class="text-sm font-semibold">Sent</p>
                         <button type="button" x-show="log.length" x-on:click="discardLog()" class="text-xs text-gray-500 underline">Clear</button>

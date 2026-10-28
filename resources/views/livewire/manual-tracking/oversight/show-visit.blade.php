@@ -1,11 +1,11 @@
 <div class="space-y-4">
     @if (session('success'))
-    <div class="p-3 text-sm text-green-800 bg-green-100 rounded-md">{{ session('success') }}</div>
+    <div class="alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="p-5 card">
         <p class="text-xs text-gray-500 uppercase">Verification visit · {{ $visit->visited_at->format('Y-m-d H:i') }}</p>
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">{{ $visit->school->name ?? '—' }}</h3>
+        <h3 class="section-title">{{ $visit->school->name ?? '—' }}</h3>
         <p class="text-sm text-gray-500">By {{ $visit->visitor->name ?? '—' }}</p>
         <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
             <div>
@@ -33,12 +33,12 @@
     </div>
 
     @if ($stockItems->isNotEmpty())
-    <div class="overflow-x-auto bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+    <div class="overflow-x-auto card">
+        <table class="table-ui">
+            <thead>
                 <tr><th class="px-4 py-2">Title</th><th class="px-4 py-2">In the system</th><th class="px-4 py-2">Counted</th><th class="px-4 py-2">Difference</th></tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody>
                 @foreach ($stockItems as $item)
                 @php $difference = $item->found - $item->expected; @endphp
                 <tr>
@@ -54,7 +54,7 @@
     @endif
 
     @if ($studentItems->isNotEmpty())
-    <div class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="p-5 card">
         <h4 class="mb-2 font-semibold text-gray-800 dark:text-gray-100">Students checked</h4>
         @foreach ($studentItems as $items)
         @php $student = $items->first()->student; @endphp

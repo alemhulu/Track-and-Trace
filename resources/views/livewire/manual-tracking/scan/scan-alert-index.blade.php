@@ -1,7 +1,7 @@
 <div class="space-y-4">
     <div class="flex flex-wrap items-end justify-between gap-3">
         <div>
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Misrouted packages</h3>
+            <h3 class="section-title">Misrouted packages</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">Raised when a package or book is scanned somewhere it does not belong.</p>
         </div>
         <div class="w-48">
@@ -13,9 +13,9 @@
         </div>
     </div>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+    <div class="overflow-x-auto card">
+        <table class="table-ui">
+            <thead>
                 <tr>
                     <th class="px-4 py-2">Scanned</th>
                     <th class="px-4 py-2">Where</th>
@@ -24,7 +24,7 @@
                     <th class="px-4 py-2">Action</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody>
                 @forelse ($alerts as $alert)
                 <tr wire:key="alert-{{ $alert->id }}" class="align-top">
                     <td class="px-4 py-2 text-gray-700 whitespace-nowrap dark:text-gray-200">
@@ -45,7 +45,7 @@
                     <td class="px-4 py-2">
                         @if ($alert->distribution)
                         <a href="{{ route('manual-tracking.shipments.show', $alert->distribution->id) }}"
-                            class="font-medium text-blue-700 hover:underline dark:text-blue-300">{{ $alert->distribution->reference }}</a>
+                            class="font-medium link">{{ $alert->distribution->reference }}</a>
                         <div class="text-xs text-gray-500">from {{ $alert->distribution->organization->name ?? '—' }}</div>
                         @else
                         <span class="text-gray-400">—</span>
@@ -56,7 +56,7 @@
                         <div class="flex gap-2">
                             <x-jet-input wire:model.defer="notes.{{ $alert->id }}" type="text" placeholder="What was done, e.g. sent on to Arsi Zone" class="flex-1 text-sm" />
                             <button type="button" wire:click="resolve({{ $alert->id }})"
-                                class="px-3 py-1 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Close</button>
+                                class="btn-primary btn-sm">Close</button>
                         </div>
                         @else
                         <div class="text-gray-700 dark:text-gray-200">{{ $alert->resolution_note }}</div>

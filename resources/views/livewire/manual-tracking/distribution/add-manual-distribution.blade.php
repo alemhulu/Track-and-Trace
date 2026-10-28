@@ -169,7 +169,7 @@
             <div>
                 <x-jet-label for="remarks" value="Remarks" />
                 <textarea wire:model.defer="remarks" id="remarks" rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"></textarea>
+                    class="mt-1 form-control"></textarea>
                 <x-jet-input-error for="remarks" class="mt-2" />
             </div>
         </div>

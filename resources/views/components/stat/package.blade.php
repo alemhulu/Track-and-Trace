@@ -1,16 +1,16 @@
 @props(['batch' => '#PO1091479181', 'qr' => '100001', 'Qrcode'=> '', 'grade'=>'', 'subject', 'edition', 'isbn',
 'volume', 'booktype'])
 <div {{ $attributes->merge([ 'class' => '']) }}>
-    <div class="flex flex-col text-center border border-blue-200 dark:border-gray-400 rounded-lg">
+    <div class="flex flex-col text-center border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden">
         <div class="flex flex-row">
 
             @if ($Qrcode == '')
             <div
-                class="w-32 bg-blue-100 dark:bg-blue-700 flex items-center justify-center text-2xl text-blue-700 dark:text-blue-100 rounded-l-lg ">
-                <i class="text-4xl flex fi fi-rr-box p-2 font-semibold"></i>
+                class="w-24 shrink-0 bg-brand-50 dark:bg-brand-900/30 flex items-center justify-center text-brand-500 dark:text-brand-300">
+                <i class="text-2xl flex fi fi-rr-box"></i>
             </div>
             @else
-            <div class="flex flex-shrink-0 items-center p-1 bg-blue-200 rounded-l-md border">
+            <div class="flex flex-shrink-0 items-center p-1 bg-white border-r border-slate-200 dark:border-slate-700">
                 <img src="{{ $Qrcode }}" alt="" srcset="" class="w-32 h-32">
             </div>
             @endif
@@ -19,7 +19,7 @@
                 <div class="flex flex-col py-1 px-3 min-w-fit">
                     <div class="text-left">
                         <x-jet-label class="text-xs text-gray-400 dark:text-gray-400" value="Batch Number" />
-                        <span class="text-md font-bold text-gray-400 dark:text-blue-200 leading-none">
+                        <span class="text-sm font-semibold text-gray-400 dark:text-blue-200 leading-none">
                             {{ $batch }}</span>
                     </div>
 
@@ -27,7 +27,7 @@
                     <div class="text-left pt-1">
                         <x-jet-label class="text-xs text-gray-400 dark:text-gray-400" value="QR Code" />
                         <span
-                            class="flex justify-center p-1 px-2 text-md font-bold text-blue-50 dark:text-blue-200 leading-none tracking-wide bg-blue-500 rounded-md">
+                            class="badge-brand font-mono">
                             {{ $qr }}</span>
                     </div>
                     @endif
@@ -37,7 +37,7 @@
                 <div class="flex flex-col py-1 px-3 min-w-fit">
                     <div class="text-left">
                         <x-jet-label class="text-xs text-gray-400 dark:text-gray-400" value="Grade" />
-                        <span class="text-md font-bold text-gray-500 dark:text-blue-200 leading-none">
+                        <span class="text-sm font-semibold text-gray-500 dark:text-blue-200 leading-none">
                             Grade {{ $grade ?? ''}}</span>
                     </div>
 
@@ -45,7 +45,7 @@
                     <div class="text-left pt-1">
                         <x-jet-label class="text-xs text-gray-400 dark:text-gray-400" value="Subject" />
                         <span
-                            class="flex justify-start p-1 text-md font-bold  leading-none tracking-wide text-gray-500">
+                            class="flex justify-start p-1 text-sm font-semibold  leading-none tracking-wide text-gray-500">
                             {{ $subject ?? '' }}</span>
                     </div>
                     @endif
@@ -56,7 +56,7 @@
                 <div class="flex flex-col py-1 px-3 min-w-fit">
                     <div class="text-left">
                         <x-jet-label class="text-xs text-gray-400 dark:text-gray-400" value="Edition" />
-                        <span class="text-md font-bold text-gray-500 dark:text-blue-200 leading-none">
+                        <span class="text-sm font-semibold text-gray-500 dark:text-blue-200 leading-none">
                             {{ $edition }}st Edition {{ now()->year }}</span>
                     </div>
 
@@ -64,7 +64,7 @@
                     <div class="text-left pt-1">
                         <x-jet-label class="text-xs text-gray-400 dark:text-gray-400" value="Volume" />
                         <span
-                            class="flex justify-start p-1 text-md font-bold  leading-none tracking-wide text-gray-500">
+                            class="flex justify-start p-1 text-sm font-semibold  leading-none tracking-wide text-gray-500">
                             {{ $volume }}</span>
                     </div>
                     @endif
@@ -73,7 +73,7 @@
                 <div class="flex flex-col py-1 px-3 min-w-fit">
                     <div class="text-left">
                         <x-jet-label class="text-xs text-gray-400 dark:text-gray-400" value="ISBN" />
-                        <span class="text-md font-bold text-gray-500 dark:text-blue-200 leading-none">
+                        <span class="text-sm font-semibold text-gray-500 dark:text-blue-200 leading-none">
                             {{ $isbn }}</span>
                     </div>
 
@@ -81,7 +81,7 @@
                     <div class="text-left pt-1">
                         <x-jet-label class="text-xs text-gray-400 dark:text-gray-400" value="Book Type" />
                         <span
-                            class="flex justify-start p-1 text-md font-bold  leading-none tracking-wide text-gray-500">
+                            class="flex justify-start p-1 text-sm font-semibold  leading-none tracking-wide text-gray-500">
                             {{ $booktype }}</span>
                     </div>
                     @endif

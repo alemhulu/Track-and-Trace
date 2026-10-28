@@ -1,26 +1,26 @@
 <div class="space-y-5">
     @php
         $statusClasses = [
-            'dispatched' => 'bg-amber-100 text-amber-800',
-            'received' => 'bg-green-100 text-green-800',
-            'received_with_discrepancy' => 'bg-red-100 text-red-800',
+            'dispatched' => 'badge-warning',
+            'received' => 'badge-success',
+            'received_with_discrepancy' => 'badge-danger',
         ];
     @endphp
 
     @if (session('success'))
-    <div class="p-3 text-sm text-green-800 bg-green-100 rounded-md">{{ session('success') }}</div>
+    <div class="alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="p-5 card">
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
                 <p class="text-xs text-gray-500 uppercase dark:text-gray-400">Shipment</p>
-                <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{{ $shipment->reference }}</h3>
+                <h3 class="section-title text-xl">{{ $shipment->reference }}</h3>
             </div>
             <div class="flex items-center gap-3">
                 <a href="{{ route('manual-tracking.shipments.print', $shipment->id) }}" target="_blank"
-                    class="text-sm font-medium text-blue-700 hover:underline dark:text-blue-300">Print delivery note</a>
-                <span class="px-3 py-1 text-xs font-semibold rounded-full {{ $statusClasses[$shipment->status] ?? 'bg-gray-100 text-gray-700' }}">
+                    class="text-sm link">Print delivery note</a>
+                <span class="{{ $statusClasses[$shipment->status] ?? 'badge-neutral' }}">
                     {{ \App\Models\ManualTracking\ManualDistribution::STATUSES[$shipment->status] ?? $shipment->status }}
                 </span>
             </div>
@@ -77,9 +77,9 @@
         @endif
     </div>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+    <div class="overflow-x-auto card">
+        <table class="table-ui">
+            <thead>
                 <tr>
                     <th class="px-4 py-2">Title</th>
                     <th class="px-4 py-2">Packages sent</th>
@@ -89,7 +89,7 @@
                     <th class="px-4 py-2">Discrepancies</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody>
                 @foreach ($shipment->lines as $line)
                 <tr>
                     <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100">{{ $line->book->title ?? '—' }}</td>
@@ -121,8 +121,8 @@
     </div>
 
     @if ($canReceive)
-    <div class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">Scan packages as they are unloaded</h3>
+    <div class="p-5 card">
+        <h3 class="card-title">Scan packages as they are unloaded</h3>
         <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
             Optional. Each package's zone is checked against {{ $shipment->destinationOrganization->name }}; packages for another zone raise a misroute alert.
             Then use the scan counts to fill the receipt below.
@@ -170,14 +170,14 @@
         <x-scan.log :scans="$recentScans" undo="voidScan" class="mt-3" />
         <div class="flex justify-end mt-3">
             <button type="button" wire:click="applyScans"
-                class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Fill receipt from scans</button>
+                class="btn-primary">Fill receipt from scans</button>
         </div>
         @endif
     </div>
 
     <form wire:submit.prevent="receive" class="p-5 bg-white border border-green-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-green-800">
         <div class="flex flex-wrap items-center justify-between gap-3">
-            <h3 class="text-base font-semibold text-gray-800 dark:text-gray-100">Confirm receipt</h3>
+            <h3 class="card-title">Confirm receipt</h3>
             <x-shipment.entry-mode model="receiveMode" :value="$receiveMode" />
         </div>
         <p class="mb-4 text-xs text-gray-500 dark:text-gray-400">
@@ -185,7 +185,7 @@
         </p>
 
         <div class="overflow-x-auto">
-            <table class="w-full text-sm text-left">
+            <table class="table-ui">
                 <thead class="text-xs text-gray-600 dark:text-gray-300">
                     <tr>
                         <th class="px-2 py-2">Title</th>
@@ -234,12 +234,12 @@
         <div class="mt-4">
             <x-jet-label for="receiptNotes" value="Notes" />
             <textarea wire:model.defer="receiptNotes" id="receiptNotes" rows="2"
-                class="block w-full mt-1 border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"></textarea>
+                class="mt-1 form-control"></textarea>
         </div>
 
         <div class="flex justify-end mt-4">
             <button type="submit" wire:loading.attr="disabled"
-                class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700 disabled:opacity-50">Confirm Receipt</button>
+                class="btn-success">Confirm Receipt</button>
         </div>
     </form>
     @elseif ($shipment->isInTransit())

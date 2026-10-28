@@ -4,17 +4,17 @@
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">From Date</label>
                 <input type="date" wire:model="createdFrom"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+                    class="form-control">
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">To Date</label>
                 <input type="date" wire:model="createdTo"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+                    class="form-control">
             </div>
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">Status</label>
                 <select wire:model="statusFilter"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+                    class="form-control">
                     <option value="">All Statuses</option>
                     <option value="0">Requested</option>
                     <option value="1">Accepted</option>
@@ -26,7 +26,7 @@
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">Order By Created At</label>
                 <select wire:model="sortType"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+                    class="form-control">
                     <option value="desc">Newest First</option>
                     <option value="asc">Oldest First</option>
                 </select>
@@ -34,7 +34,7 @@
             <div>
                 <label class="block text-xs font-medium text-gray-500 dark:text-gray-300 mb-1">Rows Per Page</label>
                 <select wire:model="recordes"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 text-sm">
+                    class="form-control">
                     <option value="5">5</option>
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -43,7 +43,7 @@
             </div>
         </div>
 
-        <x-form.table title="Organizations List">
+        <x-form.table title="Print Orders">
             <x-slot name="tableHeaders">
                 <x-data-table.th scope="col">#</x-data-table.th>
                 <x-data-table.th scope="col"> {{__('Book') }}</x-data-table.th>

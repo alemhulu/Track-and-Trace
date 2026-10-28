@@ -49,9 +49,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="success" class="py-1 relative pl-6 pr-2 font-bold">
-                        <i class="fi fi-rr-checkbox flex inset-0 top-1 left-1 absolute text-base"></i>Configured
-                    </x-button>
+                    <span class="badge-success"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Configured</span>
                 </td>
             </x-data-table.tr>
             @empty

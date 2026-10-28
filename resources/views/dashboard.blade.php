@@ -2,271 +2,114 @@
     @php
         $scopeLevel = $dashboardData['scopeLevel'] ?? 'user';
         $kpiGroups = $dashboardData['kpiGroups'] ?? [];
-        $scopeBadgeClasses = match ($scopeLevel) {
-            'national' => 'bg-indigo-100 text-indigo-800 dark:bg-indigo-900 dark:text-indigo-100',
-            'region' => 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-100',
-            'zone' => 'bg-teal-100 text-teal-800 dark:bg-teal-900 dark:text-teal-100',
-            'woreda' => 'bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100',
-            'organization' => 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900 dark:text-emerald-100',
-            'none' => 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-100',
-            default => 'bg-slate-100 text-slate-800 dark:bg-slate-700 dark:text-slate-100',
-        };
+        $kpiIcons = [
+            'Print Orders' => 'fi-rr-print',
+            'Distributed Books' => 'fi-rr-truck-side',
+            'Stock on Hand' => 'fi-rr-box',
+            'Warehouses' => 'fi-rr-home-location-alt',
+            'Organizations' => 'fi-rr-building',
+            'Distribution Records' => 'fi-rr-document',
+        ];
+        $kpiTones = ['indigo' => 'brand', 'blue' => 'sky', 'emerald' => 'emerald', 'amber' => 'gold', 'teal' => 'emerald', 'slate' => 'slate'];
     @endphp
     <x-slot name="header">
-        <div class="flex items-center justify-between gap-3">
-            <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
-                {{ __('Dashboard') }}
-            </h2>
-            <span class="inline-flex items-center px-3 py-1 text-xs font-semibold tracking-wide uppercase rounded-full {{ $scopeBadgeClasses }}">
+        <div class="flex flex-wrap items-center gap-3">
+            <div>
+                <h2>{{ __('Dashboard') }}</h2>
+                <p class="page-subtitle">Textbook supply at a glance, from print orders to students' hands.</p>
+            </div>
+            <span class="badge-gold">
+                <i class="flex fi fi-rr-marker"></i>
                 {{ $dashboardData['scopeLabel'] ?? 'User Scope' }}
             </span>
         </div>
     </x-slot>
 
-    {{-- <div class="grid grid-cols-3 gap-5 p-5 my-5 bg-white">
-    {!! DNS2D::getBarcodeSVG("G-9 Biology: 0000010000001", 'QRCODE')!!}
+    <div class="pb-8" x-data="{ tab: 'manual' }"
+        x-init="renderDashboardCharts(tab); $watch('tab', value => $nextTick(() => renderDashboardCharts(value)))">
+        <x-dashboard.source-tabs class="mb-5" />
 
-  </div> --}}
-
-    <div class="mb-8">
-        <div class="w-auto">
-            <div class="overflow-hidden shadow-xl sm:rounded-lg dark:bg-gray-800"
-                x-data="{ tab: 'manual' }"
-                x-init="renderDashboardCharts(tab); $watch('tab', value => $nextTick(() => renderDashboardCharts(value)))">
-                <div class="px-5 pt-5">
-                    <x-dashboard.source-tabs />
+        @foreach (['manual', 'digital'] as $source)
+        <div id="panel-{{ $source }}" role="tabpanel" aria-labelledby="tab-{{ $source }}" class="space-y-6"
+            x-show="tab === '{{ $source }}'" @if ($source !== 'manual') style="display: none" @endif>
+            <section>
+                <p class="mb-3 text-sm text-slate-500 dark:text-slate-400">
+                    {{ $kpiGroups[$source]['subtitle'] }}
+                </p>
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                    @foreach ($kpiGroups[$source]['cards'] as $card)
+                    <x-kpi-card :label="$card['label'] ?? 'KPI'" :value="number_format((int) ($card['value'] ?? 0))"
+                        :hint="$card['hint'] ?? ''" :icon="$kpiIcons[$card['label'] ?? ''] ?? 'fi-rr-chart-histogram'"
+                        :tone="$kpiTones[$card['style'] ?? 'slate'] ?? 'brand'"
+                        :delta="$card['delta'] ?? ['label' => '0.0% vs previous 30 days', 'direction' => 'flat']" />
+                    @endforeach
                 </div>
+            </section>
 
-                @foreach (['manual', 'digital'] as $source)
-                <div id="panel-{{ $source }}" role="tabpanel" aria-labelledby="tab-{{ $source }}"
-                    x-show="tab === '{{ $source }}'" @if ($source !== 'manual') style="display: none" @endif>
-                <section class="p-5">
-                    <p class="mb-3 text-xs text-gray-500 dark:text-gray-400">
-                        {{ $kpiGroups[$source]['subtitle'] }}
-                    </p>
-                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                        @foreach ($kpiGroups[$source]['cards'] as $card)
-                            @php
-                                $cardStyle = $card['style'] ?? 'slate';
-                                $delta = $card['delta'] ?? ['label' => '0.0% vs previous 30 days', 'direction' => 'flat'];
-                                $cardClasses = match ($cardStyle) {
-                                    'indigo' => 'border-indigo-200 bg-indigo-50 dark:border-indigo-700 dark:bg-indigo-900/30',
-                                    'blue' => 'border-blue-200 bg-blue-50 dark:border-blue-700 dark:bg-blue-900/30',
-                                    'emerald' => 'border-emerald-200 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-900/30',
-                                    'amber' => 'border-amber-200 bg-amber-50 dark:border-amber-700 dark:bg-amber-900/30',
-                                    'teal' => 'border-teal-200 bg-teal-50 dark:border-teal-700 dark:bg-teal-900/30',
-                                    default => 'border-slate-200 bg-slate-50 dark:border-slate-700 dark:bg-slate-900/30',
-                                };
-                                $deltaClasses = match ($delta['direction'] ?? 'flat') {
-                                    'up' => 'text-emerald-700 dark:text-emerald-300',
-                                    'down' => 'text-rose-700 dark:text-rose-300',
-                                    default => 'text-gray-500 dark:text-gray-400',
-                                };
-                                $deltaIcon = match ($delta['direction'] ?? 'flat') {
-                                    'up' => '▲',
-                                    'down' => '▼',
-                                    default => '•',
-                                };
-                            @endphp
-                            <div class="p-4 border rounded-lg {{ $cardClasses }}">
-                                <p class="text-sm font-medium text-gray-600 dark:text-gray-300">
-                                    {{ $card['label'] ?? 'KPI' }}
-                                </p>
-                                <p class="mt-2 text-3xl font-bold text-gray-900 dark:text-gray-100">
-                                    {{ number_format((int) ($card['value'] ?? 0)) }}
-                                </p>
-                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                                    {{ $card['hint'] ?? '' }}
-                                </p>
-                                <p class="mt-2 flex items-center gap-1 text-xs font-semibold {{ $deltaClasses }}">
-                                    <span>{{ $deltaIcon }}</span>
-                                    <span>{{ $delta['label'] ?? '0.0% vs previous 30 days' }}</span>
-                                </p>
-                            </div>
-                        @endforeach
-                    </div>
-                </section>
+            @if ($source === 'manual' && ! empty($dashboardData['oversight']))
+            <x-dashboard.coverage :overview="$dashboardData['oversight']" :year="$dashboardData['academicYear']" />
+            @endif
 
-                @if ($source === 'manual' && ! empty($dashboardData['oversight']))
-                <x-dashboard.coverage :overview="$dashboardData['oversight']" :year="$dashboardData['academicYear']" />
-                @endif
-
-                <section>
-                    <div class="grid grid-cols-6 gap-5 rounded-lg ">
-                        <div class="col-span-6 p-4 bg-white rounded-lg shadow-md lg:col-span-4 dark:bg-gray-900"
-                            id="{{ $source }}SubjectChart">
-                        </div>
-                        <div class="col-span-6 p-4 bg-white rounded-lg shadow-md lg:col-span-2 dark:bg-gray-900"
-                            id="{{ $source }}StatusChart">
-                        </div>
-                        <div class="col-span-6 p-4 bg-white rounded-lg shadow-md md:col-span-3 dark:bg-gray-900"
-                            id="{{ $source }}SummaryChart">
-                        </div>
-                        <div class="col-span-6 p-4 bg-white rounded-lg shadow-md md:col-span-3 dark:bg-gray-900"
-                            id="{{ $source }}NetworkChart">
-                        </div>
-                    </div>
-                </section>
-                </div>
-                @endforeach
-
-                {{-- <section class="rounded-lg">
-                    <div class="px-4 py-5 mx-auto mb-3 sm:px-6 lg:px-8">
-                        <div class="mt-4">
-                            <p class="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-400">Print Orders
-                            </p>
-                            <dl class="grid grid-cols-1 gap-5 sm:grid-cols-4">
-                                <div class="flex flex-col px-4 py-8 text-center border border-gray-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total Orders
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-gray-600 dark:text-gray-200 md:text-5xl">
-                                        70
-                                    </dd>
-                                </div>
-
-                                <div class="flex flex-col px-4 py-8 text-center border border-green-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total Accepted
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-green-600 md:text-5xl">
-                                        67
-                                    </dd>
-                                </div>
-
-                                <div class="flex flex-col px-4 py-8 text-center border border-red-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total Rejected
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-red-600 md:text-5xl">5</dd>
-                                </div>
-
-                                <div class="flex flex-col px-4 py-8 text-center border border-green-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total Printed
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-green-600 md:text-5xl">62</dd>
-                                </div>
-                            </dl>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="rounded-lg">
-                    <div class="px-4 py-5 mx-auto mb-3 sm:px-6 lg:px-8">
-                        <div class="mt-4">
-                            <p class="text-xl font-bold text-gray-900 dark:text-gray-400 sm:text-2xl">Books
-                            </p>
-                            <dl class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-                                <div class="flex flex-col px-4 py-8 text-center border border-gray-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total In Stock
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-gray-600 md:text-5xl dark:text-gray-200">
-                                        2.1M
-                                    </dd>
-                                </div>
-
-                                <div class="flex flex-col px-4 py-8 text-center border border-yellow-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total Distributed
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-yellow-600 md:text-5xl">2.4M</dd>
-                                </div>
-
-                                <div class="flex flex-col px-4 py-8 text-center border border-green-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total on Students Hand
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-yellow-600 md:text-5xl">2.1M</dd>
-                                </div>
-                            </dl>
-                        </div>
-                    </div>
-                </section>
-
-                <section class="rounded-lg">
-                    <div class="px-4 py-5 mx-auto mb-3 sm:px-6 lg:px-8">
-                        <div class="mt-4">
-                            <p class="text-xl font-bold text-gray-900 sm:text-2xl dark:text-gray-400">Wearhouses
-                            </p>
-                            <dl class="grid grid-cols-1 gap-5 sm:grid-cols-3">
-                                <div class="flex flex-col px-4 py-8 text-center border border-gray-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total Wearhouses
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-gray-600 md:text-5xl dark:text-gray-200">
-                                        700
-                                    </dd>
-                                </div>
-
-                                <div class="flex flex-col px-4 py-8 text-center border border-blue-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total Stores
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">2.4K</dd>
-                                </div>
-
-                                <div class="flex flex-col px-4 py-8 text-center border border-yellow-200 rounded-lg">
-                                    <dt class="order-last text-lg font-medium text-gray-500 dark:text-gray-400">
-                                        Total Books in Stores
-                                    </dt>
-
-                                    <dd class="text-4xl font-extrabold text-blue-600 md:text-5xl">2.1M</dd>
-                                </div>
-                            </dl>
-                        </div>
-                    </div>
-                </section> --}}
-            </div>
+            <section class="grid grid-cols-6 gap-4">
+                <div class="col-span-6 p-4 card lg:col-span-4" id="{{ $source }}SubjectChart"></div>
+                <div class="col-span-6 p-4 card lg:col-span-2" id="{{ $source }}StatusChart"></div>
+                <div class="col-span-6 p-4 card md:col-span-3" id="{{ $source }}SummaryChart"></div>
+                <div class="col-span-6 p-4 card md:col-span-3" id="{{ $source }}NetworkChart"></div>
+            </section>
         </div>
+        @endforeach
     </div>
-
-
 </x-app-layout>
 <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 <script>
     const dashboardData = @json($dashboardData);
     const renderedDashboardTabs = new Set();
 
-    const donutTitle = (chartData, color) => ({
+    // Brand palette from the MoE logo
+    const brandBlues = ['#1e4ea2', '#4474cb', '#9abbe8', '#16305d', '#3c8ac0'];
+    const isDark = () => document.body.classList.contains('dark');
+    const baseChart = () => ({
+        fontFamily: 'Nunito, sans-serif',
+        toolbar: { show: false },
+        foreColor: isDark() ? '#94a3b8' : '#64748b',
+        background: 'transparent',
+    });
+    const baseGrid = () => ({ borderColor: isDark() ? '#1e293b' : '#e2e8f0', strokeDashArray: 4 });
+
+    const donutTitle = (chartData) => ({
         title: {
             text: chartData.title,
             offsetX: 0,
-            style: { fontSize: '24px', color: color, cssClass: 'text-gray-500', fontFamily: 'Nunito' }
+            style: { fontSize: '16px', fontWeight: 600, color: isDark() ? '#f1f5f9' : '#0f172a', fontFamily: 'Nunito' }
         },
         subtitle: {
             text: chartData.subtitle,
             offsetX: 1,
-            style: { fontSize: '14px', color: '#88888e', cssClass: 'text-gray-500', fontFamily: 'Nunito' }
+            style: { fontSize: '13px', color: '#64748b', fontFamily: 'Nunito' }
         },
     });
 
-    const donutOptions = (chartData, colors, titleColor) => ({
-        ...donutTitle(chartData, titleColor),
+    const donutOptions = (chartData, colors) => ({
+        ...donutTitle(chartData),
         colors: colors,
         series: chartData.series,
         labels: chartData.labels,
-        chart: { type: 'donut', height: 400 },
-        legend: { position: 'bottom', offsetY: 0, height: 30 },
+        chart: { ...baseChart(), type: 'donut', height: 380 },
+        stroke: { colors: [isDark() ? '#0f172a' : '#ffffff'] },
+        plotOptions: { pie: { donut: { size: '68%', labels: { show: true, total: { show: true, label: 'Total' } } } } },
+        dataLabels: { enabled: false },
+        legend: { position: 'bottom', offsetY: 0, markers: { radius: 12 } },
         responsive: [{ breakpoint: 480, options: { chart: { width: 200 }, legend: { position: 'bottom' } } }]
     });
 
     const chartFactories = {
         Subject: (chartData) => ({
-            colors: ['#688cff', '#005bfc', '#0617db'],
+            colors: ['#1e4ea2', '#f6ba12', '#3c8ac0'],
             series: chartData.series,
-            chart: { type: 'bar', height: 350 },
-            plotOptions: { bar: { horizontal: false, borderRadius: 3, columnWidth: '75%', endingShape: 'rounded' } },
+            chart: { ...baseChart(), type: 'bar', height: 350 },
+            grid: baseGrid(),
+            legend: { position: 'top', horizontalAlign: 'left', markers: { radius: 12 } },
+            plotOptions: { bar: { horizontal: false, borderRadius: 4, columnWidth: '60%' } },
             dataLabels: { enabled: false },
             stroke: { show: true, width: 1, radius: 5, colors: ['transparent'] },
             xaxis: { categories: chartData.categories },
@@ -274,20 +117,20 @@
             tooltip: { shared: true, followCursor: true, intersect: false },
         }),
         Status: (chartData) => ({
-            colors: ['#688cff', '#005bfc', '#0617db', '#053385', '#2f9e44'],
+            colors: [...brandBlues, '#10b981'],
             series: chartData.series,
-            chart: { width: 380, height: 350, type: 'polarArea' },
-            title: { text: chartData.title, align: 'center' },
+            chart: { ...baseChart(), height: 350, type: 'polarArea' },
+            title: { text: chartData.title, align: 'left', style: { fontSize: '16px', fontWeight: 600, fontFamily: 'Nunito', color: isDark() ? '#f1f5f9' : '#0f172a' } },
             labels: chartData.labels,
             fill: { opacity: 1 },
             stroke: { width: 1, colors: undefined },
             yaxis: { show: false },
             legend: { position: 'bottom' },
             plotOptions: { polarArea: { rings: { strokeWidth: 0 }, spokes: { strokeWidth: 0 } } },
-            theme: { monochrome: { enabled: true, shadeTo: 'dark', shadeIntensity: 0.6 } }
+            theme: { monochrome: { enabled: true, color: '#1e4ea2', shadeTo: 'light', shadeIntensity: 0.65 } }
         }),
-        Summary: (chartData) => donutOptions(chartData, ['#ff4f36', '#b91e09', '#6b0d00', '#16a349'], '#6b0d00'),
-        Network: (chartData) => donutOptions(chartData, ['#ffad00', '#ac5709', '#ff8500', '#16a349'], '#ac5709'),
+        Summary: (chartData) => donutOptions(chartData, ['#1e4ea2', '#4474cb', '#9abbe8', '#10b981']),
+        Network: (chartData) => donutOptions(chartData, ['#f6ba12', '#cc4e3c', '#c67b03', '#10b981']),
     };
 
     // Charts are drawn the first time their tab is shown; ApexCharts cannot size a hidden container

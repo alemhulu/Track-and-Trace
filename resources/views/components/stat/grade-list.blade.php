@@ -2,53 +2,35 @@
 'secondary'])
 @php
 $statusClasses = [
-'secondary' => 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200',
-'danger' => 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200',
-'info' => 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
-'warning' => 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200',
-'success' => 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200',
-'primary' => 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200',
-][$statusType ?? 'secondary'];
+'secondary' => 'badge-neutral',
+'danger' => 'badge-danger',
+'info' => 'badge-brand',
+'warning' => 'badge-gold',
+'success' => 'badge-success',
+'primary' => 'badge-brand',
+][$statusType ?? 'secondary'] ?? 'badge-neutral';
 @endphp
-<div {{ $attributes->merge([ 'class' => '']) }}>
-    <div class="flex flex-col px-4text-center border border-blue-200 rounded-lg">
-        <div class="grid grid-cols-2">
-            <div class="flex flex-col items-center justify-center py-3 bg-blue-50 dark:bg-blue-900 rounded-l-lg">
-                <dt class="order-last text-lg font-bold text-gray-500 dark:text-blue-300">
-                    Grade
-                </dt>
-                <dd class="text-4xl font-extrabold text-blue-600 dark:text-blue-200 md:text-5xl lg:text-7xl">
-                    {{ $grade }}
-                </dd>
-            </div>
-
-            <div class="flex flex-col py-3 px-3 min-w-fit">
-                <div class="text-left">
-                    <x-jet-label class="text-xs text-gray-400 dark:text-gray-200" value="Package Received" />
-                    <span class="text-xl font-bold text-blue-600 dark:text-blue-200 leading-none tracking-wider">
-                        {{ $received }}</span>
-                </div>
-
-                <div class="text-left">
-                    <x-jet-label class="text-xs text-gray-400 dark:text-gray-200" value="Package Sent" />
-                    <span class="text-xl font-bold text-blue-600 dark:text-blue-200 leading-none tracking-wider">
-                        {{ $sent }}</span>
-                </div>
-
-                <div class="text-left">
-                    <x-jet-label class="text-xs text-gray-400 dark:text-gray-200" value="Package Available" />
-                    <span class="text-xl font-bold text-blue-600 dark:text-blue-200 leading-none tracking-wider">
-                        {{ $available }}</span>
-                </div>
-
-                <div class="text-left pt-2">
-                    <x-jet-label class="text-xs text-gray-400 dark:text-gray-200" value="Package Status" />
-                    <span
-                        class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold capitalize {{ $statusClasses }}">
-                        {{ $status }}
-                    </span>
-                </div>
-            </div>
-        </div>
+<div {{ $attributes->merge([ 'class' => 'flex overflow-hidden border rounded-xl border-slate-200 bg-white dark:bg-slate-900 dark:border-slate-800']) }}>
+    <div class="flex flex-col items-center justify-center w-20 shrink-0 bg-brand-50 dark:bg-brand-900/30">
+        <span class="text-[11px] font-semibold tracking-wide uppercase text-brand-500 dark:text-brand-300">Grade</span>
+        <span class="text-3xl font-bold text-brand-700 dark:text-brand-100">{{ $grade }}</span>
     </div>
+
+    <dl class="flex-1 p-3 space-y-1.5 text-sm">
+        <div class="flex justify-between gap-2">
+            <dt class="text-slate-500 dark:text-slate-400">Received</dt>
+            <dd class="font-semibold tabular-nums text-slate-900 dark:text-slate-100">{{ $received }}</dd>
+        </div>
+        <div class="flex justify-between gap-2">
+            <dt class="text-slate-500 dark:text-slate-400">Sent</dt>
+            <dd class="font-semibold tabular-nums text-slate-900 dark:text-slate-100">{{ $sent }}</dd>
+        </div>
+        <div class="flex justify-between gap-2">
+            <dt class="text-slate-500 dark:text-slate-400">Available</dt>
+            <dd class="font-semibold tabular-nums text-slate-900 dark:text-slate-100">{{ $available }}</dd>
+        </div>
+        <div class="pt-1">
+            <span class="{{ $statusClasses }} capitalize">{{ $status }}</span>
+        </div>
+    </dl>
 </div>

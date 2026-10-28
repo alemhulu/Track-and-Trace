@@ -23,13 +23,13 @@
                 <x-jet-label for="guide-qty" value="Copies" />
                 <x-jet-input wire:model.defer="form.quantity" id="guide-qty" type="number" min="1" class="block w-full mt-1" />
             </div>
-            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">Issue</button>
+            <button type="submit" class="btn-success">Issue</button>
         </div>
     </form>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+    <div class="overflow-x-auto card">
+        <table class="table-ui">
+            <thead>
                 <tr>
                     <th class="px-4 py-2">Teacher</th>
                     <th class="px-4 py-2">Title</th>
@@ -39,7 +39,7 @@
                     <th class="px-4 py-2">Returned</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody>
                 @forelse ($issues as $issue)
                 <tr wire:key="guide-{{ $issue->id }}">
                     <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100">{{ $issue->teacher_name }}</td>
@@ -51,7 +51,7 @@
                         @if ($issue->returned_at)
                         <span class="text-gray-500">{{ $issue->returned_at->format('Y-m-d') }}</span>
                         @else
-                        <button type="button" wire:click="returnGuides({{ $issue->id }})" class="text-xs text-blue-700 hover:underline dark:text-blue-300">Record return</button>
+                        <button type="button" wire:click="returnGuides({{ $issue->id }})" class="text-xs link">Record return</button>
                         @endif
                     </td>
                 </tr>

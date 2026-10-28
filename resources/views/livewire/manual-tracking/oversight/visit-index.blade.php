@@ -1,11 +1,11 @@
 <div class="space-y-4">
     @if (session('success'))
-    <div class="p-3 text-sm text-green-800 bg-green-100 rounded-md">{{ session('success') }}</div>
+    <div class="alert-success">{{ session('success') }}</div>
     @endif
 
-    <div class="flex flex-wrap items-end gap-3 p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="flex flex-wrap items-end gap-3 p-5 card">
         <div class="flex-1">
-            <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Verification visits</h3>
+            <h3 class="section-title">Verification visits</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">
                 A supervisor counts books on the school's shelves and asks a random sample of students to show the books recorded as theirs.
             </p>
@@ -29,15 +29,15 @@
                 </x-form.select>
                 <x-jet-input-error for="schoolId" class="mt-1" />
             </div>
-            <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">Start visit</button>
+            <button type="submit" class="btn-success">Start visit</button>
         </form>
         <a href="{{ route('manual-tracking.exports', ['type' => 'visits', 'year' => $year]) }}"
-            class="px-3 py-2 text-sm text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200">Export CSV</a>
+            class="btn-secondary">Export CSV</a>
     </div>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+    <div class="overflow-x-auto card">
+        <table class="table-ui">
+            <thead>
                 <tr>
                     <th class="px-4 py-2">Date</th>
                     <th class="px-4 py-2">School</th>
@@ -46,11 +46,11 @@
                     <th class="px-4 py-2">Books shown by students</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody>
                 @forelse ($visits as $visit)
                 <tr>
                     <td class="px-4 py-2 whitespace-nowrap">
-                        <a href="{{ route('manual-tracking.visits.show', $visit->id) }}" class="font-medium text-blue-700 hover:underline dark:text-blue-300">{{ $visit->visited_at->format('Y-m-d') }}</a>
+                        <a href="{{ route('manual-tracking.visits.show', $visit->id) }}" class="font-medium link">{{ $visit->visited_at->format('Y-m-d') }}</a>
                     </td>
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
                         {{ $visit->school->name ?? '—' }}

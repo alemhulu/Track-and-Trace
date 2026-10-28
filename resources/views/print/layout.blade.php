@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title')</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap">
     <style>
         * { box-sizing: border-box; }
-        body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; color: #111; margin: 0; padding: 16px; background: #fff; }
+        body { font-family: "Nunito", Arial, Helvetica, sans-serif; font-size: 11pt; color: #111; margin: 0; padding: 16px; background: #fff; }
         h1 { font-size: 16pt; margin: 0 0 2px; }
         .muted { color: #555; font-size: 9pt; }
         .head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; border-bottom: 2px solid #111; padding-bottom: 8px; margin-bottom: 10px; }

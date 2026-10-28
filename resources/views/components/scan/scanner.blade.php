@@ -9,8 +9,8 @@
     {{-- Not a <form>: the scanner often sits inside one, and Enter must never submit it --}}
     <div class="flex flex-wrap gap-2">
         <input x-model="typed" x-ref="typed" x-on:keydown.enter.prevent="submitTyped" type="text" autocomplete="off" placeholder="{{ $placeholder }}"
-            class="flex-1 min-w-[12rem] text-sm border-gray-300 rounded-md dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100" />
-        <button type="button" x-on:click="submitTyped" class="px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">Add</button>
+            class="flex-1 min-w-[12rem] form-control" />
+        <button type="button" x-on:click="submitTyped" class="btn-primary">Add</button>
         <button type="button" x-on:click="running ? stop() : start()"
             class="px-3 py-2 text-sm font-medium text-white rounded-md"
             :class="running ? 'bg-gray-600 hover:bg-gray-700' : 'bg-green-600 hover:bg-green-700'"

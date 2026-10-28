@@ -61,7 +61,7 @@
             <div class="md:col-span-2">
                 <x-jet-label for="notes" value="Notes" />
                 <textarea wire:model.defer="notes" id="notes" rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"></textarea>
+                    class="mt-1 form-control"></textarea>
                 <x-jet-input-error for="notes" class="mt-2" />
             </div>
         </div>

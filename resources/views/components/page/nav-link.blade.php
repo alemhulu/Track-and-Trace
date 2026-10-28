@@ -1,37 +1,32 @@
-@props(['title', 'total' =>0, 'tabLink'=>'', 'icon', 'link'=>'#'])
+@props(['title', 'total' => null, 'tabLink' => '', 'icon' => '', 'link' => '#'])
+{{-- The per-link colour class callers pass is ignored on purpose: every module uses the brand palette. --}}
+@php
+$active = $link != '#' && request()->routeIs($link . '*');
+$href = $link != '#' ? route($link) : null;
+@endphp
 
-<li @class(['col-span-1 flex shadow-sm hover:shadow-md rounded-lg hover:font-semibold dark:shadow-gray-600
-    dark:bg-gray-800 bg-white cursor-pointer','font-bold shadow-lg bg-blue-50 dark:bg-gray-700'=>
-    request()->routeIs($link.'*')])>
-    <a @if ($link !='#' ) href="{{ route($link) }}" @else onclick="openTab(event,'{{ $tabLink }}')" @endif
-        class="flex ">
-        <button {{ $attributes ->merge(['type' => 'button', 'class' => 'flex-shrink-0 flex items-center justify-center
-            w-16 h-18 text-white text-sm font-semibold rounded-l-lg uppercase']) }}>
-            {{ substr($title,0, 3) }}
-        </button>
+<li class="shrink-0">
+    <a @if ($href) href="{{ $href }}" @else href="#" onclick="event.preventDefault(); openTab(event,'{{ $tabLink }}')" @endif
+        @if ($active) aria-current="page" @endif
+        @class([
+            'group flex items-center gap-2.5 px-3.5 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition',
+            'bg-brand-600 text-white shadow-brand' => $active,
+            'text-slate-600 hover:bg-brand-50 hover:text-brand-700 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white' => ! $active,
+        ])>
+        @if ($icon)
+        <i @class([
+            "flex text-base $icon",
+            'text-gold-300' => $active,
+            'text-brand-400 group-hover:text-brand-600 dark:text-brand-300' => ! $active,
+        ])></i>
+        @endif
+        <span>{{ $title }}</span>
+        @if (! is_null($total) && (int) $total > 0)
+        <span @class([
+            'px-1.5 py-0.5 text-[11px] font-semibold rounded-md leading-none',
+            'bg-white/20 text-white' => $active,
+            'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300' => ! $active,
+        ])>{{ $total }}</span>
+        @endif
     </a>
-
-    <div class="flex-1 flex items-center justify-between rounded-r-md truncate relative">
-        <a @if ($link !='#' ) href="{{ route($link) }}" @else onclick="openTab(event,'{{ $tabLink }}')" @endif
-            class="absolute inset-0 h-full w-full"></a>
-        <div class="flex-1 px-4 py-2 text-sm truncate">
-            <a @if ($link !='#' ) href="{{ route($link) }}" @endif class="text-gray-600 dark:text-gray-300">
-                {{ $title }}
-            </a>
-            <p class="text-gray-500 font-medium dark:text-gray-400">
-                @isset($total)
-                {{ $total }} {{__(' Total') }}
-                @endisset
-            </p>
-        </div>
-
-        <div class="flex-shrink-0 pr-2">
-            <a @if ($link !='#' ) href="{{ route($link) }}" @else onclick="openTab(event,'{{ $tabLink }}')" @endif>
-                <x-page.actionbtn @class(['w-8 h-8 inline-flex items-center justify-center', 'bg-blue-400 text-white'=>
-                    request()->routeIs($link.'*') ])>
-                    <span class="flex font-bold @isset($icon){{ $icon }}@endisset text-base dark:text-lime-600"></span>
-                </x-page.actionbtn>
-            </a>
-        </div>
-    </div>
 </li>

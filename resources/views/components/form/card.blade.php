@@ -1,29 +1,27 @@
 @props(['function'=>'', 'title' ,'buttons'=> true, 'submitLabel' => 'Add'])
 <form wire:submit.prevent={{ $function }} class="h-auto">
-    <div
-        class="relative mb-10 py-6 sm:px-4 lg:py-0 lg:px-0 lg:col-span-8 bg-white sm:rounded-lg rounded-md dark:bg-gray-800">
+    <div class="relative mb-6 lg:col-span-8 card">
         <x-form.header>
             {{ __($title) }}
         </x-form.header>
 
-        <div class="px-2 sm:px-4 pt-2 mb-5">
-            <div class="space-y-5 ">
+        <div class="p-5 sm:p-6">
+            <div class="space-y-5">
                 {{$slot }}
             </div>
         </div>
 
         @if ($buttons)
-        <div class="px-2 sm:px-4 py-3 text-right mb-0 space-x-4">
-            <x-jet-secondary-button onclick="openTab(event,'non')" class="">
+        <div class="flex justify-end gap-3 px-5 py-4 border-t sm:px-6 bg-slate-50/70 border-slate-100 dark:bg-slate-800/40 dark:border-slate-800 rounded-b-xl">
+            <x-jet-secondary-button onclick="openTab(event,'non')">
                 {{__('Cancel') }}
             </x-jet-secondary-button>
 
-            <x-jet-button type="submit" class="disabled:opacity-40 flex">
+            <x-jet-button type="submit" class="disabled:opacity-40">
                 {{ __($submitLabel) }}
                 <x-action.button-loader wire:loading wire:target='{{ $function }}' />
             </x-jet-button>
         </div>
         @endif
-
     </div>
 </form>

@@ -36,9 +36,9 @@
                 <div class="mt-4 flex items-center gap-3">
                     <div class="text-sm text-gray-500 dark:text-gray-400">Status:</div>
                     @if($routeRecord->is_active)
-                    <x-button btnType="success" class="py-1">Active</x-button>
+                    <span class="badge-success"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Active</span>
                     @else
-                    <x-button btnType="danger" class="py-1">InActive</x-button>
+                    <span class="badge-danger"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Inactive</span>
                     @endif
                 </div>
             </div>
@@ -69,9 +69,9 @@
 
                             <td class="px-5 py-2 whitespace-nowrap">
                                 @if(optional($usage->distribution)->is_active)
-                                <x-button btnType="success" class="py-1">Active</x-button>
+                                <span class="badge-success"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Active</span>
                                 @else
-                                <x-button btnType="danger" class="py-1">InActive</x-button>
+                                <span class="badge-danger"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Inactive</span>
                                 @endif
                             </td>
 

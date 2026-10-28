@@ -7,11 +7,12 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
-        <link rel="icon" href="https://moe.gov.et/logom.png">
+        <meta name="theme-color" content="#1e4ea2">
+        <link rel="icon" href="/logom.png">
         <title>{{ config('app.name', 'Track and Trace') }}</title>
 
         <!-- Fonts -->
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">
+        <x-fonts />
 
         <!-- Styles -->
         @livewireStyles
@@ -23,31 +24,32 @@
     <body :class="{'dark': darkMode === true}" class="font-sans antialiased">
         <x-jet-banner />
 
-        <div class="min-h-screen bg-[#edf1f7] dark:bg-gray-900">
+        <div class="min-h-screen bg-slate-50 dark:bg-slate-950">
             <x-side-navigation.desktop />
 
-            <div class="flex flex-col flex-1 md:pl-64">
+            <div class="flex flex-col flex-1 min-h-screen md:pl-64">
                 @livewire('navigation-menu')
-                <!-- Page Heading -->
-                @if (isset($header))
-                <header class="mx-3 bg-white rounded-lg shadow dark:bg-gray-800">
-                    <div class="flex items-center justify-between px-4 py-3 mx-auto rounded-lg sm:px-6 lg:px-8">
-                        {{ $header }}
+
+                <div class="flex-1 w-full px-4 py-6 mx-auto max-w-screen-2xl sm:px-6 lg:px-8">
+                    @if (isset($header))
+                    <header class="flex flex-wrap items-center justify-between gap-4 mb-6 page-header">
+                        <div class="min-w-0">
+                            {{ $header }}
+                        </div>
                         @if (isset($actionButton))
-                        <div class="flex justify-between gap-3">
+                        <div class="flex flex-wrap items-center gap-3">
                             {{ $actionButton }}
                         </div>
                         @endif
-                    </div>
-                </header>
+                    </header>
+                    @endif
 
-                <!-- Page Content -->
-                <main class="m-3">
-                    <x-validation-errors />
-                    <x-session-messages />
-                    {{ $slot }}
-                </main>
-                @endif
+                    <main class="space-y-4">
+                        <x-validation-errors />
+                        <x-session-messages />
+                        {{ $slot }}
+                    </main>
+                </div>
             </div>
         </div>
 
@@ -57,10 +59,6 @@
         @livewireScripts
         <script src="/js/tabs.js"></script>
         <script src="/js/qr-scanner.js"></script>
-
-        {{-- <script src="https://cdn.jsdelivr.net/gh/livewire/turbolinks@v0.1.x/dist/livewire-turbolinks.js"
-            data-turbolinks-eval="false" data-turbo-eval="false"></script> --}}
-    </body>
     </body>
 
 </html>

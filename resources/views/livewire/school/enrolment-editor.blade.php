@@ -1,10 +1,10 @@
-<form wire:submit.prevent="save" class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+<form wire:submit.prevent="save" class="p-5 card">
     <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
         Students enrolled per grade this year. Leave a grade empty if the school does not teach it. Sections are optional; without them the system assumes up to 40 students per section.
     </p>
 
     <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left">
+        <table class="table-ui">
             <thead class="text-xs text-gray-600 dark:text-gray-300">
                 <tr>
                     <th class="px-2 py-2">Grade</th>
@@ -38,6 +38,6 @@
     <x-jet-input-error for="rows.*" class="mt-2" />
 
     <div class="flex justify-end mt-4">
-        <button type="submit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-md hover:bg-green-700">Save Enrolment</button>
+        <button type="submit" class="btn-success">Save Enrolment</button>
     </div>
 </form>

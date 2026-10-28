@@ -40,7 +40,7 @@
                     </x-button>
                     @if (($record->organizationType->name ?? null) === 'School')
                     <a href="{{ route('manual-tracking.schools.show', $record->id) }}"
-                        class="block mt-1 text-xs text-blue-700 hover:underline dark:text-blue-300">School records</a>
+                        class="block mt-1 text-xs link">School records</a>
                     @endif
                 </td>
 

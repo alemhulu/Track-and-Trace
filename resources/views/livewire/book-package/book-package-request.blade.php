@@ -40,7 +40,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="danger" class="">Rejected</x-button>
+                    <span class="badge-danger"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Rejected</span>
                 </td>
 
                 <td class="px-5 py-2">
@@ -75,7 +75,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="success" class="">Accepted</x-button>
+                    <span class="badge-success"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Accepted</span>
                 </td>
 
                 <td class="px-5 py-2">
@@ -108,7 +108,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="warning" class="animate-pulse hover:animate-none">Pending</x-button>
+                    <span class="badge-gold"><span class="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse"></span>Pending</span>
                 </td>
 
                 <td class="px-5 py-2">

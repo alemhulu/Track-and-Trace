@@ -78,14 +78,14 @@
                             Order Print
                         </h3>
                         <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
-                            Fill The Necessary Infomation To Order The Print
+                            Fill in the details needed to place the print order
                         </p>
                     </div>
                     <div class="space-y-6 sm:space-y-5">
 
                         <div
                             class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:border-t sm:border-gray-200 sm:pt-5">
-                            <x-jet-label value="Organazation" />
+                            <x-jet-label value="Organization" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2">
                                 <x-form.select wire:model="organization_id" id="organization_id" class="max-w-md">
                                     <option selected>Select Print Order Organization</option>
@@ -105,7 +105,7 @@
                                     <div>
                                         <x-jet-label value="Student Text Books" />
                                         <x-jet-input wire:model="number_of_copies" type="number" @class(['max-w-md'])
-                                            max="10000000" placeholder="inter number of copies" />
+                                            max="10000000" placeholder="Enter number of copies" />
                                     </div>
                                     <div>
                                         <x-jet-label value="Books per Packages" />
@@ -123,7 +123,7 @@
                         </div>
 
                         <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
-                            <x-jet-label value="Teacher's Gide Books" />
+                            <x-jet-label value="Teacher's Guide Books" />
                             <div class="mt-1 sm:mt-0 sm:col-span-2 dark:text-gray-300">
                                 <span
                                     class="max-w-xl text-lg rounded-md border py-2 px-4 text-gray-600 font-semibold bg-blue-50 hover:bg-blue-100 hover:font-bold shadow-lg shadow-blue-50 dark:shadow-gray-700 mr-2">{{ $no_of_packages ??'0'}}

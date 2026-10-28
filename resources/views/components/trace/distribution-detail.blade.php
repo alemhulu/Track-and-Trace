@@ -52,15 +52,9 @@
                             <x-jet-label value="Status" />
                             <div class="sm:mt-0 sm:col-span-2 text-gray-500">
                                 @if($distribution->is_active)
-                                <x-button btnType="success" class="py-1 relative pl-6 pr-2 font-bold">
-                                    <i class="fi fi-rr-checkbox flex inset-0 top-1 left-1 absolute text-base"></i>
-                                    Active
-                                </x-button>
+                                <span class="badge-success"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Active</span>
                                 @else
-                                <x-button btnType="danger" class="py-1 relative pl-6 pr-2 font-bold">
-                                    <i class="fi fi-rr-cross-circle flex inset-0 top-1 left-1 absolute text-base"></i>
-                                    InActive
-                                </x-button>
+                                <span class="badge-danger"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Inactive</span>
                                 @endif
                             </div>
                         </div>

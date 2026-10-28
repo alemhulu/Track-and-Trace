@@ -1,8 +1,8 @@
 <div x-data="{ tab: 'coverage' }">
-    <div class="flex flex-wrap items-end justify-between gap-3 p-5 mb-4 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="flex flex-wrap items-end justify-between gap-3 p-5 mb-4 card">
         <div>
-            <a href="{{ route('manual-tracking.schools.index', ['year' => $year]) }}" class="text-xs text-blue-700 hover:underline dark:text-blue-300">← All schools</a>
-            <h3 class="text-xl font-semibold text-gray-900 dark:text-gray-100">{{ $school->name }}</h3>
+            <a href="{{ route('manual-tracking.schools.index', ['year' => $year]) }}" class="text-xs link">← All schools</a>
+            <h3 class="section-title text-xl">{{ $school->name }}</h3>
             <p class="text-sm text-gray-500 dark:text-gray-400">
                 {{ $school->woreda->name ?? '—' }}, {{ $school->zone->name ?? '—' }}, {{ $school->region->name ?? '—' }}
             </p>

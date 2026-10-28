@@ -1,7 +1,7 @@
 @props(['scans', 'undo' => 'void'])
-<div {{ $attributes->merge(['class' => 'overflow-x-auto bg-white rounded-lg shadow-sm dark:bg-gray-800']) }}>
-    <table class="w-full text-sm text-left">
-        <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+<div {{ $attributes->merge(['class' => 'overflow-x-auto card']) }}>
+    <table class="table-ui">
+        <thead>
             <tr>
                 <th class="px-3 py-2">Time</th>
                 <th class="px-3 py-2">Scanned</th>
@@ -10,7 +10,7 @@
                 <th class="px-3 py-2"><span class="sr-only">Undo</span></th>
             </tr>
         </thead>
-        <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+        <tbody>
             @forelse ($scans as $scan)
             <tr wire:key="scan-{{ $scan->id }}">
                 <td class="px-3 py-2 text-gray-500 whitespace-nowrap">{{ $scan->scanned_at->format('H:i:s') }}</td>

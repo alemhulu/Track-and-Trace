@@ -1,9 +1,9 @@
 <div>
     @php
         $statusClasses = [
-            'dispatched' => 'bg-amber-100 text-amber-800',
-            'received' => 'bg-green-100 text-green-800',
-            'received_with_discrepancy' => 'bg-red-100 text-red-800',
+            'dispatched' => 'badge-warning',
+            'received' => 'badge-success',
+            'received_with_discrepancy' => 'badge-danger',
         ];
     @endphp
 
@@ -26,7 +26,7 @@
 
         @if ($canCreate)
         <a href="{{ route('manual-tracking.distribution.add') }}"
-            class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700">
+            class="btn-primary">
             New Shipment
         </a>
         @endif
@@ -48,7 +48,7 @@
             <x-data-table.tr>
                 <td class="px-5 py-2 text-sm font-semibold whitespace-nowrap">
                     <a href="{{ route('manual-tracking.shipments.show', $distribution->id) }}"
-                        class="text-blue-700 hover:underline dark:text-blue-300">{{ $distribution->reference }}</a>
+                        class="link">{{ $distribution->reference }}</a>
                 </td>
                 <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">
                     {{ optional($distribution->distributed_at)->format('Y-m-d') ?: '-' }}
@@ -62,7 +62,7 @@
                     {{ number_format((int) $distribution->lines_sum_quantity) }} / {{ number_format((int) $distribution->lines_sum_teacher_guides) }}
                 </td>
                 <td class="px-5 py-2 text-sm whitespace-nowrap">
-                    <span class="px-2 py-1 text-xs font-semibold rounded-full {{ $statusClasses[$distribution->status] ?? 'bg-gray-100 text-gray-700' }}">
+                    <span class="{{ $statusClasses[$distribution->status] ?? 'badge-neutral' }}">
                         {{ \App\Models\ManualTracking\ManualDistribution::STATUSES[$distribution->status] ?? $distribution->status }}
                     </span>
                     @if ($distribution->open_discrepancies_count)

@@ -1,38 +1,23 @@
 @props(['title', 'subTitle', 'action', 'enctype' => 'multipart/form-data', 'method' => 'POST', 'publish'])
-<div>
-    <div class="py-3">
-        <div class="mx-auto">
-            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 bg-white dark:bg-gray-800">
-                    <form enctype="{{ $enctype }}" action="{{ $action }}" method="POST">
-                        @csrf
-                        @method($method)
-                        <div class="space-y-8 sm:space-y-5">
-                            <x-form.header>
-                                {{ $title ?? 'form'}}
-                            </x-form.header>
+<div class="overflow-hidden card">
+    <form enctype="{{ $enctype }}" action="{{ $action }}" method="POST">
+        @csrf
+        @method($method)
+        <x-form.header>
+            {{ $title ?? 'form'}}
+        </x-form.header>
 
-
-                            <div class="py-3">
-                                {{ $body }}
-                            </div>
-
-
-                            <div class="pt-5">
-                                <div class="flex justify-end">
-                                    <x-button type="button" btnType="secondary" class="">
-                                        Cancel
-                                    </x-button>
-                                    <x-button type="submit" class="ml-3">
-                                        Save
-                                    </x-button>
-                                </div>
-                            </div>
-                        </div>
-
-                    </form>
-                </div>
-            </div>
+        <div class="p-5 sm:p-6">
+            {{ $body }}
         </div>
-    </div>
+
+        <div class="flex justify-end gap-3 px-5 py-4 border-t sm:px-6 bg-slate-50/70 border-slate-100 dark:bg-slate-800/40 dark:border-slate-800">
+            <x-button type="button" btnType="secondary" class="!w-auto" onclick="history.back()">
+                Cancel
+            </x-button>
+            <x-button type="submit" class="!w-auto">
+                Save
+            </x-button>
+        </div>
+    </form>
 </div>

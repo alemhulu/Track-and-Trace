@@ -1,7 +1,7 @@
 <div>
     <div class="mb-3 flex justify-end">
         <a href="{{ route('manual-tracking.books.add') }}"
-            class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium">
+            class="btn-primary">
             Add Title
         </a>
     </div>

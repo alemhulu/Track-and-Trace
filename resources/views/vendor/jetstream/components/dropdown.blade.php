@@ -1,4 +1,4 @@
-@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'py-1 bg-white dark:bg-gray-800', 'dropdownClasses' =>
+@props(['align' => 'right', 'width' => '48', 'contentClasses' => 'py-1 bg-white dark:bg-slate-800', 'dropdownClasses' =>
 ''])
 
 @php
@@ -21,7 +21,7 @@ break;
 
 switch ($width) {
 case '48':
-$width = 'w-48';
+$width = 'w-56';
 break;
 }
 @endphp
@@ -35,9 +35,9 @@ break;
         x-transition:enter-start="transform opacity-0 scale-95" x-transition:enter-end="transform opacity-100 scale-100"
         x-transition:leave="transition ease-in duration-75" x-transition:leave-start="transform opacity-100 scale-100"
         x-transition:leave-end="transform opacity-0 scale-95"
-        class="absolute z-50 mt-2 {{ $width }} rounded-md shadow-lg {{ $alignmentClasses }} {{ $dropdownClasses }}"
+        class="absolute z-50 mt-2 {{ $width }} rounded-xl shadow-xl {{ $alignmentClasses }} {{ $dropdownClasses }}"
         style="display: none;" @click="open = false">
-        <div class="rounded-md ring-1 ring-black ring-opacity-5 {{ $contentClasses }}">
+        <div class="rounded-xl ring-1 ring-slate-900/5 dark:ring-slate-700 {{ $contentClasses }}">
             {{ $content }}
         </div>
     </div>

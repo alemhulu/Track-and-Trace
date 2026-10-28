@@ -1,6 +1,6 @@
 <div class="space-y-4">
     @if ($rows->isEmpty())
-    <div class="p-5 text-sm bg-white rounded-lg shadow-sm text-amber-700 dark:bg-gray-800">
+    <div class="p-5 text-sm card text-amber-700 dark:text-amber-300">
         Record this year's enrolment or student register to see what the school needs.
     </div>
     @else
@@ -11,16 +11,16 @@
             'On hand at school' => number_format($totals['on_hand_student']),
             'Still short' => number_format($totals['shortfall_student']),
         ] as $label => $value)
-        <div class="p-4 bg-white rounded-lg shadow-sm dark:bg-gray-800">
+        <div class="p-4 card">
             <p class="text-xs text-gray-500 dark:text-gray-400">{{ $label }}</p>
             <p class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ $value }}</p>
         </div>
         @endforeach
     </div>
 
-    <div class="overflow-x-auto bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <table class="w-full text-sm text-left">
-            <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+    <div class="overflow-x-auto card">
+        <table class="table-ui">
+            <thead>
                 <tr>
                     <th class="px-4 py-2">Title</th>
                     <th class="px-4 py-2">Enrolled / Registered</th>
@@ -29,7 +29,7 @@
                     <th class="px-4 py-2">Coverage</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody>
                 @foreach ($rows as $row)
                 <tr>
                     <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100">{{ $row['book']->title }}</td>

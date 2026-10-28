@@ -149,7 +149,7 @@
                             @if (! empty($book->file_location))
                             <div class="pt-4">
                                 <a href="{{ $book->file_location }}" target="_blank"
-                                    class="inline-flex items-center px-4 py-2 rounded-md bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium">
+                                    class="btn-primary">
                                     Open Book File
                                 </a>
                             </div>

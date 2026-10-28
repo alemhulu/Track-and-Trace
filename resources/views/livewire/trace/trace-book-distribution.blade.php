@@ -25,9 +25,7 @@
 
                 <td class="px-5 py-2 whitespace-nowrap">
                     <div class="text-sm text-gray-700 dark:text-gray-100">
-                        <div class=" rounded-full bg-blue-500 w-10 h-10 flex items-center justify-center">
-                            <span class="text-sm text-blue-50 font-bold">{{ $record->steps_count }}</span>
-                        </div>
+                        <span class="badge-brand">{{ $record->steps_count }} steps</span>
                     </div>
                 </td>
 
@@ -45,13 +43,9 @@
 
                 <td class="px-5 py-2 whitespace-nowrap">
                     @if($record->is_active)
-                    <x-button btnType="success" class="py-1 relative pl-6 pr-2 font-bold">
-                        <i class="fi fi-rr-checkbox flex inset-0 top-1 left-1 absolute text-base"></i>Active
-                    </x-button>
+                    <span class="badge-success"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Active</span>
                     @else
-                    <x-button btnType="danger" class="py-1 relative pl-6 pr-2 font-bold">
-                        <i class="fi fi-rr-cross-circle flex inset-0 top-1 left-1 absolute text-base"></i>InActive
-                    </x-button>
+                    <span class="badge-danger"><span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Inactive</span>
                     @endif
                 </td>
 

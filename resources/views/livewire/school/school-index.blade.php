@@ -30,7 +30,7 @@
             <x-data-table.tr>
                 <td class="px-5 py-2 text-sm whitespace-nowrap">
                     <a href="{{ route('manual-tracking.schools.show', ['school' => $school->id, 'year' => $year]) }}"
-                        class="font-semibold text-blue-700 hover:underline dark:text-blue-300">{{ $school->name }}</a>
+                        class="font-semibold link">{{ $school->name }}</a>
                     <div class="text-xs text-gray-500">{{ $school->woreda->name ?? '—' }}, {{ $school->zone->name ?? '—' }}</div>
                 </td>
                 @if ($total['required_student'] === 0)

@@ -1,6 +1,3 @@
-<td {{ $attributes->merge(['class' => 'px-6 py-4 whitespace-nowrap']) }}>
+<td {{ $attributes->merge(['class' => 'px-5 py-3.5 whitespace-nowrap text-sm text-slate-700 dark:text-slate-300']) }}>
     {{ $slot }}
-    {{-- <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-        Active
-    </span> --}}
 </td>

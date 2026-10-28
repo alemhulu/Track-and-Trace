@@ -1,6 +1,6 @@
 <div class="space-y-5">
-    <div class="p-5 bg-white rounded-lg shadow-sm dark:bg-gray-800">
-        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100">Sort packages</h3>
+    <div class="p-5 card">
+        <h3 class="section-title">Sort packages</h3>
         <p class="mb-4 text-sm text-gray-500 dark:text-gray-400">
             A package QR only names its zone. Choose the title you are counting (or scan one of its books), then scan each package.
             Packages that do not belong here are flagged and sent to the misroutes list.
@@ -41,10 +41,10 @@
     @endif
 
     @if ($place)
-    <div class="overflow-x-auto bg-white rounded-lg shadow-sm dark:bg-gray-800">
+    <div class="overflow-x-auto card">
         <div class="px-4 pt-4 text-sm font-semibold text-gray-800 dark:text-gray-100">Sorted at {{ $place->name }}</div>
         <table class="w-full mt-2 text-sm text-left">
-            <thead class="text-xs text-gray-600 bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+            <thead>
                 <tr>
                     <th class="px-4 py-2">Zone</th>
                     <th class="px-4 py-2">Title</th>
@@ -53,7 +53,7 @@
                     <th class="px-4 py-2"><span class="sr-only">Ship</span></th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody>
                 @forelse ($tally as $row)
                 <tr>
                     <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100">{{ $row->zone->name ?? 'Unresolved zone' }}</td>
@@ -63,7 +63,7 @@
                     <td class="px-4 py-2 text-right">
                         @if ($row->zone && $row->book && ! $row->alerts)
                         <a href="{{ route('manual-tracking.distribution.add', ['from' => $place->id, 'zone' => $row->zone_id, 'book' => $row->manual_book_id, 'packages' => $row->packages]) }}"
-                            class="text-sm font-medium text-blue-700 hover:underline dark:text-blue-300">Ship to zone</a>
+                            class="text-sm link">Ship to zone</a>
                         @endif
                     </td>
                 </tr>

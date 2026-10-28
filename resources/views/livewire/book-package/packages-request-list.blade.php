@@ -26,7 +26,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-button btnType="secondary" class="">Unchecked</x-button>
+                    <span class="badge-neutral"><span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>Unchecked</span>
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
