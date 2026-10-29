@@ -36,42 +36,44 @@
         @endif
     </div>
 
-    <x-form.table title="Shipments">
+    {{-- Searching by reference or waybill is in the filters above --}}
+    <x-form.table title="Shipments" :search="false">
         <x-slot name="tableHeaders">
-            <x-data-table.th scope="col">{{ __('Reference') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Dispatched') }}</x-data-table.th>
+            <x-data-table.th scope="col">{{ __('Reference · Dispatched') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('From') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('To') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Titles') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Sent (SB / TG)') }}</x-data-table.th>
+            <x-data-table.th scope="col" class="th-wrap">{{ __('Sent (SB / TG)') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Status') }}</x-data-table.th>
+            <x-data-table.th scope="col"><span class="sr-only">{{ __('View') }}</span></x-data-table.th>
         </x-slot>
 
         <x-slot name="tableRows">
             @forelse ($distributions as $distribution)
             <x-data-table.tr>
-                <td class="px-5 py-2 text-sm font-semibold whitespace-nowrap">
+                <td class="px-5 py-2 text-sm whitespace-nowrap">
                     <a href="{{ route('manual-tracking.shipments.show', $distribution->id) }}"
-                        class="link">{{ $distribution->reference }}</a>
+                        class="font-semibold link">{{ $distribution->reference }}</a>
+                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ optional($distribution->distributed_at)->format('Y-m-d') ?: '-' }}</div>
                 </td>
-                <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">
-                    {{ optional($distribution->distributed_at)->format('Y-m-d') ?: '-' }}
-                </td>
-                <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">{{ $distribution->organization->name ?? '-' }}</td>
-                <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">{{ $distribution->destinationOrganization->name ?? '-' }}</td>
+                <td class="px-5 py-2 text-sm text-gray-700 dark:text-gray-100"><div class="cell-wrap">{{ $distribution->organization->name ?? '-' }}</div></td>
+                <td class="px-5 py-2 text-sm text-gray-700 dark:text-gray-100"><div class="cell-wrap">{{ $distribution->destinationOrganization->name ?? '-' }}</div></td>
                 <td class="px-5 py-2 text-sm text-gray-700 dark:text-gray-100">
-                    {{ $distribution->lines->pluck('book.title')->filter()->join(', ') ?: '-' }}
+                    <x-ui.clamp title="Titles in {{ $distribution->reference }}">{{ $distribution->lines->pluck('book.title')->filter()->join(', ') ?: '-' }}</x-ui.clamp>
                 </td>
                 <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">
                     {{ number_format((int) $distribution->lines_sum_quantity) }} / {{ number_format((int) $distribution->lines_sum_teacher_guides) }}
                 </td>
-                <td class="px-5 py-2 text-sm whitespace-nowrap">
+                <td class="px-5 py-2 text-sm">
                     <span class="{{ $statusClasses[$distribution->status] ?? 'badge-neutral' }}">
                         {{ \App\Models\ManualTracking\ManualDistribution::STATUSES[$distribution->status] ?? $distribution->status }}
                     </span>
                     @if ($distribution->open_discrepancies_count)
-                    <span class="ml-1 text-xs text-red-600">{{ $distribution->open_discrepancies_count }} open</span>
+                    <span class="block mt-1 text-xs text-red-600 dark:text-red-400">{{ $distribution->open_discrepancies_count }} open {{ \Illuminate\Support\Str::plural('discrepancy', $distribution->open_discrepancies_count) }}</span>
                     @endif
+                </td>
+                <td class="px-5 py-2">
+                    <x-action.view-link :href="route('manual-tracking.shipments.show', $distribution->id)" label="View shipment" />
                 </td>
             </x-data-table.tr>
             @empty

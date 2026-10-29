@@ -80,16 +80,16 @@
                         <tr>
                             <th class="px-3 py-2">Title</th>
                             @if ($entryMode === 'totals')
-                            <th class="px-3 py-2">Total student books</th>
-                            <th class="px-3 py-2">Total teacher guides</th>
-                            <th class="px-3 py-2">Usual packing</th>
+                            <th class="px-3 py-2 th-wrap">Total student books</th>
+                            <th class="px-3 py-2 th-wrap">Total teacher guides</th>
+                            <th class="px-3 py-2 th-wrap">Usual packing</th>
                             @else
-                            <th class="px-3 py-2">Full packages</th>
-                            <th class="px-3 py-2">Partial package: student books</th>
-                            <th class="px-3 py-2">Partial package: teacher guides</th>
+                            <th class="px-3 py-2 th-wrap">Full packages</th>
+                            <th class="px-3 py-2 th-wrap">Partial package: student books</th>
+                            <th class="px-3 py-2 th-wrap">Partial package: teacher guides</th>
                             @endif
                             <th class="px-3 py-2">Copies</th>
-                            <th class="px-3 py-2">Available at source</th>
+                            <th class="px-3 py-2 th-wrap">Available at source</th>
                             <th class="px-3 py-2"><span class="sr-only">Remove</span></th>
                         </tr>
                     </thead>
@@ -102,7 +102,7 @@
                             $short = $copies['student'] > $stock['student'] || $copies['teacher'] > $stock['teacher'];
                         @endphp
                         <tr wire:key="line-{{ $index }}" class="{{ $activeLine === $index ? 'bg-blue-50 dark:bg-blue-900/20' : '' }}">
-                            <td class="px-3 py-2 min-w-[16rem]">
+                            <td class="px-3 py-2 min-w-[14rem] max-w-[20rem]">
                                 @if (count($lines) > 1)
                                 <button type="button" wire:click="setActiveLine({{ $index }})"
                                     class="mb-1 text-xs {{ $activeLine === $index ? 'font-semibold text-blue-700 dark:text-blue-300' : 'text-gray-500 hover:underline' }}">
@@ -115,6 +115,21 @@
                                     <option value="{{ $option->id }}">{{ $option->title }}</option>
                                     @endforeach
                                 </x-form.select>
+                                @if ($target = $allocation[$line['manual_book_id']] ?? null)
+                                @php
+                                    $leftStudent = max(0, $target['student'] - $target['sent_student']);
+                                    $leftTeacher = max(0, $target['teacher'] - $target['sent_teacher']);
+                                    $over = $copies['student'] > $leftStudent || $copies['teacher'] > $leftTeacher;
+                                @endphp
+                                <p class="mt-1 text-xs {{ $over ? 'text-amber-700 dark:text-amber-300' : 'text-gray-500 dark:text-gray-400' }}">
+                                    {{ $target['level'] }} allocation {{ number_format($target['student']) }} SB / {{ number_format($target['teacher']) }} TG ·
+                                    sent {{ number_format($target['sent_student']) }} / {{ number_format($target['sent_teacher']) }} ·
+                                    <strong>{{ number_format($leftStudent) }} / {{ number_format($leftTeacher) }} left</strong>
+                                    @if ($over)
+                                    <span class="block font-semibold">This line goes over the {{ strtolower($target['level']) }}'s allocation.</span>
+                                    @endif
+                                </p>
+                                @endif
                             </td>
 @if ($entryMode === 'totals')
                             <td class="px-3 py-2">

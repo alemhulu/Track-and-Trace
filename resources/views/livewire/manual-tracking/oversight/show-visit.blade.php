@@ -4,7 +4,8 @@
     @endif
 
     <div class="p-5 card">
-        <p class="text-xs text-gray-500 uppercase">Verification visit · {{ $visit->visited_at->format('Y-m-d H:i') }}</p>
+        <a href="{{ route('manual-tracking.visits.index') }}" class="text-xs link">← All visits</a>
+        <p class="mt-1 text-xs text-gray-500 uppercase dark:text-gray-400">Verification visit · {{ $visit->visited_at->format('Y-m-d H:i') }}</p>
         <h3 class="section-title">{{ $visit->school->name ?? '—' }}</h3>
         <p class="text-sm text-gray-500">By {{ $visit->visitor->name ?? '—' }}</p>
         <div class="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
@@ -43,8 +44,8 @@
                 @php $difference = $item->found - $item->expected; @endphp
                 <tr>
                     <td class="px-4 py-2 text-gray-900 dark:text-gray-100">{{ $item->book->title ?? '—' }}</td>
-                    <td class="px-4 py-2">{{ number_format($item->expected) }}</td>
-                    <td class="px-4 py-2">{{ number_format($item->found) }}</td>
+                    <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{ number_format($item->expected) }}</td>
+                    <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{ number_format($item->found) }}</td>
                     <td class="px-4 py-2 font-semibold {{ $difference ? 'text-red-600' : 'text-green-700' }}">{{ $difference > 0 ? '+' : '' }}{{ $difference }}</td>
                 </tr>
                 @endforeach

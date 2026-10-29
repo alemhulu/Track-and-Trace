@@ -26,6 +26,17 @@ class RegionSeeder extends Seeder
             ['name' => 'Addis Ababa', 'code' => 'AA', 'is_city' => true],
             ['name' => 'Oromia', 'code' => 'OR', 'is_city' => false],
             ['name' => 'Amhara', 'code' => 'AM', 'is_city' => false],
+            ['name' => 'Tigray', 'code' => 'TG', 'is_city' => false],
+            ['name' => 'Afar', 'code' => 'AF', 'is_city' => false],
+            ['name' => 'Somali', 'code' => 'SO', 'is_city' => false],
+            ['name' => 'Benishangul Gumuz', 'code' => 'BG', 'is_city' => false],
+            ['name' => 'Gambella', 'code' => 'GA', 'is_city' => false],
+            ['name' => 'Harari', 'code' => 'HR', 'is_city' => false],
+            ['name' => 'Sidama', 'code' => 'SI', 'is_city' => false],
+            ['name' => 'Central Ethiopia', 'code' => 'CE', 'is_city' => false],
+            ['name' => 'South Ethiopia', 'code' => 'SE', 'is_city' => false],
+            ['name' => 'South West Ethiopia', 'code' => 'SW', 'is_city' => false],
+            ['name' => 'Dire Dawa', 'code' => 'DD', 'is_city' => true],
         ];
 
         foreach ($regions as $region) {

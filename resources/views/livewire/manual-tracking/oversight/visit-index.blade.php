@@ -46,17 +46,20 @@
                     <th class="px-4 py-2">Visited by</th>
                     <th class="px-4 py-2">Shelf counts matching</th>
                     <th class="px-4 py-2">Books shown by students</th>
+                    <th class="px-4 py-2"><span class="sr-only">View</span></th>
                 </tr>
             </thead>
             <tbody>
                 @forelse ($visits as $visit)
                 <tr>
                     <td class="px-4 py-2 whitespace-nowrap">
-                        <a href="{{ route('manual-tracking.visits.show', $visit->id) }}" class="font-medium link">{{ $visit->visited_at->format('Y-m-d') }}</a>
+                        {{ $visit->visited_at->format('Y-m-d') }}
                     </td>
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
-                        {{ $visit->school->name ?? '—' }}
-                        <div class="text-xs text-gray-500">{{ $visit->school->woreda->name ?? '' }}{{ isset($visit->school->zone) ? ', ' . $visit->school->zone->name : '' }}</div>
+                        <div class="cell-wrap">
+                        <a href="{{ route('manual-tracking.visits.show', $visit->id) }}" class="font-medium link">{{ $visit->school->name ?? '—' }}</a>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $visit->school->woreda->name ?? '' }}{{ isset($visit->school->zone) ? ', ' . $visit->school->zone->name : '' }}</div>
+                        </div>
                     </td>
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-200">{{ $visit->visitor->name ?? '—' }}</td>
                     <td class="px-4 py-2">
@@ -75,9 +78,12 @@
                         <span class="text-gray-400">No students checked</span>
                         @endif
                     </td>
+                    <td class="px-4 py-2">
+                        <x-action.view-link :href="route('manual-tracking.visits.show', $visit->id)" label="View visit" />
+                    </td>
                 </tr>
                 @empty
-                <tr><td colspan="5" class="px-4 py-6 text-center text-gray-500">No visits recorded this year.</td></tr>
+                <tr><td colspan="6" class="px-4 py-6 text-center text-gray-500">No visits recorded this year.</td></tr>
                 @endforelse
             </tbody>
         </table>

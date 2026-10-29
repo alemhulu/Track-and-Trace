@@ -8,7 +8,12 @@
     }
 
     body {
-        @apply bg-slate-50 text-slate-700 dark:bg-slate-950 dark:text-slate-300;
+        @apply bg-slate-50 text-slate-700;
+    }
+
+    /* The dark class sits on <body> itself, so dark: variants (".dark body") never match it here */
+    body.dark {
+        @apply bg-slate-950 text-slate-300;
     }
 
     [x-cloak] {
@@ -548,5 +553,25 @@
     .table-ui tfoot td,
     .table-ui tfoot th {
         @apply px-4 py-3;
+    }
+
+    /* Long text in a table cell: wraps instead of widening the table */
+    .cell-wrap {
+        @apply break-words min-w-[9rem] max-w-[18rem];
+        white-space: normal !important;
+    }
+
+    /* Headings that may wrap onto two lines, so long labels do not widen the table */
+    .th-wrap {
+        @apply min-w-[6rem] leading-snug;
+        white-space: normal !important;
+    }
+
+    /* Cuts text off after three lines; see components/ui/clamp */
+    .clamp-3 {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 }

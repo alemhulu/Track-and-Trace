@@ -22,6 +22,8 @@ class ManualStockIndex extends Component
     public $area = ['region_id' => '', 'zone_id' => '', 'woreda_id' => ''];
     public $organizationFilter = '';
     public $bookFilter = '';
+    public $search = '';
+    public $recordes = 10;
 
     // Opening stock form
     public $showOpeningForm = false;
@@ -62,6 +64,16 @@ class ManualStockIndex extends Component
         $this->resetPage();
     }
 
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingRecordes()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         /** @var User $actor */
@@ -77,12 +89,15 @@ class ManualStockIndex extends Component
             ->whereIn('organization_id', $this->location()->organizations($this->area)->select('id'))
             ->when($this->organizationFilter, fn ($query) => $query->where('organization_id', $this->organizationFilter))
             ->when($this->bookFilter, fn ($query) => $query->where('manual_book_id', $this->bookFilter))
+            ->when(trim($this->search) !== '', fn ($query) => $query->where(fn ($match) => $match
+                ->whereHas('organization', fn ($organization) => $organization->where('name', 'like', '%' . trim($this->search) . '%'))
+                ->orWhereHas('book', fn ($book) => $book->where('title', 'like', '%' . trim($this->search) . '%'))))
             ->groupBy('organization_id', 'manual_book_id')
             ->havingRaw('SUM(on_hand) + SUM(in_transit_out) > 0')
             ->with(['organization:id,name', 'book:id,title,students_per_package'])
             ->orderBy('organization_id')
             ->orderBy('manual_book_id')
-            ->paginate(15);
+            ->paginate($this->recordes);
 
         return view('livewire.manual-tracking.stock.manual-stock-index', [
             'balances' => $balances,

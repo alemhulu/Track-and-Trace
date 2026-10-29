@@ -9,6 +9,7 @@
             $schoolUser = auth()->user()?->isSchoolUser();
         @endphp
         <x-ui.workflow label="Distribution workflow" :steps="array_values(array_filter([
+            ['title' => 'Allocation', 'hint' => 'Ministry targets', 'link' => 'manual-tracking.allocations.index', 'icon' => 'fi-rr-target'],
             ['title' => 'Titles', 'hint' => 'Register books', 'link' => 'manual-tracking.books.list', 'match' => 'manual-tracking.books.*', 'icon' => 'fi-rr-book'],
             ['title' => 'Stock', 'hint' => 'Receive from printers', 'link' => 'manual-tracking.stock.index', 'icon' => 'fi-rr-box'],
             ['title' => 'Shipments', 'hint' => $schoolUser ? 'Receive deliveries' : 'Dispatch & receive', 'link' => 'manual-tracking.distribution.list', 'match' => ['manual-tracking.distribution.*', 'manual-tracking.shipments.*'], 'icon' => 'fi-rr-truck-side'],

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\ManualTracking\Shipment;
 
 use App\Http\Livewire\Concerns\AuthorizesPermissions;
+use App\Models\ManualTracking\ManualAllocation;
 use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualDistribution;
 use App\Models\ManualTracking\ManualScan;
@@ -58,6 +59,11 @@ class CreateShipment extends Component
         $actor = Auth::user();
         $this->source = $this->sourceScope()->apply([]);
         $this->from_organization_id = $this->validSource($actor->organization_id);
+
+        // A woreda or zone office usually has a single place it can send from: choose it for them
+        if ($this->from_organization_id === '' && ($only = $this->sources()->limit(2)->pluck('id'))->count() === 1) {
+            $this->from_organization_id = (string) $only->first();
+        }
 
         $this->prefillFromSorting($actor);
         $this->destination = $this->destinationScope()->apply($this->destination);
@@ -177,6 +183,7 @@ class CreateShipment extends Component
             'openDestinations' => $openDestinations,
             'books' => $books,
             'available' => $this->availableAtSource(),
+            'allocation' => $this->allocationAtDestination(),
             'lineCopies' => collect($this->lines)->map(function ($line) use ($books) {
                 $book = $books[$line['manual_book_id']] ?? null;
 
@@ -315,6 +322,54 @@ class CreateShipment extends Component
             ->map(fn ($rows) => [
                 'student' => (int) $rows->firstWhere('edition', ManualBook::EDITION_STUDENT)?->on_hand,
                 'teacher' => (int) $rows->firstWhere('edition', ManualBook::EDITION_TEACHER)?->on_hand,
+            ])
+            ->all();
+    }
+
+    /**
+     * For shipments into a zone or region from outside it: each title's allocation there for
+     * the latest year and how much has already been sent in, so over-sending shows before
+     * dispatch. A zone's own share is used when the zone has one, otherwise the region's.
+     *
+     * @return array<int, array{level: string, student: int, teacher: int, sent_student: int, sent_teacher: int}>
+     */
+    private function allocationAtDestination(): array
+    {
+        $bookIds = collect($this->lines)->pluck('manual_book_id')->filter()->map(fn ($id) => (int) $id)->unique()->values()->all();
+        $to = $this->to_organization_id ? Organization::query()->find($this->to_organization_id, ['id', 'region_id', 'zone_id']) : null;
+        $from = $this->from_organization_id ? Organization::query()->find($this->from_organization_id, ['id', 'region_id', 'zone_id']) : null;
+        $regionId = (int) ($to?->region_id ?: $this->destination['region_id']);
+        $zoneId = (int) ($to?->zone_id ?: $this->destination['zone_id']);
+
+        if (! $bookIds || ! ($year = ManualAllocation::latestYear())) {
+            return [];
+        }
+
+        $rows = fn () => ManualAllocation::query()->where('academic_year', $year)->whereIn('manual_book_id', $bookIds);
+
+        if ($zoneId && (! $from || (int) $from->zone_id !== $zoneId) && ($zoneRows = $rows()->where('zone_id', $zoneId)->get(['manual_book_id', 'edition', 'quantity']))->isNotEmpty()) {
+            return $this->allocationHints('Zone', $zoneRows, ManualAllocation::inboundZoneProgress([$zoneId], $bookIds), $zoneId);
+        }
+
+        if (! $regionId || ($from && (int) $from->region_id === $regionId)) {
+            return [];
+        }
+
+        $regionRows = $rows()->where('region_id', $regionId)->whereNull('zone_id')->get(['manual_book_id', 'edition', 'quantity']);
+
+        return $this->allocationHints('Region', $regionRows, ManualAllocation::inboundProgress([$regionId], $bookIds), $regionId);
+    }
+
+    private function allocationHints(string $level, $rows, $sent, int $placeId): array
+    {
+        return $rows
+            ->groupBy('manual_book_id')
+            ->map(fn ($editions, $bookId) => [
+                'level' => $level,
+                'student' => (int) $editions->where('edition', ManualBook::EDITION_STUDENT)->sum('quantity'),
+                'teacher' => (int) $editions->where('edition', ManualBook::EDITION_TEACHER)->sum('quantity'),
+                'sent_student' => (int) ($sent["{$placeId}:{$bookId}"]->sent_student ?? 0),
+                'sent_teacher' => (int) ($sent["{$placeId}:{$bookId}"]->sent_teacher ?? 0),
             ])
             ->all();
     }

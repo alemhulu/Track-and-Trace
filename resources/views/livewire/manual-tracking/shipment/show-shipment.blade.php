@@ -14,7 +14,8 @@
     <div class="p-5 card">
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-                <p class="text-xs text-gray-500 uppercase dark:text-gray-400">Shipment</p>
+                <a href="{{ route('manual-tracking.distribution.list') }}" class="text-xs link">← All shipments</a>
+                <p class="mt-1 text-xs text-gray-500 uppercase dark:text-gray-400">Shipment</p>
                 <h3 class="section-title text-xl">{{ $shipment->reference }}</h3>
             </div>
             <div class="flex items-center gap-3">
@@ -29,7 +30,7 @@
         <dl class="grid grid-cols-1 gap-4 mt-4 text-sm md:grid-cols-4">
             <div>
                 <dt class="text-gray-500 dark:text-gray-400">From</dt>
-                <dd class="font-medium text-gray-900 dark:text-gray-100">{{ $shipment->organization->name ?? '—' }}</dd>
+                <dd class="font-medium text-gray-900 break-words dark:text-gray-100">{{ $shipment->organization->name ?? '—' }}</dd>
             </div>
             <div>
                 <dt class="text-gray-500 dark:text-gray-400">To</dt>
@@ -69,7 +70,7 @@
             </div>
             <div>
                 <dt class="text-gray-500 dark:text-gray-400">Remarks</dt>
-                <dd class="text-gray-900 dark:text-gray-100">{{ $shipment->remarks ?: '—' }}</dd>
+                <dd class="text-gray-900 break-words dark:text-gray-100">{{ $shipment->remarks ?: '—' }}</dd>
             </div>
         </dl>
         @if ($shipment->receipt_notes)

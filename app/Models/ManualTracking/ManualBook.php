@@ -26,9 +26,12 @@ class ManualBook extends ManualBaseModel
 
     protected $fillable = [
         'code',
+        'print_code',
+        'source_key',
         'title',
         'grade_name',
         'subject_name',
+        'language',
         'region_id',
         'grade_id',
         'subject_id',
@@ -115,6 +118,11 @@ class ManualBook extends ManualBaseModel
     public function distributionLines(): HasMany
     {
         return $this->hasMany(\App\Models\ManualTracking\ManualDistributionLine::class, 'manual_book_id');
+    }
+
+    public function allocations(): HasMany
+    {
+        return $this->hasMany(\App\Models\ManualTracking\ManualAllocation::class, 'manual_book_id');
     }
 
     public function stockLedgers(): HasMany

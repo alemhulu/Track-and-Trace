@@ -23,16 +23,16 @@
             <thead>
                 <tr>
                     <th class="px-4 py-2">Title</th>
-                    <th class="px-4 py-2">Enrolled / Registered</th>
-                    <th class="px-4 py-2">Student books: required · on hand · issued · short</th>
-                    <th class="px-4 py-2">Teacher guides: required · on hand · issued · short</th>
+                    <th class="px-4 py-2 th-wrap">Enrolled / Registered</th>
+                    <th class="px-4 py-2 th-wrap">Student books: required · on hand · issued · short</th>
+                    <th class="px-4 py-2 th-wrap">Teacher guides: required · on hand · issued · short</th>
                     <th class="px-4 py-2">Coverage</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($rows as $row)
                 <tr>
-                    <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100">{{ $row['book']->title }}</td>
+                    <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100"><div class="cell-wrap">{{ $row['book']->title }}</div></td>
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-300">
                         {{ number_format($row['enrolled']) }} / {{ number_format($row['registered']) }}
                         @if ($row['enrolled'] && $row['registered'] && $row['enrolled'] !== $row['registered'])

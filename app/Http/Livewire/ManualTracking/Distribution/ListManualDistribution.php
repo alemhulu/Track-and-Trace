@@ -55,6 +55,11 @@ class ListManualDistribution extends Component
         $this->resetPage();
     }
 
+    public function updatingRecordes()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         $actor = Auth::user();
@@ -65,10 +70,7 @@ class ListManualDistribution extends Component
         $distributions = ManualDistribution::query()
             ->withSum('lines', 'quantity')
             ->withSum('lines', 'teacher_guides')
-            ->withCount(['lines as open_discrepancies_count' => fn ($query) => $query->whereHas(
-                'discrepancies',
-                fn ($discrepancy) => $discrepancy->where('status', 'open')
-            )])
+            ->withCount(['discrepancies as open_discrepancies_count' => fn ($query) => $query->where('manual_discrepancies.status', 'open')])
             ->with(['lines.book:id,title', 'organization:id,name', 'destinationOrganization:id,name'])
             ->accessibleBy($actor)
             ->when($this->filtersByPlace(), function ($query) {

@@ -25,7 +25,7 @@ class SubjectSeeder extends Seeder
             ['name' => 'Geography'],
             ['name' => 'Civics'],
             ['name' => 'PHE'],
-            ['name' => 'Environmental Sience'],
+            ['name' => 'Environmental Science'],
             ['name' => 'Technical Drawing'],
             ['name' => 'Social Studies'],
             ['name' => 'Sign Language'],

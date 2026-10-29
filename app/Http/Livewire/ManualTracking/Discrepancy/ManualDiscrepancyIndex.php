@@ -16,12 +16,24 @@ class ManualDiscrepancyIndex extends Component
     use AuthorizesPermissions;
 
     public $statusFilter = ManualDiscrepancy::STATUS_OPEN;
+    public $search = '';
+    public $recordes = 10;
 
     // Resolve form state, keyed by discrepancy id
     public $resolutions = [];
     public $notes = [];
 
     public function updatingStatusFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingRecordes()
     {
         $this->resetPage();
     }
@@ -39,8 +51,11 @@ class ManualDiscrepancyIndex extends Component
                 'resolvedBy:id,name',
             ])
             ->when($this->statusFilter, fn ($query) => $query->where('status', $this->statusFilter))
+            ->when(trim($this->search) !== '', fn ($query) => $query->whereHas('line', fn ($line) => $line
+                ->whereHas('distribution', fn ($shipment) => $shipment->where('reference', 'like', '%' . trim($this->search) . '%'))
+                ->orWhereHas('book', fn ($book) => $book->where('title', 'like', '%' . trim($this->search) . '%'))))
             ->orderByDesc('id')
-            ->paginate(15);
+            ->paginate($this->recordes);
 
         return view('livewire.manual-tracking.discrepancy.manual-discrepancy-index', [
             'discrepancies' => $discrepancies,

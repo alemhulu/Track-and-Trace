@@ -11,6 +11,7 @@ use App\Models\Zone;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
  * A shipment of manual-tracked books from one organization to another.
@@ -81,6 +82,11 @@ class ManualDistribution extends ManualBaseModel
     public function lines(): HasMany
     {
         return $this->hasMany(\App\Models\ManualTracking\ManualDistributionLine::class, 'manual_distribution_id');
+    }
+
+    public function discrepancies(): HasManyThrough
+    {
+        return $this->hasManyThrough(ManualDiscrepancy::class, ManualDistributionLine::class, 'manual_distribution_id', 'manual_distribution_line_id');
     }
 
     public function organization(): BelongsTo

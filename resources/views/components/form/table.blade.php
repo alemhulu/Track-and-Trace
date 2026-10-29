@@ -1,11 +1,10 @@
-@props(['title' => '', 'search' => true ])
+@props(['title' => '', 'search' => true, 'entries' => true])
 @php
-if($search==true ) {
-$search = "search";
-}
-else {
-$search = "";
-}
+// The header search and "Show N entries" bind to $search and $recordes; leave them out when the
+// component has no such property, otherwise typing or changing the count throws a Livewire error.
+$component = isset($this) && $this instanceof \Livewire\Component ? $this : null;
+$search = $search && (! $component || property_exists($component, 'search')) ? 'search' : '';
+$entries = $entries && (! $component || property_exists($component, 'recordes'));
 @endphp
 <div class="relative card lg:col-span-8 col-span-full">
     <div wire:loading>
@@ -17,7 +16,7 @@ $search = "";
     </x-form.header>
 
     <div class="overflow-x-auto">
-        <x-data-table.table class="myTable2">
+        <x-data-table.table class="myTable2" :entries="$entries">
             <thead class="bg-slate-50 border-y border-slate-100 dark:bg-slate-800/60 dark:border-slate-800">
                 <tr>
                     {{ $tableHeaders ?? $slot }}

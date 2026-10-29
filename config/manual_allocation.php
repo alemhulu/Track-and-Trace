@@ -1,0 +1,114 @@
+<?php
+
+/*
+ * Spelling fixes for the Ministry's allocation workbooks (a sheet per region, with zone
+ * columns or a sheet per zone; one row per student text or teacher guide). Keys are matched case-insensitively after
+ * trimming and collapsing spaces; anything not listed is kept as written. Add a line here
+ * when a new spelling shows up instead of editing the import code.
+ */
+return [
+
+    'regions' => [
+        'benshangul gumuz' => 'Benishangul Gumuz',
+        'benishangul' => 'Benishangul Gumuz',
+        'beneshangul' => 'Benishangul Gumuz',
+        'centralethiopia' => 'Central Ethiopia',
+        'southethiopia' => 'South Ethiopia',
+        'diredawa' => 'Dire Dawa',
+        'south west' => 'South West Ethiopia',
+        'southwest' => 'South West Ethiopia',
+        'swepr' => 'South West Ethiopia',
+        'southwesteth' => 'South West Ethiopia',
+        'swe' => 'South West Ethiopia',
+    ],
+
+    // Zone sheets and zone columns are named after their zone; a zone sheet's A1 caption is
+    // tried when its name is not a zone. Local names of zones already set up map onto them.
+    'zones' => [
+        'kafa' => 'Kaffa',
+        'semen showa' => 'North Shewa Zone',
+        'mirab gojjam' => 'West Gojjam Zone',
+        'shawaa bahaa' => 'East Shewa Zone',
+        'godina jimma' => 'Jimma Zone',
+        'arsii lixaa' => 'West Arsi Zone',
+    ],
+
+    // Headers right of Final Quantity that are not zones
+    'ignored_columns' => ['remark', 'remarks', 'cover color', 'cover colour', 'note', 'notes'],
+
+    'languages' => [
+        'englishi' => 'English',
+        'majange' => 'Majang',
+        'wolaitatto' => 'Wolaytatto',
+        'afar afi' => 'Afar Af',
+        'afu oromo' => 'Afaan Oromo',
+        'aff-oromo' => 'Afaan Oromo',
+        'afan oromo' => 'Afaan Oromo',
+        'af-somali' => 'Af Soomaali',
+        'in amharic' => 'Amharic',
+        'hp amharic' => 'Amharic',
+        'sa- gumuza' => 'Sa-Gumuza',
+        'tembarisssa' => 'Tembarissa',
+        'kaffinon' => 'Kafinoono',
+        'kaffnon' => 'Kafinoono',
+        'kafinono' => 'Kafinoono',
+        "me'en" => "Me'en",
+    ],
+
+    // Subject words some sheets append to the language ("KaffNon Moral", "Me'en Pre prim")
+    'language_suffix_pattern' => '/\s+(env|moral|mt|maths?l?|pre\s*prim)$/i',
+
+    'subjects' => [
+        'mother toung' => 'Mother Tongue',
+        'mother tounge' => 'Mother Tongue',
+        'health physical education' => 'Health and Physical Education',
+        'hp' => 'Health and Physical Education',
+        'hpe' => 'Health and Physical Education',
+        'art' => 'Performance and Visual Art',
+        'ahmaric' => 'Amharic',
+        'amahric 2nd language' => 'Amharic',
+        'amharic as second language' => 'Amharic',
+        'afan oromo' => 'Afaan Oromo',
+        'preprimary st' => 'Integrated Pre-Primary',
+        'preprimary tg' => 'Integrated Pre-Primary',
+        'environmental sience' => 'Environmental Science',
+        'sidaamu afoo' => 'Mother Tongue',
+        'amharic as 1st languge' => 'Mother Tongue',
+        'amharic as 1st language' => 'Mother Tongue',
+        'amharic as 2nd languge' => 'Mother Tongue',
+        'amharic as 2nd language' => 'Mother Tongue',
+        'pva' => 'Performance and Visual Art',
+    ],
+
+    // Title patterns that name the subject when a row's subject cell is empty, checked in order
+    'subject_title_patterns' => [
+        '/\b(fil|first language|mother tongue)\b/i' => 'Mother Tongue',
+        '/\b(2nd|second) langu/i' => 'Mother Tongue',
+        '/pre-?\s*primary/i' => 'Integrated Pre-Primary',
+        '/\benv[ie]?r[oa]?n?mental\b/i' => 'Environmental Science',
+        '/\bpva|performance and visual/i' => 'Performance and Visual Art',
+        '/\bhpe\b|physical education/i' => 'Health and Physical Education',
+        '/\bmoral\b/i' => 'Moral Education',
+        '/\bmath/i' => 'Mathematics',
+        '/\benglish\b/i' => 'English',
+    ],
+
+    // Subject cells that only say which language slot the book fills: the row's language is the subject
+    'language_subjects' => ['2nd language'],
+
+    'grades' => [
+        'l1' => 'KG L1',
+        'l2' => 'KG L2',
+        'l3' => 'KG L3',
+        'level 1' => 'KG L1',
+        'level 2' => 'KG L2',
+        'level 3' => 'KG L3',
+    ],
+
+    // Title words that settle a TBD type; checked teacher first ("Teacher guide for student book")
+    'teacher_keywords' => ['teacher', 'guide', 't.guid', 'tg'],
+    'student_keywords' => ['student', 'sts', 'text', 'pupil', 'st'],
+
+    // Title words that mark a second-language edition of the same subject and grade
+    'second_language_pattern' => '/\b(2nd|second)\b/i',
+];

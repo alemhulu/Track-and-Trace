@@ -6,6 +6,7 @@
                 balance overview.</p>
         </div>
         <div class="flex flex-wrap gap-2">
+            <x-jet-button wire:click="exportAllocationCsv" type="button">Export Allocation CSV</x-jet-button>
             <x-jet-button wire:click="exportLocationSummaryCsv" type="button">Export Location CSV</x-jet-button>
             <x-jet-button wire:click="exportBookBalanceCsv" type="button">Export Book CSV</x-jet-button>
             <x-jet-button wire:click="exportUserActivityCsv" type="button">Export Activity CSV</x-jet-button>
@@ -26,25 +27,25 @@
 
     <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-4">
         <div class="p-4 card">
-            <p class="text-sm text-slate-500">Books</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Books</p>
             <div class="flex items-end justify-between mt-2">
-                <h3 class="text-3xl font-bold text-slate-900">{{ number_format($summary['total_books']) }}</h3>
+                <h3 class="text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($summary['total_books']) }}</h3>
                 <span class="px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full">Catalog</span>
             </div>
         </div>
 
         <div class="p-4 card">
-            <p class="text-sm text-slate-500">Packages Dispatched</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Packages Dispatched</p>
             <div class="flex items-end justify-between mt-2">
-                <h3 class="text-3xl font-bold text-slate-900">{{ number_format($summary['total_packages']) }}</h3>
+                <h3 class="text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($summary['total_packages']) }}</h3>
                 <span class="px-2 py-1 text-xs font-medium rounded-full bg-violet-100 text-violet-700">Full</span>
             </div>
         </div>
 
         <div class="p-4 card">
-            <p class="text-sm text-slate-500">Distributed Qty</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Distributed Qty</p>
             <div class="flex items-end justify-between mt-2">
-                <h3 class="text-3xl font-bold text-slate-900">
+                <h3 class="text-3xl font-bold text-slate-900 dark:text-white">
                     {{ number_format($summary['total_quantity_distributed']) }}
                 </h3>
                 <span class="px-2 py-1 text-xs font-medium rounded-full bg-emerald-100 text-emerald-700">Moved</span>
@@ -52,19 +53,58 @@
         </div>
 
         <div class="p-4 card">
-            <p class="text-sm text-slate-500">Active Users</p>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Active Users</p>
             <div class="flex items-end justify-between mt-2">
-                <h3 class="text-3xl font-bold text-slate-900">{{ number_format($summary['active_users']) }}</h3>
+                <h3 class="text-3xl font-bold text-slate-900 dark:text-white">{{ number_format($summary['active_users']) }}</h3>
                 <span class="px-2 py-1 text-xs font-medium rounded-full bg-amber-100 text-amber-700">Activity</span>
             </div>
         </div>
     </div>
 
+    @if ($allocationByRegion->isNotEmpty())
+    <div class="p-4 card">
+        <div class="flex items-center justify-between mb-3">
+            <div>
+                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">Allocation vs delivered by region</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Ministry allocation for {{ \App\Support\AcademicYear::label((int) $allocationYear) }} against copies sent into and received in each region.</p>
+            </div>
+            <a href="{{ route('manual-tracking.allocations.index') }}" class="text-sm link">Open allocation</a>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="text-xs text-left text-gray-500 uppercase dark:text-gray-400">
+                    <tr>
+                        <th class="px-3 py-2">Region</th>
+                        <th class="px-3 py-2 text-right">Allocated</th>
+                        <th class="px-3 py-2 text-right">Dispatched in</th>
+                        <th class="px-3 py-2 text-right">Received</th>
+                        <th class="px-3 py-2 text-right">Still due</th>
+                        <th class="px-3 py-2 text-right">Received %</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                    @foreach ($allocationByRegion as $row)
+                    @php $allocated = $row->student + $row->teacher; @endphp
+                    <tr class="text-gray-700 dark:text-gray-200">
+                        <td class="px-3 py-1.5 font-medium">{{ $row->region }}</td>
+                        <td class="px-3 py-1.5 text-right">{{ number_format($allocated) }}</td>
+                        <td class="px-3 py-1.5 text-right">{{ number_format($row->sent) }}</td>
+                        <td class="px-3 py-1.5 text-right">{{ number_format($row->received) }}</td>
+                        <td class="px-3 py-1.5 text-right">{{ number_format($row->due) }}</td>
+                        <td class="px-3 py-1.5 text-right">{{ $allocated ? number_format(min(100, $row->received / $allocated * 100), 1) : '0.0' }}%</td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+    @endif
+
     <div class="grid grid-cols-1 gap-4 xl:grid-cols-2">
         <div class="p-4 card">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="section-title">Monthly Distribution Trend</h3>
-                <span class="text-xs font-medium tracking-wide uppercase text-slate-400">Last 12 months</span>
+                <span class="text-xs font-medium tracking-wide uppercase text-slate-500 dark:text-slate-400">Last 12 months</span>
             </div>
             <div id="manual-tracking-trend-chart" class="h-72"></div>
         </div>
@@ -72,7 +112,7 @@
         <div class="p-4 card">
             <div class="flex items-center justify-between mb-3">
                 <h3 class="section-title">Top Distribution Regions</h3>
-                <span class="text-xs font-medium tracking-wide uppercase text-slate-400">Volume</span>
+                <span class="text-xs font-medium tracking-wide uppercase text-slate-500 dark:text-slate-400">Volume</span>
             </div>
             <div id="manual-tracking-location-chart" class="h-72"></div>
         </div>
@@ -87,7 +127,7 @@
             <div class="overflow-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="text-left text-gray-500">
+                        <tr class="text-left text-gray-500 dark:text-gray-400">
                             <th class="py-2">Region</th>
                             <th class="py-2">Zone</th>
                             <th class="py-2">Woreda</th>
@@ -104,7 +144,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="py-3 text-gray-500">No data</td>
+                            <td colspan="4" class="py-3 text-gray-500 dark:text-gray-400">No data</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -120,7 +160,7 @@
             <div class="overflow-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="text-left text-gray-500">
+                        <tr class="text-left text-gray-500 dark:text-gray-400">
                             <th class="py-2">Book</th>
                             <th class="py-2">In</th>
                             <th class="py-2">Out</th>
@@ -137,7 +177,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="4" class="py-3 text-gray-500">No data</td>
+                            <td colspan="4" class="py-3 text-gray-500 dark:text-gray-400">No data</td>
                         </tr>
                         @endforelse
                     </tbody>
@@ -155,7 +195,7 @@
             <div class="overflow-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="text-left text-gray-500">
+                        <tr class="text-left text-gray-500 dark:text-gray-400">
                             <th class="py-2">Book</th>
                             <th class="py-2">Source</th>
                             <th class="py-2">Destination</th>
@@ -191,7 +231,7 @@
             <div class="overflow-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="text-left text-gray-500">
+                        <tr class="text-left text-gray-500 dark:text-gray-400">
                             <th class="py-2">User</th>
                             <th class="py-2">Action</th>
                             <th class="py-2">Total</th>
@@ -224,6 +264,11 @@
             return;
         }
 
+        // Axis and legend text that stays readable on the dark theme too
+        const dark = document.body.classList.contains('dark');
+        const labelColor = dark ? '#cbd5e1' : '#475569';
+        const gridColor = dark ? '#334155' : '#e2e8f0';
+
         const trendOptions = {
             chart: {
                 type: 'bar',
@@ -237,10 +282,11 @@
             }],
             xaxis: {
                 categories: @json($distributionTrendLabels),
-                labels: { style: { colors: '#64748b' } }
+                labels: { style: { colors: labelColor } }
             },
             yaxis: {
                 labels: {
+                    style: { colors: labelColor },
                     formatter: (value) => Number(value).toLocaleString()
                 }
             },
@@ -253,7 +299,7 @@
             colors: ['#2048a1'],
             fill: { opacity: 1 },
             dataLabels: { enabled: false },
-            grid: { borderColor: '#e2e8f0' },
+            grid: { borderColor: gridColor },
             tooltip: {
                 y: { formatter: (value) => Number(value).toLocaleString() }
             }
@@ -271,7 +317,8 @@
             colors: ['#2048a1', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe', '#dbeafe'],
             legend: {
                 position: 'bottom',
-                horizontalAlign: 'left'
+                horizontalAlign: 'left',
+                labels: { colors: labelColor }
             },
             dataLabels: {
                 enabled: true,

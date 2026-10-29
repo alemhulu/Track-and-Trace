@@ -80,19 +80,19 @@
         <x-slot name="tableHeaders">
             <x-data-table.th scope="col">{{ __('Location') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Title') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Student Books on Hand') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Teacher Guides on Hand') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Dispatched, Not Yet Received') }}</x-data-table.th>
+            <x-data-table.th scope="col" class="th-wrap">{{ __('Student Books on Hand') }}</x-data-table.th>
+            <x-data-table.th scope="col" class="th-wrap">{{ __('Teacher Guides on Hand') }}</x-data-table.th>
+            <x-data-table.th scope="col" class="th-wrap">{{ __('Dispatched, Not Yet Received (SB / TG)') }}</x-data-table.th>
         </x-slot>
 
         <x-slot name="tableRows">
             @forelse ($balances as $balance)
             <x-data-table.tr>
-                <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">{{ $balance->organization->name ?? '—' }}</td>
-                <td class="px-5 py-2 text-sm text-gray-700 whitespace-nowrap dark:text-gray-100">{{ $balance->book->title ?? '—' }}</td>
+                <td class="px-5 py-2 text-sm text-gray-700 dark:text-gray-100"><div class="cell-wrap">{{ $balance->organization->name ?? '—' }}</div></td>
+                <td class="px-5 py-2 text-sm text-gray-700 dark:text-gray-100"><div class="cell-wrap">{{ $balance->book->title ?? '—' }}</div></td>
                 <td class="px-5 py-2 text-sm font-semibold text-gray-700 whitespace-nowrap dark:text-gray-100">
                     {{ number_format((int) $balance->student_on_hand) }}
-                    <span class="text-xs font-normal text-gray-400">
+                    <span class="text-xs font-normal text-gray-500 dark:text-gray-400">
                         ≈ {{ number_format(intdiv((int) $balance->student_on_hand, max(1, $balance->book->students_per_package ?? 40))) }} pkg
                     </span>
                 </td>

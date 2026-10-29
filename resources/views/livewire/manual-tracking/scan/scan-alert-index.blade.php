@@ -22,6 +22,7 @@
                     <th class="px-4 py-2">Problem</th>
                     <th class="px-4 py-2">Shipment</th>
                     <th class="px-4 py-2">Action</th>
+                    <th class="px-4 py-2"><span class="sr-only">View</span></th>
                 </tr>
             </thead>
             <tbody>
@@ -32,12 +33,12 @@
                         <div class="text-xs text-gray-500">by {{ $alert->scanner->name ?? '—' }}</div>
                     </td>
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-200">
-                        {{ $alert->organization->name ?? '—' }}
+                        <div class="cell-wrap">{{ $alert->organization->name ?? '—' }}</div>
                         <div class="text-xs text-gray-500">{{ $alert->context === 'receive' ? 'Receiving' : 'Sorting' }}</div>
                     </td>
                     <td class="px-4 py-2">
                         <div class="font-semibold text-red-700 dark:text-red-400">{{ \App\Models\ManualTracking\ManualScan::FLAG_LABELS[$alert->flag] ?? $alert->flag }}</div>
-                        <div class="text-gray-700 dark:text-gray-200">{{ $alert->flag_message }}</div>
+                        <x-ui.clamp class="text-gray-700 dark:text-gray-200" title="Misroute details">{{ $alert->flag_message }}</x-ui.clamp>
                         @if ($alert->book)
                         <div class="text-xs text-gray-500">{{ $alert->book->title }}</div>
                         @endif
@@ -54,6 +55,8 @@
                     <td class="px-4 py-2 min-w-[16rem]">
                         @if ($alert->alert_status === 'open' && ! auth()->user()->can('manual-tracking.alerts.resolve'))
                         <span class="text-xs text-gray-500">Open</span>
+                        @elseif ($alert->alert_status === 'open' && (int) $alert->scanned_by === (int) auth()->id())
+                        <span class="text-xs text-gray-500 dark:text-gray-400">Awaiting someone other than you, the scanner, to close it</span>
                         @elseif ($alert->alert_status === 'open')
                         <div class="flex gap-2">
                             <x-jet-input wire:model.defer="notes.{{ $alert->id }}" type="text" placeholder="What was done, e.g. sent on to Arsi Zone" class="flex-1 text-sm" />
@@ -61,13 +64,18 @@
                                 class="btn-primary btn-sm">Close</button>
                         </div>
                         @else
-                        <div class="text-gray-700 dark:text-gray-200">{{ $alert->resolution_note }}</div>
+                        <x-ui.clamp class="text-gray-700 dark:text-gray-200" title="How it was closed">{{ $alert->resolution_note }}</x-ui.clamp>
                         <div class="text-xs text-gray-500">{{ $alert->resolver->name ?? '—' }}, {{ optional($alert->resolved_at)->format('Y-m-d') }}</div>
+                        @endif
+                    </td>
+                    <td class="px-4 py-2">
+                        @if ($alert->distribution)
+                        <x-action.view-link :href="route('manual-tracking.shipments.show', $alert->distribution->id)" label="View shipment" />
                         @endif
                     </td>
                 </tr>
                 @empty
-                <tr><td colspan="5" class="px-4 py-6 text-center text-gray-500">No misroute alerts.</td></tr>
+                <tr><td colspan="6" class="px-4 py-6 text-center text-gray-500">No misroute alerts.</td></tr>
                 @endforelse
             </tbody>
         </table>

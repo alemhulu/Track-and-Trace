@@ -1,6 +1,12 @@
-<form wire:submit.prevent="save" class="space-y-4">
+{{-- An untouched form would record that no sampled student could show a book, so ask first --}}
+<form x-data x-on:submit.prevent="
+        const counted = [...$el.querySelectorAll('input[type=number]')].some(input => input.value !== '');
+        const ticked = $el.querySelector('input[type=checkbox]:checked');
+        if (counted || ticked || confirm('Nothing was counted or ticked. Save the visit as: no shelf counts, and no sampled student could show a book?')) $wire.save();
+    " class="space-y-4">
     <div class="p-5 card">
-        <p class="text-xs text-gray-500 uppercase">Verification visit</p>
+        <a href="{{ route('manual-tracking.visits.index') }}" class="text-xs link">← All visits</a>
+        <p class="mt-1 text-xs text-gray-500 uppercase dark:text-gray-400">Verification visit</p>
         <h3 class="section-title">{{ $school->name }}</h3>
         <p class="text-sm text-gray-500 dark:text-gray-400">
             Nothing here changes stock. Differences are recorded so they can be followed up.

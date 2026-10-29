@@ -1,4 +1,4 @@
-@aware(['entries'=>true])
+@props(['entries' => true])
 <table {{ $attributes->merge(['class' => 'w-full'])}}>
     @if ($entries)
     <x-data-table.entries />

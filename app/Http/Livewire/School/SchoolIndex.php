@@ -17,6 +17,7 @@ class SchoolIndex extends Component
 
     public $year;
     public $search = '';
+    public $recordes = 10;
 
     protected $queryString = ['year', 'search' => ['except' => '']];
 
@@ -30,6 +31,11 @@ class SchoolIndex extends Component
         $this->resetPage();
     }
 
+    public function updatingRecordes()
+    {
+        $this->resetPage();
+    }
+
     public function render(SchoolAllocationService $allocations)
     {
         $schools = Organization::query()
@@ -38,7 +44,7 @@ class SchoolIndex extends Component
             ->with(['woreda:id,name', 'zone:id,name'])
             ->when($this->search, fn ($query) => $query->where('name', 'like', '%' . $this->search . '%'))
             ->orderBy('name')
-            ->paginate(15);
+            ->paginate($this->recordes);
 
         $totals = $allocations->summaries($schools->getCollection(), (int) $this->year);
 

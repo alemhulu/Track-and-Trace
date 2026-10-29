@@ -14,24 +14,27 @@
         </div>
     </div>
 
-    <x-form.table title="Schools">
+    <x-form.table title="Schools" :search="false">
         <x-slot name="tableHeaders">
             <x-data-table.th scope="col">{{ __('School') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Student Books Required') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Issued to Students') }}</x-data-table.th>
+            <x-data-table.th scope="col" class="th-wrap">{{ __('Student Books Required') }}</x-data-table.th>
+            <x-data-table.th scope="col" class="th-wrap">{{ __('Issued to Students') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('On Hand') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Short') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Coverage') }}</x-data-table.th>
+            <x-data-table.th scope="col"><span class="sr-only">{{ __('View') }}</span></x-data-table.th>
         </x-slot>
 
         <x-slot name="tableRows">
             @forelse ($schools as $school)
             @php $total = $totals[$school->id]; @endphp
             <x-data-table.tr>
-                <td class="px-5 py-2 text-sm whitespace-nowrap">
-                    <a href="{{ route('manual-tracking.schools.show', ['school' => $school->id, 'year' => $year]) }}"
-                        class="font-semibold link">{{ $school->name }}</a>
-                    <div class="text-xs text-gray-500">{{ $school->woreda->name ?? '—' }}, {{ $school->zone->name ?? '—' }}</div>
+                <td class="px-5 py-2 text-sm">
+                    <div class="cell-wrap">
+                        <a href="{{ route('manual-tracking.schools.show', ['school' => $school->id, 'year' => $year]) }}"
+                            class="font-semibold link">{{ $school->name }}</a>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $school->woreda->name ?? '—' }}, {{ $school->zone->name ?? '—' }}</div>
+                    </div>
                 </td>
                 @if ($total['required_student'] === 0)
                 <td colspan="5" class="px-5 py-2 text-sm text-amber-600">No enrolment or students recorded for this year.</td>
@@ -46,9 +49,12 @@
                     <x-school.coverage-bar :value="$total['coverage']" />
                 </td>
                 @endif
+                <td class="px-5 py-2">
+                    <x-action.view-link :href="route('manual-tracking.schools.show', ['school' => $school->id, 'year' => $year])" label="Open school" />
+                </td>
             </x-data-table.tr>
             @empty
-            <x-data-table.empty colspan="6" />
+            <x-data-table.empty colspan="7" />
             @endforelse
         </x-slot>
 

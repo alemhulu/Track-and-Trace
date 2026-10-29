@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\ManualTracking\Book;
 
 use App\Http\Livewire\Concerns\AuthorizesPermissions;
+use App\Models\ManualTracking\ManualAllocation;
 use App\Models\ManualTracking\ManualBook;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -14,14 +15,34 @@ class ListManualBook extends Component
     use AuthorizesPermissions;
 
     public $recordes = 10;
+    public $search = '';
+
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingRecordes()
+    {
+        $this->resetPage();
+    }
 
     public function render()
     {
+        $year = ManualAllocation::latestYear();
+
         $books = ManualBook::query()
             ->accessibleBy(Auth::user())
+            ->when(trim($this->search) !== '', fn ($query) => $query->where(fn ($match) => $match
+                ->where('title', 'like', '%' . trim($this->search) . '%')
+                ->orWhere('grade_name', 'like', '%' . trim($this->search) . '%')
+                ->orWhere('subject_name', 'like', '%' . trim($this->search) . '%')
+                ->orWhere('language', 'like', '%' . trim($this->search) . '%')))
             ->with(['region:id,name', 'codes'])
             ->withSum(['balances as student_on_hand' => fn ($query) => $query->where('edition', ManualBook::EDITION_STUDENT)], 'on_hand')
             ->withSum(['balances as teacher_on_hand' => fn ($query) => $query->where('edition', ManualBook::EDITION_TEACHER)], 'on_hand')
+            ->withSum(['allocations as student_allocated' => fn ($query) => $query->where('academic_year', $year)->whereNull('zone_id')->where('edition', ManualBook::EDITION_STUDENT)], 'quantity')
+            ->withSum(['allocations as teacher_allocated' => fn ($query) => $query->where('academic_year', $year)->whereNull('zone_id')->where('edition', ManualBook::EDITION_TEACHER)], 'quantity')
             ->orderBy('title')
             ->paginate($this->recordes);
 
