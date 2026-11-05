@@ -44,7 +44,7 @@
         @foreach ($shipment->lines as $line)
         <tr>
             <td>{{ $line->book->title }}</td>
-            <td>{{ $line->full_packages }}{{ $line->partial_package_books || $line->partial_teacher_guides ? ' + 1 partial' : '' }}</td>
+            <td>{{ $line->full_packages }}{{ $line->partial_package_books || $line->partial_teacher_guides ? ' + 1 partial' : '' }}{{ $line->extra_teacher_guides ? ' + 1 teacher package (' . number_format($line->extra_teacher_guides) . ' TG)' : '' }}</td>
             <td>{{ number_format($line->quantity) }}</td>
             <td>{{ number_format($line->teacher_guides) }}</td>
             @if ($shipment->isInTransit())
@@ -59,7 +59,7 @@
         @endforeach
         <tr>
             <th>Total</th>
-            <th>{{ $shipment->lines->sum(fn ($line) => $line->full_packages + ($line->partial_package_books || $line->partial_teacher_guides ? 1 : 0)) }}</th>
+            <th>{{ $shipment->lines->sum(fn ($line) => $line->packageCount()) }}</th>
             <th>{{ number_format($shipment->lines->sum('quantity')) }}</th>
             <th>{{ number_format($shipment->lines->sum('teacher_guides')) }}</th>
             <th></th><th></th><th></th><th></th>

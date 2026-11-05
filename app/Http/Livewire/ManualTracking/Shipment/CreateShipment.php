@@ -82,7 +82,7 @@ class CreateShipment extends Component
             }
 
             if ($this->entryMode === 'totals') {
-                $copies = $book->copiesFor((int) $line['full_packages'], (int) $line['partial_package_books'], (int) $line['partial_teacher_guides']);
+                $copies = $book->copiesFor((int) $line['full_packages'], (int) $line['partial_package_books'], (int) $line['partial_teacher_guides'], (int) $line['extra_teacher_guides']);
                 $this->lines[$index]['student_books'] = $copies[ManualBook::EDITION_STUDENT];
                 $this->lines[$index]['teacher_guides'] = $copies[ManualBook::EDITION_TEACHER];
             } else {
@@ -115,6 +115,14 @@ class CreateShipment extends Component
     {
         $to = $this->destinationScope()->organization($this->destination, $this->to_organization_id);
         $this->to_organization_id = (string) $to === (string) $this->from_organization_id ? '' : $to;
+
+        // Titles of another region cannot go to this destination: clear them from the lines
+        $fits = $this->titles()->whereKey(collect($this->lines)->pluck('manual_book_id')->filter())->pluck('id')->map(fn ($id) => (int) $id);
+        foreach ($this->lines as $index => $line) {
+            if ($line['manual_book_id'] && ! $fits->contains((int) $line['manual_book_id'])) {
+                $this->lines[$index]['manual_book_id'] = '';
+            }
+        }
     }
 
     /**
@@ -151,6 +159,20 @@ class CreateShipment extends Component
         $this->scanFeedback(! $result['flag'], $result['flag'] ? $result['message'] : null);
     }
 
+    // Picking a title that is already on another line is flagged at once
+    public function updatedLines($value, $key)
+    {
+        [$index, $field] = array_pad(explode('.', (string) $key, 2), 2, null);
+
+        if ($field === 'manual_book_id' && $value && ($others = $this->duplicateLines()[(int) $index] ?? null)) {
+            $title = ManualBook::query()->whereKey($value)->value('title');
+            $this->dispatchBrowserEvent('alert', ['type' => 'warning', 'message' => sprintf(
+                '%s is already on line %s. A title can be added only once: change the counts on that line instead.',
+                $title, implode(', ', $others)
+            )]);
+        }
+    }
+
     public function setActiveLine($index)
     {
         $this->activeLine = isset($this->lines[$index]) ? (int) $index : 0;
@@ -158,7 +180,7 @@ class CreateShipment extends Component
 
     public function addLine()
     {
-        $this->lines[] = ['manual_book_id' => '', 'full_packages' => 0, 'partial_package_books' => 0, 'partial_teacher_guides' => 0, 'student_books' => 0, 'teacher_guides' => 0];
+        $this->lines[] = ['manual_book_id' => '', 'full_packages' => 0, 'partial_package_books' => 0, 'partial_teacher_guides' => 0, 'extra_teacher_guides' => 0, 'student_books' => 0, 'teacher_guides' => 0];
     }
 
     public function removeLine($index)
@@ -168,11 +190,32 @@ class CreateShipment extends Component
         $this->activeLine = min($this->activeLine, max(count($this->lines) - 1, 0));
     }
 
+    /**
+     * Fill a line with what may still go to the destination: the allocation left there, no
+     * more than the source holds, packed as full and partial packages plus extra teacher guides.
+     */
+    public function fillAllowed($index)
+    {
+        $line = $this->lines[$index] ?? null;
+        $book = $line && $line['manual_book_id'] ? ManualBook::query()->find($line['manual_book_id']) : null;
+        $room = $book ? $this->roomFor($book) : null;
+
+        if (! $room) {
+            return;
+        }
+
+        $this->lines[$index] = array_merge($line, $book->packagesFor($room['student'], $room['teacher']), [
+            'student_books' => $room['student'],
+            'teacher_guides' => $room['teacher'],
+        ]);
+        $this->activeLine = (int) $index;
+    }
+
     public function render()
     {
         $actor = Auth::user();
         $openDestinations = $this->sendsAnywhere();
-        $books = ManualBook::query()->when(! $openDestinations, fn ($query) => $query->accessibleBy($actor))->orderBy('title')->get(['id', 'title', 'has_teacher_guide', 'students_per_package'])->keyBy('id');
+        $books = $this->titles()->orderBy('title')->get(['id', 'title', 'has_teacher_guide', 'students_per_package'])->keyBy('id');
         $destinations = $this->destinationScope()->organizations($this->destination)
             ->when($this->from_organization_id, fn ($query) => $query->whereKeyNot($this->from_organization_id));
 
@@ -181,9 +224,18 @@ class CreateShipment extends Component
             'sourcePicker' => $this->sourceScope()->picker($this->source, $this->sources()),
             'destinationPicker' => $this->destinationScope()->picker($this->destination, $destinations),
             'openDestinations' => $openDestinations,
+            'titleRegion' => ($titleRegion = $this->titleRegion())
+                ? ['name' => \App\Models\Region::query()->whereKey($titleRegion['id'])->value('name'), 'side' => $titleRegion['side']]
+                : null,
             'books' => $books,
+            'duplicates' => $this->duplicateLines(),
             'available' => $this->availableAtSource(),
-            'allocation' => $this->allocationAtDestination(),
+            'allocation' => $allocation = $this->allocationAtDestination(),
+            'room' => collect($this->lines)->map(function ($line) use ($books, $allocation) {
+                $book = $books[$line['manual_book_id']] ?? null;
+
+                return $book && isset($allocation[$book->id]) ? $this->roomFor($book, $allocation) : null;
+            })->all(),
             'lineCopies' => collect($this->lines)->map(function ($line) use ($books) {
                 $book = $books[$line['manual_book_id']] ?? null;
 
@@ -193,13 +245,17 @@ class CreateShipment extends Component
 
                 return $this->entryMode === 'totals'
                     ? ['student' => max(0, (int) $line['student_books']), 'teacher' => max(0, (int) $line['teacher_guides'])]
-                    : $book->copiesFor((int) $line['full_packages'], (int) $line['partial_package_books'], (int) $line['partial_teacher_guides']);
+                    : $book->copiesFor((int) $line['full_packages'], (int) $line['partial_package_books'], (int) $line['partial_teacher_guides'], (int) ($line['extra_teacher_guides'] ?? 0));
             })->all(),
         ])->extends('main.manual-tracking.index');
     }
 
     public function dispatchShipment(ManualShipmentService $shipments)
     {
+        if ($this->duplicateLines()) {
+            return $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => 'A title is on more than one line. Remove the repeated line or choose another title before dispatching.']);
+        }
+
         $this->validate([
             'from_organization_id' => 'required|exists:organizations,id',
             'to_organization_id' => 'required|exists:organizations,id|different:from_organization_id',
@@ -219,12 +275,14 @@ class CreateShipment extends Component
             'lines.*.full_packages' => 'required|integer|min:0',
             'lines.*.partial_package_books' => 'required|integer|min:0',
             'lines.*.partial_teacher_guides' => 'required|integer|min:0',
+            'lines.*.extra_teacher_guides' => 'required|integer|min:0',
         ]), [], [
             'from_organization_id' => 'source',
             'to_organization_id' => 'destination',
             'lines.*.manual_book_id' => 'title',
             'lines.*.student_books' => 'student books',
             'lines.*.teacher_guides' => 'teacher guides',
+            'lines.*.extra_teacher_guides' => 'extra teacher guides',
         ]);
 
         try {
@@ -233,7 +291,7 @@ class CreateShipment extends Component
                 'to_organization_id' => (int) $this->to_organization_id,
                 'lines' => collect($this->lines)->map(fn ($line) => $this->entryMode === 'totals'
                     ? collect($line)->only(['manual_book_id', 'student_books', 'teacher_guides'])->all()
-                    : collect($line)->only(['manual_book_id', 'full_packages', 'partial_package_books', 'partial_teacher_guides'])->all()
+                    : collect($line)->only(['manual_book_id', 'full_packages', 'partial_package_books', 'partial_teacher_guides', 'extra_teacher_guides'])->all()
                 )->all(),
                 'carrier' => $this->carrier,
                 'vehicle_no' => $this->vehicle_no,
@@ -272,6 +330,28 @@ class CreateShipment extends Component
         }
     }
 
+    /**
+     * Lines whose title is also on another line, keyed by line index, with the other lines'
+     * numbers as shown on screen (counting from 1).
+     *
+     * @return array<int, array<int, int>>
+     */
+    private function duplicateLines(): array
+    {
+        $byTitle = collect($this->lines)->filter(fn ($line) => filled($line['manual_book_id']))
+            ->groupBy(fn ($line) => (string) $line['manual_book_id'], true)
+            ->filter(fn ($lines) => $lines->count() > 1);
+        $duplicates = [];
+
+        foreach ($byTitle as $lines) {
+            foreach ($lines->keys() as $index) {
+                $duplicates[$index] = $lines->keys()->reject(fn ($other) => $other === $index)->map(fn ($other) => $other + 1)->values()->all();
+            }
+        }
+
+        return $duplicates;
+    }
+
     private function lineFor(int $bookId): int
     {
         foreach ($this->lines as $index => $line) {
@@ -304,6 +384,32 @@ class CreateShipment extends Component
             $this->scanWarnings = array_slice(array_unique($this->scanWarnings), 0, 5);
             $this->dispatchBrowserEvent('alert', ['type' => 'warning', 'message' => $warning]);
         }
+    }
+
+    /**
+     * Copies of a title that may still be sent: the destination's allocation less what has been
+     * sent in, and no more than the source holds. Null when the destination has no allocation.
+     *
+     * @return array{student: int, teacher: int}|null
+     */
+    private function roomFor(ManualBook $book, ?array $allocation = null): ?array
+    {
+        $target = ($allocation ?? $this->allocationAtDestination())[$book->id] ?? null;
+        if (! $target) {
+            return null;
+        }
+
+        $stock = $this->from_organization_id ? ($this->availableAtSource()[$book->id] ?? ['student' => 0, 'teacher' => 0]) : null;
+        $left = [
+            'student' => max(0, $target['student'] - $target['sent_student']),
+            'teacher' => $book->has_teacher_guide ? max(0, $target['teacher'] - $target['sent_teacher']) : 0,
+        ];
+
+        return $stock === null ? $left : [
+            'student' => min($left['student'], $stock['student']),
+            'teacher' => min($left['teacher'], $stock['teacher']),
+            'limited' => $stock['student'] < $left['student'] || $stock['teacher'] < $left['teacher'],
+        ];
     }
 
     /**
@@ -372,6 +478,40 @@ class CreateShipment extends Component
                 'sent_teacher' => (int) ($sent["{$placeId}:{$bookId}"]->sent_teacher ?? 0),
             ])
             ->all();
+    }
+
+    /**
+     * Titles that may go on this shipment: the user's own (printers and hubs see every title),
+     * narrowed to those used in the destination's region once one is chosen.
+     */
+    private function titles()
+    {
+        return ManualBook::query()
+            ->when(! $this->sendsAnywhere(), fn ($query) => $query->accessibleBy(Auth::user()))
+            ->forRegion($this->titleRegion()['id'] ?? null);
+    }
+
+    /**
+     * The region the titles are listed for: the destination's once one is chosen, since the
+     * books must suit where they go, otherwise the region chosen for the source.
+     *
+     * @return array{id: int, side: string}|null
+     */
+    private function titleRegion(): ?array
+    {
+        if ($regionId = $this->destinationRegionId()) {
+            return ['id' => $regionId, 'side' => 'destination'];
+        }
+
+        return filled($this->source['region_id'] ?? null) ? ['id' => (int) $this->source['region_id'], 'side' => 'source'] : null;
+    }
+
+    private function destinationRegionId(): ?int
+    {
+        $to = $this->to_organization_id ? Organization::query()->find($this->to_organization_id, ['id', 'region_id']) : null;
+        $regionId = $to?->region_id ?: $this->destination['region_id'];
+
+        return $regionId ? (int) $regionId : null;
     }
 
     private function sourceScope(): ScopedLocation

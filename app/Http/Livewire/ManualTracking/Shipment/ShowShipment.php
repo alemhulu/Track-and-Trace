@@ -43,6 +43,7 @@ class ShowShipment extends Component
                 'full_packages' => $line->full_packages,
                 'partial_package_books' => $line->partial_package_books,
                 'partial_teacher_guides' => $line->partial_teacher_guides,
+                'extra_teacher_guides' => $line->extra_teacher_guides,
                 'student_books' => $line->quantity,
                 'teacher_guides' => $line->teacher_guides,
                 'damaged_quantity' => 0,
@@ -81,6 +82,7 @@ class ShowShipment extends Component
             'counts.*.full_packages' => 'required|integer|min:0',
             'counts.*.partial_package_books' => 'required|integer|min:0',
             'counts.*.partial_teacher_guides' => 'required|integer|min:0',
+            'counts.*.extra_teacher_guides' => 'required|integer|min:0',
             'counts.*.student_books' => 'required|integer|min:0',
             'counts.*.teacher_guides' => 'required|integer|min:0',
             'counts.*.damaged_quantity' => 'required|integer|min:0',
@@ -90,7 +92,7 @@ class ShowShipment extends Component
 
         $fields = $this->receiveMode === 'totals'
             ? ['student_books', 'teacher_guides', 'damaged_quantity', 'damaged_teacher_guides']
-            : ['full_packages', 'partial_package_books', 'partial_teacher_guides', 'damaged_quantity', 'damaged_teacher_guides'];
+            : ['full_packages', 'partial_package_books', 'partial_teacher_guides', 'extra_teacher_guides', 'damaged_quantity', 'damaged_teacher_guides'];
         $counts = collect($this->counts)->map(fn ($count) => collect($count)->only($fields)->all())->all();
 
         try {
@@ -162,16 +164,18 @@ class ShowShipment extends Component
                 continue;
             }
 
-            $sentPackages = $line->full_packages + ($line->partial_package_books || $line->partial_teacher_guides ? 1 : 0);
+            $sentPackages = $line->packageCount();
 
             if ($count >= $sentPackages) {
                 $this->counts[$line->id]['full_packages'] = $line->full_packages + ($count - $sentPackages);
                 $this->counts[$line->id]['partial_package_books'] = $line->partial_package_books;
                 $this->counts[$line->id]['partial_teacher_guides'] = $line->partial_teacher_guides;
+                $this->counts[$line->id]['extra_teacher_guides'] = $line->extra_teacher_guides;
             } else {
                 $this->counts[$line->id]['full_packages'] = $count;
                 $this->counts[$line->id]['partial_package_books'] = 0;
                 $this->counts[$line->id]['partial_teacher_guides'] = 0;
+                $this->counts[$line->id]['extra_teacher_guides'] = 0;
                 $short[] = $line->book->title;
             }
         }
@@ -209,7 +213,8 @@ class ShowShipment extends Component
             $copies = $line->book->copiesFor(
                 (int) $this->counts[$line->id]['full_packages'],
                 (int) $this->counts[$line->id]['partial_package_books'],
-                (int) $this->counts[$line->id]['partial_teacher_guides']
+                (int) $this->counts[$line->id]['partial_teacher_guides'],
+                (int) ($this->counts[$line->id]['extra_teacher_guides'] ?? 0)
             );
             $this->counts[$line->id]['student_books'] = $copies['student'];
             $this->counts[$line->id]['teacher_guides'] = $copies['teacher'];
@@ -222,7 +227,7 @@ class ShowShipment extends Component
 
         return $this->receiveMode === 'totals'
             ? ['student' => max(0, (int) ($count['student_books'] ?? 0)), 'teacher' => max(0, (int) ($count['teacher_guides'] ?? 0))]
-            : $line->book->copiesFor((int) ($count['full_packages'] ?? 0), (int) ($count['partial_package_books'] ?? 0), (int) ($count['partial_teacher_guides'] ?? 0));
+            : $line->book->copiesFor((int) ($count['full_packages'] ?? 0), (int) ($count['partial_package_books'] ?? 0), (int) ($count['partial_teacher_guides'] ?? 0), (int) ($count['extra_teacher_guides'] ?? 0));
     }
 
     private function shipment(): ManualDistribution

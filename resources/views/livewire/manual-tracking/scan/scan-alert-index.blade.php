@@ -1,15 +1,63 @@
 <div class="space-y-4">
-    <div class="flex flex-wrap items-end justify-between gap-3">
-        <div>
-            <h3 class="section-title">Misrouted packages</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Raised when a package or book is scanned somewhere it does not belong.</p>
+    <div>
+        <h3 class="section-title">Misrouted packages</h3>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Raised when a package or book is scanned somewhere it does not belong.</p>
+    </div>
+
+    <div class="grid grid-cols-2 gap-3 xl:grid-cols-4">
+        <x-ui.stat label="Open" :value="number_format($stats['open'])" icon="fi-rr-shield-exclamation" tone="danger"
+            :active="$statusFilter === 'open'" wire:click="setFilter('statusFilter', 'open')">
+            At {{ number_format($stats['open_places']) }} {{ \Illuminate\Support\Str::plural('place', $stats['open_places']) }} · {{ number_format($stats['open_shipments']) }} {{ \Illuminate\Support\Str::plural('shipment', $stats['open_shipments']) }}
+        </x-ui.stat>
+        <x-ui.stat label="Closed" :value="number_format($stats['resolved'])" icon="fi-rr-check" tone="success"
+            :active="$statusFilter === 'resolved'" wire:click="setFilter('statusFilter', 'resolved')"
+            :percent="$stats['open'] + $stats['resolved'] ? round($stats['resolved'] / ($stats['open'] + $stats['resolved']) * 100, 1) : 0">
+            {{ $stats['close_days'] !== null ? 'Closed in ' . $stats['close_days'] . ' days on average' : 'None closed yet' }}
+        </x-ui.stat>
+        @foreach ([\App\Models\ManualTracking\ManualScan::FLAG_MISROUTE => ['warning', 'fi-rr-shuffle'], \App\Models\ManualTracking\ManualScan::FLAG_WRONG_REGION => ['info', 'fi-rr-map-marker']] as $flag => [$tone, $icon])
+        <x-ui.stat :label="\App\Models\ManualTracking\ManualScan::FLAG_LABELS[$flag]" :value="number_format($stats['flags'][$flag] ?? 0)" :tone="$tone" :icon="$icon"
+            :active="$flagFilter === $flag" wire:click="setFilter('flagFilter', '{{ $flag }}')">
+            {{ $statusFilter === 'open' ? 'Open' : ($statusFilter ? 'Closed' : 'All') }} alerts · {{ $flagFilter === $flag ? 'click to clear' : 'click to filter' }}
+        </x-ui.stat>
+        @endforeach
+    </div>
+
+    <div class="p-4 card">
+        <div class="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+            <div class="col-span-2">
+                <x-jet-label for="alert-search" value="Search" />
+                <x-jet-input wire:model.debounce.400ms="search" id="alert-search" type="search" placeholder="Place, title, shipment or scanned code" class="block w-full mt-1" />
+            </div>
+            <div>
+                <x-jet-label for="alert-status" value="Status" />
+                <x-form.select wire:model="statusFilter" id="alert-status">
+                    <option value="open">Open</option>
+                    <option value="resolved">Closed</option>
+                    <option value="">All</option>
+                </x-form.select>
+            </div>
+            <div>
+                <x-jet-label for="alert-context" value="Found while" />
+                <x-form.select wire:model="contextFilter" id="alert-context">
+                    <option value="">Sorting or receiving</option>
+                    <option value="sort">Sorting</option>
+                    <option value="receive">Receiving</option>
+                </x-form.select>
+            </div>
+            <div>
+                <x-jet-label for="alert-from" value="Scanned from" />
+                <x-jet-input wire:model="dateFrom" id="alert-from" type="date" class="block w-full mt-1" />
+            </div>
+            <div>
+                <x-jet-label for="alert-to" value="Scanned to" />
+                <x-jet-input wire:model="dateTo" id="alert-to" type="date" class="block w-full mt-1" />
+            </div>
         </div>
-        <div class="w-48">
-            <x-form.select wire:model="statusFilter">
-                <option value="open">Open</option>
-                <option value="resolved">Closed</option>
-                <option value="">All</option>
-            </x-form.select>
+        <div class="flex flex-wrap items-center justify-between gap-2 mt-3">
+            <p class="text-xs text-gray-500 dark:text-gray-400">{{ number_format($alerts->total()) }} {{ \Illuminate\Support\Str::plural('alert', $alerts->total()) }} shown</p>
+            @if ($filtersActive)
+            <button type="button" wire:click="clearFilters" class="text-sm link">Show everything</button>
+            @endif
         </div>
     </div>
 

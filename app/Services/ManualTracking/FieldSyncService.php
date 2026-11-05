@@ -117,7 +117,7 @@ class FieldSyncService
                     'has_teacher_guide' => (bool) $line->book->has_teacher_guide,
                     'student_books' => (int) $line->quantity,
                     'teacher_guides' => (int) $line->teacher_guides,
-                    'packages' => $line->full_packages + ($line->partial_package_books || $line->partial_teacher_guides ? 1 : 0),
+                    'packages' => $line->packageCount(),
                 ])->values(),
             ])->values(),
             'students' => $students->map(fn ($student) => [

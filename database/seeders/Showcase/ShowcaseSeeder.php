@@ -1022,6 +1022,7 @@ class ShowcaseSeeder extends Seeder
                     'full_packages' => $line->full_packages,
                     'partial_package_books' => $line->partial_package_books,
                     'partial_teacher_guides' => $line->partial_teacher_guides,
+                    'extra_teacher_guides' => $line->extra_teacher_guides,
                 ]])->all();
                 $counts = $this->withShowcaseDiscrepancy($counts, $shipment, $level, $legIndex);
 
