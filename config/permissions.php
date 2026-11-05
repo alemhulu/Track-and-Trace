@@ -126,6 +126,9 @@ return [
                     'manual-tracking.reports.view' => 'View reports & exports',
                 ],
                 'submodules' => [
+                    'manual-tracking.allocations' => ['label' => 'Allocation', 'permissions' => [
+                        'manual-tracking.allocations.import' => 'Import Ministry allocation',
+                    ]],
                     'manual-tracking.titles' => ['label' => 'Titles', 'permissions' => [
                         'manual-tracking.titles.create' => 'Register titles',
                         'manual-tracking.titles.edit' => 'Edit titles',

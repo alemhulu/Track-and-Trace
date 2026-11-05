@@ -15,6 +15,23 @@ class DatabaseSeeder extends Seeder
     {
         $profile = strtolower((string) ($_ENV['SEED_PROFILE'] ?? $_SERVER['SEED_PROFILE'] ?? 'demo'));
 
+        // Only what the allocation workbooks bring, on top of the lookup lists
+        if ($profile === 'imports') {
+            $this->call([
+                \Database\Seeders\PermissionSeeder::class,
+                \Database\Seeders\CountrySeeder::class,
+                \Database\Seeders\RegionSeeder::class,
+                \Database\Seeders\OrganizationTypeSeeder::class,
+                \Database\Seeders\OwnershipSeeder::class,
+                \Database\Seeders\BookTypeSeeder::class,
+                \Database\Seeders\PrintTypeSeeder::class,
+                \Database\Seeders\PaperSizeSeeder::class,
+                \Database\Seeders\SectorSeeder::class,
+                \Database\Seeders\ImportedDataSeeder::class,
+            ]);
+            return;
+        }
+
         $this->call($this->referenceSeeders());
 
         if ($profile === 'minimal') {

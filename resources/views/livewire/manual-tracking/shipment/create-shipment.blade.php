@@ -64,6 +64,14 @@
                 <button type="button" wire:click="addLine" class="text-sm link">+ Add title</button>
             </div>
             <x-jet-input-error for="lines" class="mb-2" />
+            @if ($duplicates)
+            <div class="mb-2 alert-warning" wire:key="duplicate-titles">
+                The same title is on more than one line (highlighted in red). Keep it on one line only; the shipment cannot be dispatched until then.
+            </div>
+            @endif
+            <p class="mb-2 text-xs text-gray-500 dark:text-gray-400">
+                {{ $titleRegion ? 'Showing titles used in ' . $titleRegion['name'] . ', the ' . $titleRegion['side'] . ' region' . ($titleRegion['side'] === 'source' ? '; choosing a destination region narrows it to that region.' : '.') : 'Choose a region to see only the titles used there.' }}
+            </p>
 
             <x-scan.scanner class="mb-3" placeholder="Scan a book to pick its title, then scan each full package" />
             @if ($scanWarnings)
@@ -80,29 +88,36 @@
                         <tr>
                             <th class="px-3 py-2">Title</th>
                             @if ($entryMode === 'totals')
-                            <th class="px-3 py-2">Total student books</th>
-                            <th class="px-3 py-2">Total teacher guides</th>
-                            <th class="px-3 py-2">Usual packing</th>
+                            <th class="px-3 py-2 th-wrap">Total student books</th>
+                            <th class="px-3 py-2 th-wrap">Total teacher guides</th>
+                            <th class="px-3 py-2 th-wrap">Usual packing</th>
                             @else
-                            <th class="px-3 py-2">Full packages</th>
-                            <th class="px-3 py-2">Partial package: student books</th>
-                            <th class="px-3 py-2">Partial package: teacher guides</th>
+                            <th class="px-3 py-2 th-wrap">Full packages</th>
+                            <th class="px-3 py-2 th-wrap">Partial package: student books</th>
+                            <th class="px-3 py-2 th-wrap">Partial package: teacher guides</th>
+                            <th class="px-3 py-2 th-wrap">Extra teacher guides</th>
                             @endif
                             <th class="px-3 py-2">Copies</th>
-                            <th class="px-3 py-2">Available at source</th>
+                            <th class="px-3 py-2 th-wrap">Available at source</th>
                             <th class="px-3 py-2"><span class="sr-only">Remove</span></th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            // Which line each title is on, to mark it in the other lines' lists
+                            $chosenOn = collect($lines)->filter(fn ($line) => filled($line['manual_book_id']))
+                                ->mapToGroups(fn ($line, $index) => [(string) $line['manual_book_id'] => $index + 1]);
+                        @endphp
                         @foreach ($lines as $index => $line)
                         @php
+                            $repeated = $duplicates[$index] ?? null;
                             $book = $books[$line['manual_book_id']] ?? null;
                             $stock = $available[$line['manual_book_id']] ?? ['student' => 0, 'teacher' => 0];
                             $copies = $lineCopies[$index];
                             $short = $copies['student'] > $stock['student'] || $copies['teacher'] > $stock['teacher'];
                         @endphp
-                        <tr wire:key="line-{{ $index }}" class="{{ $activeLine === $index ? 'bg-blue-50 dark:bg-blue-900/20' : '' }}">
-                            <td class="px-3 py-2 min-w-[16rem]">
+                        <tr wire:key="line-{{ $index }}" class="{{ $repeated ? 'bg-red-50 dark:bg-red-900/20 ring-1 ring-inset ring-red-300 dark:ring-red-800' : ($activeLine === $index ? 'bg-blue-50 dark:bg-blue-900/20' : '') }}">
+                            <td class="px-3 py-2 min-w-[14rem] max-w-[20rem]">
                                 @if (count($lines) > 1)
                                 <button type="button" wire:click="setActiveLine({{ $index }})"
                                     class="mb-1 text-xs {{ $activeLine === $index ? 'font-semibold text-blue-700 dark:text-blue-300' : 'text-gray-500 hover:underline' }}">
@@ -112,9 +127,44 @@
                                 <x-form.select wire:model="lines.{{ $index }}.manual_book_id">
                                     <option value="">Select title</option>
                                     @foreach ($books as $option)
-                                    <option value="{{ $option->id }}">{{ $option->title }}</option>
+                                    @php $elsewhere = collect($chosenOn[(string) $option->id] ?? [])->reject(fn ($number) => $number === $index + 1); @endphp
+                                    <option value="{{ $option->id }}">{{ $option->title }}{{ $elsewhere->isNotEmpty() ? ' (already on line ' . $elsewhere->join(', ') . ')' : '' }}</option>
                                     @endforeach
                                 </x-form.select>
+                                @if ($repeated)
+                                <p class="mt-1 text-xs font-semibold text-red-700 dark:text-red-300">
+                                    Also on line {{ implode(', ', $repeated) }}. A title can be added only once: remove this line or choose another title.
+                                </p>
+                                @endif
+                                @if ($target = $allocation[$line['manual_book_id']] ?? null)
+                                @php
+                                    $leftStudent = max(0, $target['student'] - $target['sent_student']);
+                                    $leftTeacher = max(0, $target['teacher'] - $target['sent_teacher']);
+                                    $over = $copies['student'] > $leftStudent || $copies['teacher'] > $leftTeacher;
+                                @endphp
+                                <p class="mt-1 text-xs {{ $over ? 'text-amber-700 dark:text-amber-300' : 'text-gray-500 dark:text-gray-400' }}">
+                                    {{ $target['level'] }} allocation {{ number_format($target['student']) }} SB / {{ number_format($target['teacher']) }} TG ·
+                                    sent {{ number_format($target['sent_student']) }} / {{ number_format($target['sent_teacher']) }} ·
+                                    <strong>{{ number_format($leftStudent) }} / {{ number_format($leftTeacher) }} left</strong>
+                                    @if ($over)
+                                    <span class="block font-semibold">This line goes over the {{ strtolower($target['level']) }}'s allocation.</span>
+                                    @endif
+                                </p>
+                                @if ($fit = $room[$index] ?? null)
+                                @php $packing = $book->packagesFor($fit['student'], $fit['teacher']); @endphp
+                                <div class="flex flex-wrap items-center gap-2 mt-1 text-xs text-sky-800 dark:text-sky-200">
+                                    <span>
+                                        Can still send: <strong>{{ number_format($packing['full_packages']) }} full</strong>
+                                        @if ($packing['partial_package_books']) + partial ({{ $packing['partial_package_books'] }} SB, {{ $packing['partial_teacher_guides'] }} TG)@endif
+                                        @if ($packing['extra_teacher_guides']) + {{ number_format($packing['extra_teacher_guides']) }} extra TG @endif
+                                        @if (! empty($fit['limited'])) <span class="text-gray-500 dark:text-gray-400">(limited by stock at the source)</span>@endif
+                                    </span>
+                                    @if ($fit['student'] + $fit['teacher'] > 0)
+                                    <button type="button" wire:click="fillAllowed({{ $index }})" class="link">Fill</button>
+                                    @endif
+                                </div>
+                                @endif
+                                @endif
                             </td>
 @if ($entryMode === 'totals')
                             <td class="px-3 py-2">
@@ -127,7 +177,7 @@
                             <td class="px-3 py-2 text-xs text-gray-500 whitespace-nowrap">
                                 @if ($book)
                                 @php $packing = $book->packagesFor($copies['student'], $copies['teacher']); @endphp
-                                {{ $packing['full_packages'] }} full{{ $packing['partial_package_books'] ? ' + 1 partial (' . $packing['partial_package_books'] . ')' : '' }}
+                                {{ $packing['full_packages'] }} full{{ $packing['partial_package_books'] ? ' + 1 partial (' . $packing['partial_package_books'] . ')' : '' }}{{ $packing['extra_teacher_guides'] ? ' + ' . $packing['extra_teacher_guides'] . ' extra TG' : '' }}
                                 @else
                                 —
                                 @endif
@@ -143,6 +193,10 @@
                             <td class="px-3 py-2">
                                 <x-jet-input wire:model="lines.{{ $index }}.partial_teacher_guides" type="number" min="0" class="w-24"
                                     :disabled="$book && ! $book->has_teacher_guide" />
+                            </td>
+                            <td class="px-3 py-2">
+                                <x-jet-input wire:model="lines.{{ $index }}.extra_teacher_guides" type="number" min="0" class="w-24"
+                                    :disabled="$book && ! $book->has_teacher_guide" title="Teacher guides beyond one per package, packed separately" />
                             </td>
                             @endif
                             <td class="px-3 py-2 whitespace-nowrap text-gray-700 dark:text-gray-200">
@@ -177,8 +231,8 @@
         <div class="flex justify-end gap-3 mt-5">
             <a href="{{ route('manual-tracking.distribution.list') }}"
                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200">Cancel</a>
-            <button type="submit" wire:loading.attr="disabled"
-                class="btn-success">Dispatch Shipment</button>
+            <button type="submit" wire:loading.attr="disabled" class="btn-success" @disabled($duplicates)
+                title="{{ $duplicates ? 'A title is on more than one line' : '' }}">Dispatch Shipment</button>
         </div>
     </form>
 </div>

@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\ManualTracking\Report;
 
 use App\Http\Livewire\Concerns\AuthorizesPermissions;
+use App\Models\ManualTracking\ManualAllocation;
 use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualDistribution;
 use App\Models\ManualTracking\ManualDistributionLine;
@@ -104,6 +105,8 @@ class ManualTrackingReports extends Component
             'distributionTrendSeries' => $distributionTrendSeries,
             'locationChartLabels' => $locationChartLabels,
             'locationChartSeries' => $locationChartSeries,
+            'allocationByRegion' => $this->allocationByRegion(),
+            'allocationYear' => ManualAllocation::latestYear(),
         ])->extends('main.manual-tracking.index');
     }
 
@@ -127,6 +130,21 @@ class ManualTrackingReports extends Component
             }
             fclose($handle);
         }, 'manual-location-summary.csv');
+    }
+
+    public function exportAllocationCsv(): StreamedResponse
+    {
+        $rows = $this->allocationByRegion();
+        $year = ManualAllocation::latestYear();
+
+        return response()->streamDownload(function () use ($rows, $year): void {
+            $handle = fopen('php://output', 'w');
+            fputcsv($handle, ['academic_year', 'region', 'titles', 'allocated_student', 'allocated_teacher', 'dispatched_in', 'received', 'still_due']);
+            foreach ($rows as $row) {
+                fputcsv($handle, [$year, $row->region, $row->titles, $row->student, $row->teacher, $row->sent, $row->received, $row->due]);
+            }
+            fclose($handle);
+        }, 'manual-allocation-vs-delivered.csv');
     }
 
     public function exportBookBalanceCsv(): StreamedResponse
@@ -186,6 +204,42 @@ class ManualTrackingReports extends Component
             }
             fclose($handle);
         }, 'manual-package-movement-history.csv');
+    }
+
+    /**
+     * The latest Ministry allocation per region in the user's area, against copies sent into
+     * and received in each region.
+     */
+    private function allocationByRegion()
+    {
+        $year = ManualAllocation::latestYear();
+        if (! $year) {
+            return collect();
+        }
+
+        $rows = ManualAllocation::query()
+            ->accessibleBy($this->actor())
+            ->where('academic_year', $year)
+            ->whereNull('manual_allocations.zone_id')
+            ->join('regions', 'regions.id', '=', 'manual_allocations.region_id')
+            ->groupBy('manual_allocations.region_id', 'regions.name')
+            ->selectRaw('manual_allocations.region_id, regions.name as region, COUNT(DISTINCT manual_book_id) as titles')
+            ->selectRaw("SUM(CASE WHEN edition = 'student' THEN quantity ELSE 0 END) as student")
+            ->selectRaw("SUM(CASE WHEN edition = 'teacher' THEN quantity ELSE 0 END) as teacher")
+            ->orderBy('regions.name')
+            ->get();
+
+        $books = ManualAllocation::query()->where('academic_year', $year)->whereNull('zone_id')->distinct()->pluck('manual_book_id')->all();
+        $progress = ManualAllocation::inboundProgress($rows->pluck('region_id')->all(), $books)->groupBy('region_id');
+
+        return $rows->map(function ($row) use ($progress) {
+            $inbound = $progress[$row->region_id] ?? collect();
+            $row->sent = (int) ($inbound->sum('sent_student') + $inbound->sum('sent_teacher'));
+            $row->received = (int) ($inbound->sum('received_student') + $inbound->sum('received_teacher'));
+            $row->due = max(0, $row->student + $row->teacher - $row->received);
+
+            return $row;
+        });
     }
 
     private function actor(): User

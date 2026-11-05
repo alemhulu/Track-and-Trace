@@ -79,6 +79,52 @@ class ManualShipmentWorkflowTest extends TestCase
         $this->assertSame(['student' => 435, 'teacher' => 0], $noGuide->copiesFor(10, 35, 0));
     }
 
+    public function test_surplus_teacher_guides_are_packed_as_extra_teacher_guides(): void
+    {
+        $packing = $this->book->packagesFor(40 * 10 + 5, 20);
+
+        $this->assertSame(['full_packages' => 10, 'partial_package_books' => 5, 'partial_teacher_guides' => 1, 'extra_teacher_guides' => 9], $packing);
+        $this->assertSame(['student' => 405, 'teacher' => 20], $this->book->copiesFor(...array_values($packing)));
+        $this->assertSame(0, $this->book->packagesFor(400, 10)['extra_teacher_guides']);
+    }
+
+    public function test_extra_teacher_guides_travel_with_the_shipment(): void
+    {
+        $this->stock->recordOpeningStock($this->national, $this->places['bureau'], $this->book, ['student' => 400, 'teacher' => 30]);
+        $send = ['full_packages' => 10, 'partial_package_books' => 0, 'partial_teacher_guides' => 0, 'extra_teacher_guides' => 15];
+
+        $shipment = $this->shipments->dispatch($this->national, [
+            'from_organization_id' => $this->places['bureau']->id,
+            'to_organization_id' => $this->places['zoneOffice']->id,
+            'lines' => [['manual_book_id' => $this->book->id] + $send],
+        ]);
+        $line = $shipment->lines->first();
+
+        $this->assertSame(15, $line->extra_teacher_guides);
+        $this->assertSame(25, $line->teacher_guides);
+        $this->assertSame(11, $line->packageCount());
+        $this->assertBalance('bureau', 'teacher', 5, 25);
+
+        // One extra teacher guide did not arrive
+        $this->shipments->receive($this->zoneUser(), $shipment, [$line->id => ['extra_teacher_guides' => 14] + $send]);
+
+        $this->assertBalance('zoneOffice', 'teacher', 24, 0);
+        $missing = ManualDiscrepancy::query()->sole();
+        $this->assertSame(['missing', 'teacher', 1], [$missing->type, $missing->edition, $missing->quantity]);
+        $this->assertLedgerMatchesBalances();
+    }
+
+    public function test_extra_teacher_guides_need_a_title_with_a_teacher_guide(): void
+    {
+        $noGuide = ManualBook::query()->create(['title' => 'Sign Language Primer', 'region_id' => $this->places['region']->id, 'has_teacher_guide' => false]);
+
+        $this->assertRejected(fn () => $this->shipments->dispatch($this->national, [
+            'from_organization_id' => $this->places['printer']->id,
+            'to_organization_id' => $this->places['bureau']->id,
+            'lines' => [['manual_book_id' => $noGuide->id, 'full_packages' => 1, 'extra_teacher_guides' => 3]],
+        ]), 'has no teacher guide');
+    }
+
     public function test_dispatch_and_full_receipt_move_stock_between_holders(): void
     {
         $this->stock->recordOpeningStock($this->national, $this->places['bureau'], $this->book, ['student' => 1000, 'teacher' => 25]);

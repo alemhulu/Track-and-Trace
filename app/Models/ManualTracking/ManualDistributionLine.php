@@ -18,6 +18,7 @@ class ManualDistributionLine extends ManualBaseModel
         'full_packages',
         'partial_package_books',
         'partial_teacher_guides',
+        'extra_teacher_guides',
         'quantity',
         'teacher_guides',
         'received_quantity',
@@ -32,6 +33,7 @@ class ManualDistributionLine extends ManualBaseModel
         'full_packages' => 'integer',
         'partial_package_books' => 'integer',
         'partial_teacher_guides' => 'integer',
+        'extra_teacher_guides' => 'integer',
         'quantity' => 'integer',
         'teacher_guides' => 'integer',
         'received_quantity' => 'integer',
@@ -53,6 +55,17 @@ class ManualDistributionLine extends ManualBaseModel
             ManualBook::EDITION_STUDENT => (int) $this->quantity,
             ManualBook::EDITION_TEACHER => (int) $this->teacher_guides,
         ];
+    }
+
+    /**
+     * Packages on the vehicle: the full ones, the partial one, and one more for teacher guides
+     * packed on their own.
+     */
+    public function packageCount(): int
+    {
+        return (int) $this->full_packages
+            + ($this->partial_package_books || $this->partial_teacher_guides ? 1 : 0)
+            + ($this->extra_teacher_guides ? 1 : 0);
     }
 
     public function distribution(): BelongsTo

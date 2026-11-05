@@ -14,7 +14,8 @@
     <div class="p-5 card">
         <div class="flex flex-wrap items-start justify-between gap-3">
             <div>
-                <p class="text-xs text-gray-500 uppercase dark:text-gray-400">Shipment</p>
+                <a href="{{ route('manual-tracking.distribution.list') }}" class="text-xs link">← All shipments</a>
+                <p class="mt-1 text-xs text-gray-500 uppercase dark:text-gray-400">Shipment</p>
                 <h3 class="section-title text-xl">{{ $shipment->reference }}</h3>
             </div>
             <div class="flex items-center gap-3">
@@ -29,7 +30,7 @@
         <dl class="grid grid-cols-1 gap-4 mt-4 text-sm md:grid-cols-4">
             <div>
                 <dt class="text-gray-500 dark:text-gray-400">From</dt>
-                <dd class="font-medium text-gray-900 dark:text-gray-100">{{ $shipment->organization->name ?? '—' }}</dd>
+                <dd class="font-medium text-gray-900 break-words dark:text-gray-100">{{ $shipment->organization->name ?? '—' }}</dd>
             </div>
             <div>
                 <dt class="text-gray-500 dark:text-gray-400">To</dt>
@@ -69,7 +70,7 @@
             </div>
             <div>
                 <dt class="text-gray-500 dark:text-gray-400">Remarks</dt>
-                <dd class="text-gray-900 dark:text-gray-100">{{ $shipment->remarks ?: '—' }}</dd>
+                <dd class="text-gray-900 break-words dark:text-gray-100">{{ $shipment->remarks ?: '—' }}</dd>
             </div>
         </dl>
         @if ($shipment->receipt_notes)
@@ -94,7 +95,7 @@
                 <tr>
                     <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100">{{ $line->book->title ?? '—' }}</td>
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-300">
-                        {{ $line->full_packages }}{{ $line->partial_package_books ? ' + partial (' . $line->partial_package_books . ' SB, ' . $line->partial_teacher_guides . ' TG)' : '' }}
+                        {{ $line->full_packages }}{{ $line->partial_package_books || $line->partial_teacher_guides ? ' + partial (' . $line->partial_package_books . ' SB, ' . $line->partial_teacher_guides . ' TG)' : '' }}{{ $line->extra_teacher_guides ? ' + ' . number_format($line->extra_teacher_guides) . ' extra TG' : '' }}
                     </td>
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-300">{{ number_format($line->quantity) }} / {{ number_format($line->teacher_guides) }}</td>
                     <td class="px-4 py-2 text-gray-700 dark:text-gray-300">
@@ -143,7 +144,7 @@
                 <ul class="mt-1 space-y-1 text-sm">
                     @foreach ($shipment->lines as $line)
                     @php
-                        $expected = $line->full_packages + ($line->partial_package_books || $line->partial_teacher_guides ? 1 : 0);
+                        $expected = $line->packageCount();
                         $got = $scanCounts[$line->manual_book_id] ?? 0;
                     @endphp
                     <li class="{{ $got === $expected ? 'text-green-700' : 'text-gray-700 dark:text-gray-200' }}">
@@ -196,6 +197,7 @@
                         <th class="px-2 py-2">Full packages</th>
                         <th class="px-2 py-2">Partial: student books</th>
                         <th class="px-2 py-2">Partial: teacher guides</th>
+                        <th class="px-2 py-2">Extra teacher guides</th>
                         @endif
                         <th class="px-2 py-2">Damaged SB</th>
                         <th class="px-2 py-2">Damaged TG</th>
@@ -206,7 +208,7 @@
                     @php
                         $receiveFields = $receiveMode === 'totals'
                             ? ['student_books', 'teacher_guides', 'damaged_quantity', 'damaged_teacher_guides']
-                            : ['full_packages', 'partial_package_books', 'partial_teacher_guides', 'damaged_quantity', 'damaged_teacher_guides'];
+                            : ['full_packages', 'partial_package_books', 'partial_teacher_guides', 'extra_teacher_guides', 'damaged_quantity', 'damaged_teacher_guides'];
                     @endphp
                     @foreach ($shipment->lines as $line)
                     @php

@@ -15,6 +15,9 @@ class GradeSeeder extends Seeder
     public function run()
     {
         $datas = [
+            ['name' => 'KG L1'],
+            ['name' => 'KG L2'],
+            ['name' => 'KG L3'],
             ['name' => '1'],
             ['name' => '2'],
             ['name' => '3'],

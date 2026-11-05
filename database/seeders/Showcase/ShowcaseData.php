@@ -138,10 +138,10 @@ final class ShowcaseData
      * Student textbooks per grade. Grades 1-8 are served by primary schools, 9-12 by secondary.
      */
     public const CURRICULUM = [
-        '1' => ['Amharic', 'English', 'Mathematics', 'Environmental Sience'],
-        '2' => ['Amharic', 'English', 'Mathematics', 'Environmental Sience'],
-        '3' => ['Amharic', 'English', 'Mathematics', 'Environmental Sience'],
-        '4' => ['Amharic', 'English', 'Mathematics', 'Environmental Sience'],
+        '1' => ['Amharic', 'English', 'Mathematics', 'Environmental Science'],
+        '2' => ['Amharic', 'English', 'Mathematics', 'Environmental Science'],
+        '3' => ['Amharic', 'English', 'Mathematics', 'Environmental Science'],
+        '4' => ['Amharic', 'English', 'Mathematics', 'Environmental Science'],
         '5' => ['Amharic', 'English', 'Mathematics', 'Social Studies'],
         '6' => ['Amharic', 'English', 'Mathematics', 'Social Studies'],
         '7' => ['English', 'Mathematics', 'Civics', 'Social Studies', 'ICT'],

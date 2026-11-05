@@ -79,7 +79,7 @@
                 <tr>
                     <th class="px-4 py-2">Student</th>
                     @foreach ($titles as $title)
-                    <th class="px-4 py-2 text-center">
+                    <th class="px-4 py-2 text-center th-wrap max-w-[11rem]">
                         {{ $title->title }}
                         <span class="block font-normal text-gray-500">{{ number_format($onHand[$title->id] ?? 0) }} on hand</span>
                     </th>

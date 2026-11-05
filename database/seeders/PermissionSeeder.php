@@ -31,9 +31,11 @@ class PermissionSeeder extends Seeder
             && ! in_array($permission, ['users.view', 'roles.view', 'logs.view'], true)));
         $locationViews = array_values(array_filter(PermissionCatalog::namesOf('locations'), fn ($permission) => str_ends_with($permission, '.view')));
 
-        // Everything in manual tracking except registering titles, which stays with admins
+        // Everything in manual tracking except registering titles and importing the national
+        // allocation, which stay with admins
         $titles = PermissionCatalog::namesOf('manual-tracking.titles');
-        $manualTracking = array_values(array_diff(PermissionCatalog::namesOf('manual-tracking'), $titles));
+        $allocations = PermissionCatalog::namesOf('manual-tracking.allocations');
+        $manualTracking = array_values(array_diff(PermissionCatalog::namesOf('manual-tracking'), $titles, $allocations));
 
         $roles = [
             'Super-Admin' => $permissionNames,

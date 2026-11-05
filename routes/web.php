@@ -21,6 +21,7 @@ use App\Http\Livewire\Location\Woreda;
 use App\Http\Livewire\Location\Zone;
 use App\Http\Livewire\ManualTracking\Book\AddManualBook;
 use App\Http\Livewire\ManualTracking\Book\ListManualBook;
+use App\Http\Livewire\ManualTracking\Allocation\AllocationIndex;
 use App\Http\Livewire\ManualTracking\Discrepancy\ManualDiscrepancyIndex;
 use App\Http\Controllers\ManualTracking\FieldAppController;
 use App\Http\Controllers\ManualTracking\ManualPrintController;
@@ -165,6 +166,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         // Recording opening stock is checked inside the page
         Route::get('/manual-tracking/books/list', ListManualBook::class)->name('manual-tracking.books.list');
         Route::get('/manual-tracking/books/add', AddManualBook::class)->middleware('permission:manual-tracking.titles.create|manual-tracking.titles.edit')->name('manual-tracking.books.add');
+
+        Route::get('/manual-tracking/allocations', AllocationIndex::class)->name('manual-tracking.allocations.index');
 
         Route::get('/manual-tracking/stock', ManualStockIndex::class)->name('manual-tracking.stock.index');
 

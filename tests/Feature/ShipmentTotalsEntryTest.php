@@ -55,7 +55,7 @@ class ShipmentTotalsEntryTest extends TestCase
 
     public function test_totals_are_kept_exactly_and_described_as_packages(): void
     {
-        $this->assertSame(['full_packages' => 10, 'partial_package_books' => 35, 'partial_teacher_guides' => 1], $this->book->packagesFor(435, 11));
+        $this->assertSame(['full_packages' => 10, 'partial_package_books' => 35, 'partial_teacher_guides' => 1, 'extra_teacher_guides' => 0], $this->book->packagesFor(435, 11));
 
         // Fewer guides than packages cannot be written as packages, but the totals still hold
         $shipment = $this->dispatchTotals(400, 3);

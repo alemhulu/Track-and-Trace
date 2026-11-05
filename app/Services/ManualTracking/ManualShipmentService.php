@@ -29,7 +29,7 @@ class ManualShipmentService
      * @param  array{
      *     from_organization_id: int,
      *     to_organization_id: int,
-     *     lines: array<int, array{manual_book_id: int, full_packages?: int, partial_package_books?: int, partial_teacher_guides?: int}>,
+     *     lines: array<int, array{manual_book_id: int, full_packages?: int, partial_package_books?: int, partial_teacher_guides?: int, extra_teacher_guides?: int}>,
      *     carrier?: ?string, vehicle_no?: ?string, driver_name?: ?string, driver_phone?: ?string,
      *     waybill_no?: ?string, expected_at?: mixed, remarks?: ?string, client_uuid?: ?string
      * }  $data
@@ -111,6 +111,7 @@ class ManualShipmentService
                     'full_packages' => $prepared['full_packages'],
                     'partial_package_books' => $prepared['partial_package_books'],
                     'partial_teacher_guides' => $prepared['partial_teacher_guides'],
+                    'extra_teacher_guides' => $prepared['extra_teacher_guides'],
                     'quantity' => $prepared['copies'][ManualBook::EDITION_STUDENT],
                     'teacher_guides' => $prepared['copies'][ManualBook::EDITION_TEACHER],
                 ]);
@@ -152,7 +153,7 @@ class ManualShipmentService
     }
 
     /**
-     * @param  array<int, array{full_packages?: int, partial_package_books?: int, partial_teacher_guides?: int, damaged_quantity?: int, damaged_teacher_guides?: int}>  $counts  keyed by line id
+     * @param  array<int, array{full_packages?: int, partial_package_books?: int, partial_teacher_guides?: int, extra_teacher_guides?: int, damaged_quantity?: int, damaged_teacher_guides?: int}>  $counts  keyed by line id
      */
     public function receive(User $actor, ManualDistribution $shipment, array $counts, ?string $notes = null, ?Carbon $occurredAt = null): ManualDistribution
     {
@@ -333,7 +334,7 @@ class ManualShipmentService
     }
 
     /**
-     * @return Collection<int, array{book: ManualBook, full_packages: int, partial_package_books: int, partial_teacher_guides: int, copies: array{student: int, teacher: int}}>
+     * @return Collection<int, array{book: ManualBook, full_packages: int, partial_package_books: int, partial_teacher_guides: int, extra_teacher_guides: int, copies: array{student: int, teacher: int}}>
      */
     private function prepareLines(array $lines): Collection
     {
@@ -391,14 +392,14 @@ class ManualShipmentService
             throw new ManualTrackingException("A partial package of {$book->title} must hold fewer than {$book->students_per_package} student books.");
         }
 
-        if (! $book->has_teacher_guide && $count['partial_teacher_guides'] > 0) {
+        if (! $book->has_teacher_guide && $count['partial_teacher_guides'] + $count['extra_teacher_guides'] > 0) {
             throw new ManualTrackingException("{$book->title} has no teacher guide.");
         }
 
-        return [$count, $book->copiesFor($count['full_packages'], $count['partial_package_books'], $count['partial_teacher_guides'])];
+        return [$count, $book->copiesFor($count['full_packages'], $count['partial_package_books'], $count['partial_teacher_guides'], $count['extra_teacher_guides'])];
     }
 
-    private function nonNegativeCounts(array $input, array $fields = ['full_packages', 'partial_package_books', 'partial_teacher_guides', 'damaged_quantity', 'damaged_teacher_guides']): array
+    private function nonNegativeCounts(array $input, array $fields = ['full_packages', 'partial_package_books', 'partial_teacher_guides', 'extra_teacher_guides', 'damaged_quantity', 'damaged_teacher_guides']): array
     {
         $count = [];
         foreach ($fields as $field) {

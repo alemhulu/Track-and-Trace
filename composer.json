@@ -17,6 +17,7 @@
         "milon/barcode": "^10.0",
         "nesbot/carbon": "^2.68",
         "opcodesio/log-viewer": "^1.2",
+        "openspout/openspout": "^4",
         "spatie/laravel-permission": "^5.7"
     },
     "require-dev": {
