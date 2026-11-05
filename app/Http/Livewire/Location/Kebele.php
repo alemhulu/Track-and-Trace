@@ -103,7 +103,10 @@ class Kebele extends Component
     public function mount()
     {
         $this->countries = country::all();
-        $this->regions = region::all();
+        $this->country_id = $this->country_id ?: Country::defaultId();
+        $this->regions = $this->country_id
+            ? region::where('country_id', $this->country_id)->orderBy('name')->get()
+            : region::orderBy('name')->get();
         $this->zones = zone::all();
         $this->woredas = woredas::all();
     }

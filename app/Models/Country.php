@@ -14,6 +14,16 @@ class Country extends Model
         'name'
     ];
 
+    public const DEFAULT_NAME = 'Ethiopia';
+
+    /**
+     * The country location forms preselect (Ethiopia), or null when it is not set up.
+     */
+    public static function defaultId(): ?int
+    {
+        return static::query()->where('name', self::DEFAULT_NAME)->value('id');
+    }
+
     public function regions()
     {
         return $this->hasMany(Region::class);
