@@ -61,7 +61,7 @@ class AllocationImportService
     /**
      * @return array{
      *     titles: array<string, array>,
-     *     regions: array<string, array{lines: int, titles: int, student: int, teacher: int, unconfirmed: int, expected_lines: ?int, expected_total: ?int}>,
+     *     regions: array<string, array{lines: int, titles: int, student: int, teacher: int, expected_lines: ?int, expected_total: ?int}>,
      *     awaiting: array<string, array{lines: int, total: int}>,
      *     zones: array<string, array<string, array{zone_id: ?int, lines: int, titles: int, student: int, teacher: int}>>,
      *     zone_rows: array<string, array<string, array<string, array>>>,
@@ -236,10 +236,9 @@ class AllocationImportService
                     $titles[$key]['editions'][$edition] = $source;
                 }
 
-                $regions[$region->name] ??= ['lines' => 0, 'titles' => 0, 'student' => 0, 'teacher' => 0, 'unconfirmed' => 0, 'expected_lines' => null, 'expected_total' => null];
+                $regions[$region->name] ??= ['lines' => 0, 'titles' => 0, 'student' => 0, 'teacher' => 0, 'expected_lines' => null, 'expected_total' => null];
                 $regions[$region->name]['lines']++;
                 $regions[$region->name][$edition === ManualBook::EDITION_TEACHER ? 'teacher' : 'student'] += $quantity;
-                $regions[$region->name]['unconfirmed'] += $confirmed ? 0 : 1;
                 $lineCount++;
                 $total += $quantity;
             }
@@ -277,10 +276,6 @@ class AllocationImportService
             }
         }
 
-        $unconfirmed = array_sum(array_column($regions, 'unconfirmed'));
-        if ($unconfirmed > 0) {
-            $warnings[] = "{$unconfirmed} rows had no clear type (TBD) and were taken as student texts; check them on the Allocations page.";
-        }
 
         ksort($regions);
 
@@ -426,14 +421,13 @@ class AllocationImportService
 
             if (! isset($regions[$regionName])) {
                 $warnings[] = "{$regionName}: no region sheet; the region allocation is the sum of its zone sheets.";
-                $regions[$regionName] = ['lines' => 0, 'titles' => 0, 'student' => 0, 'teacher' => 0, 'unconfirmed' => 0, 'expected_lines' => null, 'expected_total' => null];
+                $regions[$regionName] = ['lines' => 0, 'titles' => 0, 'student' => 0, 'teacher' => 0, 'expected_lines' => null, 'expected_total' => null];
 
                 foreach ($sums as $key => $editions) {
                     foreach ($editions as $edition => $row) {
                         $titles[$key]['editions'][$edition] = $row;
                         $regions[$regionName]['lines']++;
                         $regions[$regionName][$edition === ManualBook::EDITION_TEACHER ? 'teacher' : 'student'] += $row['quantity'];
-                        $regions[$regionName]['unconfirmed'] += $row['confirmed'] ? 0 : 1;
                     }
                 }
 
@@ -761,10 +755,7 @@ class AllocationImportService
             return [ManualBook::EDITION_TEACHER, true];
         }
 
-        if ($matches(config('manual_allocation.student_keywords', []))) {
-            return [ManualBook::EDITION_STUDENT, true];
-        }
-
-        return [ManualBook::EDITION_STUDENT, false];
+        // A TBD or blank type is a student text (STB) unless the title names a teacher guide
+        return [ManualBook::EDITION_STUDENT, true];
     }
 }

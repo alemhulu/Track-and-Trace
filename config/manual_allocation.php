@@ -105,10 +105,40 @@ return [
         'level 3' => 'KG L3',
     ],
 
-    // Title words that settle a TBD type; checked teacher first ("Teacher guide for student book")
+    // A TBD or blank type is taken as a student text (STB), unless the title has one of these words
     'teacher_keywords' => ['teacher', 'guide', 't.guid', 'tg'],
-    'student_keywords' => ['student', 'sts', 'text', 'pupil', 'st'],
 
     // Title words that mark a second-language edition of the same subject and grade
     'second_language_pattern' => '/\b(2nd|second)\b/i',
+
+    /*
+     * Regional bureau woreda splits (manual:import-woreda-allocations): a sheet per subject,
+     * zone and woreda in the first two columns, then a student text and teacher guide column
+     * per grade. A sheet is matched to the region's allocated titles by the first keyword
+     * found in its name or caption; the titles are those whose subject is one of the listed
+     * names (as the allocation import stored them) and whose grade matches the column.
+     */
+    'woreda_sheets' => [
+        'pre-primary' => ['Integrated Pre-Primary'],
+        'pre primary' => ['Integrated Pre-Primary'],
+        'afan oromo' => ['Mother Tongue'],
+        'afaan oromoo' => ['Mother Tongue'],
+        'herreegaa' => ['Mathematics'],
+        'math' => ['Mathematics'],
+        'english' => ['English'],
+        'saayinsii' => ['Environmental Science'],
+        'environmental' => ['Environmental Science'],
+        'gadaa' => ['Moral Education'],
+        'amharic' => ['Amahric 2nd Language', 'Amharic 2nd Language', 'Amharic'],
+        'afaan amaaraa' => ['Amahric 2nd Language', 'Amharic 2nd Language', 'Amharic'],
+    ],
+
+    // Zone cells carry the woreda count after the name ("Arsii  Aanaa 28", "Magaala Shaggar Kutaa Magaalaa 12")
+    'woreda_zone_suffix_pattern' => '/\s+(aanaa|aanna|kutaa\s+magaalaa|woredas?)\b.*$|\s+\d+\s*$/iu',
+
+    // Rows that are not woredas: zone subtotals and the grand total
+    'woreda_skip_rows' => ['idaáma', 'idaama', 'total', 'grand total', 'sub total', 'subtotal'],
+
+    // Woreda spellings that differ between sheets, mapped onto one name (keys lower-case)
+    'woredas' => [],
 ];

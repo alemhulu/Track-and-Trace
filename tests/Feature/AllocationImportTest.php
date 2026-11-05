@@ -21,7 +21,7 @@ use Tests\TestCase;
 
 /**
  * The Ministry allocation workbook: columns found by header on both sheet layouts, ST and TG
- * rows paired into one title named as the workbook writes it, second-language editions kept apart, TBD types flagged,
+ * rows paired into one title named as the workbook writes it, second-language editions kept apart, TBD types taken as student texts,
  * repeated rows summed, totals checked against the Summary sheet, and the result scoped
  * to the viewer's region.
  */
@@ -79,14 +79,13 @@ class AllocationImportTest extends TestCase
 
         $oromia = $result['regions']['Oromia'];
         $this->assertSame([3, 1500, 25, 1525], [$oromia['titles'], $oromia['student'], $oromia['teacher'], $oromia['expected_total']]);
-        $this->assertSame(2, $result['regions']['Amhara']['unconfirmed']);
         $this->assertArrayHasKey('South West Ethiopia', $result['awaiting']);
 
         $warnings = implode("\n", $result['warnings']);
         $this->assertStringContainsString('repeats Amhara row 2', $warnings);
         $this->assertStringContainsString('the Summary says 3 and 999', $warnings);
         $this->assertStringContainsString('South West Ethiopia: listed in the Summary', $warnings);
-        $this->assertStringContainsString('2 rows had no clear type', $warnings);
+        $this->assertStringNotContainsString('no clear type', $warnings);
     }
 
     public function test_commit_saves_titles_and_allocation_and_is_repeatable(): void
@@ -110,7 +109,9 @@ class AllocationImportTest extends TestCase
         $this->assertSame('N1001', $hpe->print_code);
         $allocation = $hpe->allocations()->sole();
         $this->assertSame(550, $allocation->quantity);
-        $this->assertFalse($allocation->type_confirmed);
+        // TBD rows are student texts (STB)
+        $this->assertSame(ManualBook::EDITION_STUDENT, $allocation->edition);
+        $this->assertTrue($allocation->type_confirmed);
 
         $counts = fn () => [ManualBook::query()->whereNotNull('source_key')->count(), ManualAllocation::query()->count(), (int) ManualAllocation::query()->sum('quantity')];
         $this->assertSame([5, 6, 2175], $counts());

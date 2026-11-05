@@ -29,4 +29,9 @@ class ManualAllocationImport extends ManualBaseModel
     {
         return $this->hasMany(ManualAllocation::class, 'manual_allocation_import_id');
     }
+
+    public function woredaAllocations(): HasMany
+    {
+        return $this->hasMany(ManualWoredaAllocation::class, 'manual_allocation_import_id');
+    }
 }

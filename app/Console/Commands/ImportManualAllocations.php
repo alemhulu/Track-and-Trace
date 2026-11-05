@@ -34,7 +34,7 @@ class ImportManualAllocations extends Command
             : $service->parse($path, $year);
 
         $this->table(
-            ['Region', 'Lines', 'Titles', 'Student texts', 'Teacher guides', 'Total', 'Summary total', 'TBD'],
+            ['Region', 'Lines', 'Titles', 'Student texts', 'Teacher guides', 'Total', 'Summary total'],
             collect($result['regions'])->map(fn ($region, $name) => [
                 $name,
                 $region['lines'],
@@ -43,7 +43,6 @@ class ImportManualAllocations extends Command
                 number_format($region['teacher']),
                 number_format($region['student'] + $region['teacher']),
                 $region['expected_total'] === null ? '-' : number_format($region['expected_total']),
-                $region['unconfirmed'],
             ])->values()->all()
         );
 
