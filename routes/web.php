@@ -83,6 +83,8 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/location/kebele', Kebele::class)->middleware('permission:locations.kebeles.view')->name('location.kebele');
     });
 
+    Route::get('/academic-years', \App\Http\Livewire\AcademicYear\AcademicYearIndex::class)->middleware('permission:academic-years.view')->name('academic-years.index');
+
     // Organization routes
     Route::middleware('permission:organizations.view')->group(function () {
         Route::get('/organization', function () {

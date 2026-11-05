@@ -447,7 +447,7 @@ class CreateShipment extends Component
         $regionId = (int) ($to?->region_id ?: $this->destination['region_id']);
         $zoneId = (int) ($to?->zone_id ?: $this->destination['zone_id']);
 
-        if (! $bookIds || ! ($year = ManualAllocation::latestYear())) {
+        if (! $bookIds || ! ($year = ManualAllocation::currentYear())) {
             return [];
         }
 

@@ -24,6 +24,9 @@ class ImportedDataSeeder extends Seeder
         $root = storage_path('app/allocation-imports');
         $year = (string) ($_ENV['ALLOCATION_YEAR'] ?? $_SERVER['ALLOCATION_YEAR'] ?? AcademicYear::current());
 
+        // The year the workbooks are imported for must be one screens can pick
+        \App\Models\AcademicYear::ensure((int) $year);
+
         $ministryFiles = glob("{$root}/ministry/*.xlsx") ?: [];
         if (! $ministryFiles) {
             throw new RuntimeException("No Ministry allocation workbook in {$root}/ministry.");

@@ -189,6 +189,12 @@ return [
                     'locations.kebeles' => ['label' => 'Kebeles', 'permissions' => $crud('locations.kebeles', 'kebeles')],
                 ],
             ],
+            'academic-years' => [
+                'route' => 'academic-years.index',
+                'label' => 'Academic Years',
+                'icon' => 'fi-rr-calendar',
+                'permissions' => $crud('academic-years', 'academic years'),
+            ],
             'users' => [
                 'route' => 'users.index',
                 'label' => 'Users',

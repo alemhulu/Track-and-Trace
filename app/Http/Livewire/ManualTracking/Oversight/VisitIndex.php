@@ -46,6 +46,11 @@ class VisitIndex extends Component
         }
     }
 
+    public function updatedYear(): void
+    {
+        $this->year = AcademicYear::resolve($this->year);
+    }
+
     public function updatedArea($value, $key)
     {
         $this->area = $this->location()->apply($this->area, $key);

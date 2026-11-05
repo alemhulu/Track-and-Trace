@@ -40,7 +40,7 @@ class SchoolIndex extends Component
 
     public function mount()
     {
-        $this->year = (int) ($this->year ?: AcademicYear::current());
+        $this->year = AcademicYear::resolve($this->year);
         $this->area = $this->location()->apply([]);
     }
 
@@ -71,6 +71,11 @@ class SchoolIndex extends Component
         $this->reset('search', 'state');
         $this->area = $this->location()->apply([]);
         $this->resetPage();
+    }
+
+    public function updatedYear(): void
+    {
+        $this->year = AcademicYear::resolve($this->year);
     }
 
     public function updatingSearch()

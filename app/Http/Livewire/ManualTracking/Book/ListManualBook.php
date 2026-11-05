@@ -65,7 +65,7 @@ class ListManualBook extends Component
 
     public function render()
     {
-        $year = ManualAllocation::latestYear();
+        $year = ManualAllocation::currentYear();
 
         $books = $this->filtered($year)
             ->with(['region:id,name', 'codes'])

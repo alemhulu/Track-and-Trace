@@ -68,6 +68,7 @@ class Region extends Component
     public function mount()
     {
         $this->countries = country::all();
+        $this->country_id = $this->country_id ?: Country::defaultId();
         $this->is_city = 0;
     }
     

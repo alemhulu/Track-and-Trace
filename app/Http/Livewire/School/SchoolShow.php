@@ -20,7 +20,12 @@ class SchoolShow extends Component
     public function mount($school)
     {
         $this->schoolId = Organization::query()->accessibleBy(Auth::user())->findOrFail($school)->id;
-        $this->year = (int) ($this->year ?: AcademicYear::current());
+        $this->year = AcademicYear::resolve($this->year);
+    }
+
+    public function updatedYear(): void
+    {
+        $this->year = AcademicYear::resolve($this->year);
     }
 
     public function render()

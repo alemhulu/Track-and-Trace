@@ -81,6 +81,10 @@
         <x-side-navigation.link href="/location" icon="fi-rr-map-marker-home" name="Locations"
             :active="(request()->routeIs('location') | request()->routeIs('location.*'))" />
         @endcan
+        @can('academic-years.view')
+        <x-side-navigation.link href="{{ route('academic-years.index') }}" icon="fi-rr-calendar" name="Academic Years"
+            :active="request()->routeIs('academic-years.*')" />
+        @endcan
         @can('users.view')
         <x-side-navigation.link href="{{ route('users.index') }}" icon="fi-rr-user" name="Users"
             :active="request()->routeIs('users.*')" />

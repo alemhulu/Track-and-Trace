@@ -12,6 +12,14 @@ abstract class TestCase extends BaseTestCase
 {
     use CreatesApplication;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        // Managed academic years are cached per process; each test reads its own database
+        \App\Support\AcademicYear::flush();
+    }
+
     /**
      * Users created from here on hold every module permission except managing titles,
      * which stays with admins, so a test exercises location scope and role rules alone.
