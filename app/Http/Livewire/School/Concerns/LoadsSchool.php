@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\School\Concerns;
 
 use App\Models\Organization;
+use App\Support\AcademicYear;
 use Illuminate\Support\Facades\Auth;
 
 /**
@@ -13,6 +14,19 @@ trait LoadsSchool
 {
     public $schoolId;
     public $year;
+
+    // Tabs are mounted with the school page's year; anything else falls back to the current year
+    public function mountLoadsSchool(): void
+    {
+        $this->year = AcademicYear::resolve($this->year);
+    }
+
+    public function updatedLoadsSchool($property): void
+    {
+        if ($property === 'year') {
+            $this->year = AcademicYear::resolve($this->year);
+        }
+    }
 
     protected function school(): Organization
     {

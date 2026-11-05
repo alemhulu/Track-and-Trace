@@ -5,6 +5,7 @@ namespace App\Models\ManualTracking;
 use App\Models\Region;
 use App\Models\User;
 use App\Models\Zone;
+use App\Support\AcademicYear;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
@@ -57,9 +58,10 @@ class ManualAllocation extends ManualBaseModel
                 ->whereNull('manual_allocations.zone_id')->orWhere('manual_allocations.zone_id', $scope['zone_id'])));
     }
 
-    public static function latestYear(): ?string
+    // The allocation year screens work with: the current academic year
+    public static function currentYear(): string
     {
-        return static::query()->max('academic_year');
+        return (string) AcademicYear::current();
     }
 
     /**
@@ -109,7 +111,7 @@ class ManualAllocation extends ManualBaseModel
      */
     public static function standing(int $bookId, ?int $regionId, ?int $zoneId, ?string $year = null): array
     {
-        $year ??= static::latestYear();
+        $year ??= static::currentYear();
         if (! $year || ! $regionId) {
             return [];
         }

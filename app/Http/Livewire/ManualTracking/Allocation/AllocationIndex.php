@@ -61,7 +61,7 @@ class AllocationIndex extends Component
 
     public function mount(): void
     {
-        $this->year = $this->year ?: (string) (ManualAllocation::latestYear() ?? AcademicYear::current());
+        $this->year = (string) AcademicYear::resolve($this->year);
         $this->importYear = (string) AcademicYear::current();
         $this->applyLocks();
     }
@@ -170,7 +170,8 @@ class AllocationIndex extends Component
         $actor = Auth::user();
         $location = ScopedLocation::for($actor);
         $regions = $location->regions();
-        $years = ManualAllocation::query()->distinct()->orderByDesc('academic_year')->pluck('academic_year');
+        $this->year = (string) AcademicYear::resolve($this->year);
+        $years = AcademicYear::options();
 
         $base = fn () => ManualAllocation::query()
             ->accessibleBy($actor)
@@ -460,10 +461,10 @@ class AllocationIndex extends Component
     {
         $this->validate([
             'workbook' => 'required|file|mimes:xlsx|max:20480',
-            'importYear' => 'required|integer|min:2000|max:2100',
+            'importYear' => AcademicYear::rules(),
             'importLevel' => 'required|in:region,woreda',
             'importRegion' => 'required_if:importLevel,woreda|nullable|string|exists:regions,name',
-        ], [], ['workbook' => 'allocation workbook', 'importYear' => 'academic year']);
+        ], ['importYear.in' => 'Add this year on the Academic Years page before importing for it.'], ['workbook' => 'allocation workbook', 'importYear' => 'academic year']);
     }
 
     // Keeps the preview small enough to travel with every Livewire request

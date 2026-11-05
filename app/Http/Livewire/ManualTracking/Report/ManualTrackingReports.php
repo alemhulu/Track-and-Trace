@@ -106,7 +106,7 @@ class ManualTrackingReports extends Component
             'locationChartLabels' => $locationChartLabels,
             'locationChartSeries' => $locationChartSeries,
             'allocationByRegion' => $this->allocationByRegion(),
-            'allocationYear' => ManualAllocation::latestYear(),
+            'allocationYear' => ManualAllocation::currentYear(),
         ])->extends('main.manual-tracking.index');
     }
 
@@ -135,7 +135,7 @@ class ManualTrackingReports extends Component
     public function exportAllocationCsv(): StreamedResponse
     {
         $rows = $this->allocationByRegion();
-        $year = ManualAllocation::latestYear();
+        $year = ManualAllocation::currentYear();
 
         return response()->streamDownload(function () use ($rows, $year): void {
             $handle = fopen('php://output', 'w');
@@ -212,7 +212,7 @@ class ManualTrackingReports extends Component
      */
     private function allocationByRegion()
     {
-        $year = ManualAllocation::latestYear();
+        $year = ManualAllocation::currentYear();
         if (! $year) {
             return collect();
         }

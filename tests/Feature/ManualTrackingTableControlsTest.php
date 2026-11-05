@@ -12,6 +12,7 @@ use App\Http\Livewire\ManualTracking\Scan\ScanAlertIndex;
 use App\Http\Livewire\ManualTracking\Shipment\CreateShipment;
 use App\Http\Livewire\ManualTracking\Stock\ManualStockIndex;
 use App\Http\Livewire\School\SchoolIndex;
+use App\Models\AcademicYear;
 use App\Models\ManualTracking\ManualAllocation;
 use App\Models\ManualTracking\ManualBook;
 use App\Models\ManualTracking\ManualDiscrepancy;
@@ -238,6 +239,7 @@ class ManualTrackingTableControlsTest extends TestCase
             ->assertViewHas('books', fn ($books) => in_array($ours->id, $ids($books)) && ! in_array($theirs->id, $ids($books)));
 
         // Opening stock: the location sets the region, the titles follow it, and the allocation is shown
+        AcademicYear::ensure(2099, current: true);
         // Room for exactly 10 more student books on top of what the region already holds
         $allocation = ManualAllocation::query()->forceCreate([
             'academic_year' => '2099', 'region_id' => $ours->region_id, 'manual_book_id' => $ours->id,
@@ -290,6 +292,8 @@ class ManualTrackingTableControlsTest extends TestCase
     public function test_fill_allowed_packs_what_the_allocation_still_allows(): void
     {
         $this->actingAs(User::query()->where('email', 'superadmin@gmail.com')->firstOrFail());
+
+        AcademicYear::ensure(2099, current: true);
 
         // Opening stock: room for 405 student books and 20 teacher guides on top of what the region holds
         $book = ManualBook::query()->whereNotNull('region_id')->where('has_teacher_guide', true)->where('students_per_package', 40)->firstOrFail();

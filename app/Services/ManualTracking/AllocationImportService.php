@@ -539,7 +539,7 @@ class AllocationImportService
         $grades = ManualAllocation::query()
             ->join('manual_books', 'manual_books.id', '=', 'manual_allocations.manual_book_id')
             ->join('grades', 'grades.id', '=', 'manual_books.grade_id')
-            ->where('manual_allocations.academic_year', $this->year ?? ManualAllocation::latestYear())
+            ->where('manual_allocations.academic_year', $this->year ?? ManualAllocation::currentYear())
             ->where('manual_allocations.region_id', $region->id)
             ->whereNull('manual_allocations.zone_id')
             ->where('manual_allocations.edition', $edition)

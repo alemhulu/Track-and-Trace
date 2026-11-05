@@ -4,11 +4,9 @@
             <div>
                 <x-jet-label for="year" value="Academic year" />
                 <x-form.select wire:model="year" id="year">
-                    @forelse ($years as $option)
-                    <option value="{{ $option }}">{{ \App\Support\AcademicYear::label((int) $option) }}</option>
-                    @empty
-                    <option value="{{ $year }}">{{ \App\Support\AcademicYear::label((int) $year) }}</option>
-                    @endforelse
+                    @foreach ($years as $value => $label)
+                    <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
                 </x-form.select>
             </div>
             <div>
@@ -181,7 +179,11 @@
                 </div>
                 <div>
                     <x-jet-label for="importYear" value="Academic year (E.C.)" />
-                    <x-jet-input wire:model.defer="importYear" id="importYear" type="number" class="block w-full mt-1" />
+                    <x-form.select wire:model.defer="importYear" id="importYear">
+                        @foreach ($years as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </x-form.select>
                     <x-jet-input-error for="importYear" class="mt-1" />
                 </div>
             </div>

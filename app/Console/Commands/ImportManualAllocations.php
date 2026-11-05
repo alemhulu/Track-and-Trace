@@ -27,6 +27,12 @@ class ImportManualAllocations extends Command
         }
 
         $year = (string) ($this->option('year') ?: AcademicYear::current());
+        if (! AcademicYear::isKnown((int) $year)) {
+            $this->error("Academic year {$year} is not set up. Add it on the Academic Years page first.");
+
+            return self::FAILURE;
+        }
+
         $actor = $this->option('user') ? User::query()->where('email', $this->option('user'))->first() : null;
 
         $result = $this->option('commit')

@@ -28,6 +28,12 @@ class ImportWoredaAllocations extends Command
         }
 
         $year = (string) ($this->option('year') ?: AcademicYear::current());
+        if (! AcademicYear::isKnown((int) $year)) {
+            $this->error("Academic year {$year} is not set up. Add it on the Academic Years page first.");
+
+            return self::FAILURE;
+        }
+
         $region = (string) $this->option('region');
         $actor = $this->option('user') ? User::query()->where('email', $this->option('user'))->first() : null;
 
