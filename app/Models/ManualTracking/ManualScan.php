@@ -24,6 +24,7 @@ class ManualScan extends ManualBaseModel
     public const FLAG_WRONG_REGION = 'wrong_region';
     public const FLAG_UNKNOWN = 'unknown_code';
     public const FLAG_AMBIGUOUS = 'ambiguous_zone';
+    public const FLAG_AMBIGUOUS_BOOK = 'ambiguous_book';
     public const FLAG_NOT_ON_SHIPMENT = 'not_on_shipment';
 
     // Flags that need someone upstream to act; the others are only shown to the scanner
@@ -37,6 +38,7 @@ class ManualScan extends ManualBaseModel
         self::FLAG_WRONG_REGION => 'Book for another region',
         self::FLAG_UNKNOWN => 'Code not recognised',
         self::FLAG_AMBIGUOUS => 'Zone name matches several zones',
+        self::FLAG_AMBIGUOUS_BOOK => 'QR text shared by several titles',
         self::FLAG_NOT_ON_SHIPMENT => 'Title not on this shipment',
     ];
 

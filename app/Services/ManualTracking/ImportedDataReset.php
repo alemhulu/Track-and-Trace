@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 /**
- * Leaves only what the imported allocation workbooks produced: their titles, allocations
- * and import records, the regions, zones and woredas they name, and the grades and subjects
+ * Leaves only what the imported workbooks produced: their titles, book QR codes, cartons,
+ * allocations and import records, the regions, zones and woredas they name, and the grades and subjects
  * their titles use. Seeded demo data goes: manual-tracking activity, the print module's
  * books, orders and packages, organizations, warehouses, and every user except the system
  * accounts. Lookup lists (countries, book/print types, paper sizes, organization types,
@@ -22,7 +22,7 @@ class ImportedDataReset
     /** Emptied completely */
     private const ACTIVITY_TABLES = [
         // Manual tracking
-        'manual_book_packages', 'manual_book_codes', 'manual_distribution_lines', 'manual_distributions',
+        'manual_distribution_lines', 'manual_distributions',
         'manual_stock_balances', 'manual_stock_ledgers', 'manual_discrepancies', 'manual_scans', 'manual_audits',
         'field_sync_actions', 'verification_visit_items', 'verification_visits',
         'student_book_issues', 'teacher_guide_issues', 'school_enrolments', 'students',
@@ -46,12 +46,17 @@ class ImportedDataReset
         try {
             foreach (self::ACTIVITY_TABLES as $table) {
                 if ($removed[$table] = $count($table)) {
-                    DB::table($table)->truncate();
+                    // DELETE, not TRUNCATE: TRUNCATE commits any open transaction in MySQL
+                    DB::table($table)->delete();
                 }
             }
 
-            // Titles the workbooks did not bring
+            // Titles the workbooks did not bring, and cartons entered by hand
             $removed['manual_books'] = DB::table('manual_books')->whereNull('source_key')->delete();
+            $removed['manual_book_packages'] = DB::table('manual_book_packages')->whereNull('source_key')
+                ->orWhereNotIn('manual_book_id', DB::table('manual_books')->select('id'))->delete();
+            $removed['manual_book_codes'] = DB::table('manual_book_codes')
+                ->whereNotIn('manual_book_id', DB::table('manual_books')->select('id'))->delete();
 
             // Users: only the system accounts, detached from any place
             $kept = DB::table('users')->whereIn('email', self::KEPT_USERS)->pluck('id');

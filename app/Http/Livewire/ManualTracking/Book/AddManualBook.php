@@ -149,16 +149,27 @@ class AddManualBook extends Component
                 continue;
             }
 
-            $taken = ManualBookCode::query()
-                ->where('normalized_payload', ManualBookCode::normalize($code['payload']))
+            $others = ManualBookCode::query()
                 ->where(fn ($query) => $query
                     ->where('manual_book_id', '!=', $this->editingBookId ?? 0)
-                    ->orWhere('edition', '!=', $edition))
+                    ->orWhere('edition', '!=', $edition));
+            $printCode = trim((string) ($code['print_code'] ?? ''));
+
+            if ($printCode !== '' && (clone $others)->where('print_code', $printCode)->exists()) {
+                throw ValidationException::withMessages([
+                    "codes.{$edition}.print_code" => 'This code number is already linked to another title or edition.',
+                ]);
+            }
+
+            // Language editions may share a QR text when each has its own code number
+            $taken = (clone $others)
+                ->where('normalized_payload', ManualBookCode::normalize($code['payload']))
+                ->when($printCode !== '', fn ($query) => $query->where(fn ($match) => $match->whereNull('print_code')->orWhere('print_code', '')))
                 ->exists();
 
             if ($taken) {
                 throw ValidationException::withMessages([
-                    "codes.{$edition}.payload" => 'This QR text is already linked to another title or edition.',
+                    "codes.{$edition}.payload" => 'This QR text is already linked to another title or edition. Give each its own code number.',
                 ]);
             }
         }

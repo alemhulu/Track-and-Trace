@@ -37,9 +37,28 @@ class ManualScanService
         $payload = trim($payload);
         $result = ['kind' => ManualScan::KIND_UNKNOWN, 'payload' => $payload, 'code' => null, 'book' => null, 'edition' => null, 'zone' => null, 'flag' => null, 'message' => ''];
 
-        if ($code = ManualBookCode::findByScan($payload)) {
-            $code->loadMissing('book');
+        $codes = ManualBookCode::matchingScan($payload)->load('book');
 
+        // A QR text several language editions share: narrow it to the shipment, then the region
+        if ($codes->pluck('manual_book_id')->unique()->count() > 1 && $shipment) {
+            $onShipment = $shipment->lines()->pluck('manual_book_id')->all();
+            $codes = $codes->whereIn('manual_book_id', $onShipment)->values()->whenEmpty(fn () => $codes);
+        }
+        if ($codes->pluck('manual_book_id')->unique()->count() > 1 && $expectedAt?->region_id) {
+            $inRegion = $codes->filter(fn (ManualBookCode $code) => (int) $code->book->region_id === (int) $expectedAt->region_id)->values();
+            $codes = $inRegion->isNotEmpty() ? $inRegion : $codes;
+        }
+
+        if ($codes->pluck('manual_book_id')->unique()->count() > 1) {
+            return array_merge($result, [
+                'kind' => ManualScan::KIND_BOOK,
+                'flag' => ManualScan::FLAG_AMBIGUOUS_BOOK,
+                'message' => "\"{$payload}\" is printed on " . $codes->count() . ' titles (' . $codes->pluck('book.title')->take(4)->implode('; ')
+                    . '). Scan or type the code number printed under the QR.',
+            ]);
+        }
+
+        if ($code = $codes->first()) {
             return $this->checkBook(array_merge($result, [
                 'kind' => ManualScan::KIND_BOOK,
                 'code' => $code,
@@ -262,10 +281,23 @@ class ManualScanService
 
     private function zonesMatching(string $payload): Collection
     {
-        $this->zones ??= Zone::query()->get(['id', 'name', 'region_id'])
-            ->groupBy(fn (Zone $zone) => self::zoneKey($zone->name));
+        $this->zones ??= Zone::query()->get(['id', 'name', 'code', 'region_id']);
 
-        return $this->zones->get(self::zoneKey($payload), collect());
+        $byName = $this->zones->filter(fn (Zone $zone) => self::zoneKey($zone->name) === self::zoneKey($payload));
+        if ($byName->isNotEmpty()) {
+            return $byName->values();
+        }
+
+        // Printer labels carry the zone code: "ORM-Z-1001", or the name and code "Arsii Aanaa 28 1001"
+        $code = self::zoneCodeIn($payload);
+
+        return $code === null ? collect() : $this->zones->where('code', $code)->values();
+    }
+
+    // The zone code at the end of a printer package QR ("ORM-Z-1001", "Dire Dawa 0600")
+    public static function zoneCodeIn(?string $payload): ?string
+    {
+        return preg_match('/(?:^|[\s-])(\d{4})\s*$/', trim((string) $payload), $match) ? $match[1] : null;
     }
 
     // "EAST SHEWA", "East Shewa Zone" and "east-shewa" are the same label

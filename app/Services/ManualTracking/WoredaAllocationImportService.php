@@ -116,9 +116,9 @@ class WoredaAllocationImportService
 
             // grade => book, for the grades this sheet has columns for
             $gradeBooks = [];
-            foreach (collect($sheet['columns'])->pluck('grade')->unique() as $grade) {
+            foreach (collect($sheet['columns'])->keyBy('grade') as $grade => $column) {
                 $book = $books->first(fn (ManualBook $book) => in_array(Str::lower((string) $book->subject_name), array_map('strtolower', $subjects), true)
-                    && $this->gradeNumber((string) $book->grade_name) === $grade);
+                    && array_intersect($this->gradeKeys((string) $book->grade_name), $column['keys']));
 
                 if ($book) {
                     $gradeBooks[$grade] = $book;
@@ -401,13 +401,15 @@ class WoredaAllocationImportService
 
             $grades = $rows[$index - 1] ?? [];
             $grade = null;
+            $keys = [];
             for ($column = 0; $column <= max(array_keys($editions)); $column++) {
                 $header = $grades[$column] ?? '';
                 if ($header !== '' && $header !== null) {
                     $grade = $this->gradeNumber((string) $header);
+                    $keys = $this->gradeKeys((string) $header);
                 }
                 if (isset($editions[$column]) && $grade !== null) {
-                    $columns[] = ['index' => $column, 'grade' => $grade, 'edition' => $editions[$column]];
+                    $columns[] = ['index' => $column, 'grade' => $grade, 'keys' => $keys, 'edition' => $editions[$column]];
                 }
             }
 
@@ -535,6 +537,31 @@ class WoredaAllocationImportService
     private function gradeNumber(string $value): ?int
     {
         return preg_match('/\d+/', $value, $match) ? (int) $match[0] : null;
+    }
+
+    /**
+     * Ways a grade is written, so a column and a title's grade can be matched: the number, and
+     * for pre-primary the level. The bureau writes "Level 5 (I)" (age 5, level I), the printer
+     * "Level 1", the Ministry "G5"; the first is level 1 and number 5.
+     *
+     * @return array<int, string>
+     */
+    private function gradeKeys(string $value): array
+    {
+        $value = Str::lower(trim($value));
+        $keys = [];
+
+        if (($number = $this->gradeNumber($value)) !== null) {
+            $keys[] = (string) $number;
+        }
+
+        if (preg_match('/\((i{1,3})\)/', $value, $match)) {
+            $keys[] = 'L' . strlen($match[1]);
+        } elseif (preg_match('/(?:level|kg\s*l?)\s*(\d)/', $value, $match)) {
+            $keys[] = 'L' . $match[1];
+        }
+
+        return $keys;
     }
 
     private function clean(string $value): string

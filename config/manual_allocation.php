@@ -141,4 +141,26 @@ return [
 
     // Woreda spellings that differ between sheets, mapped onto one name (keys lower-case)
     'woredas' => [],
+
+    /*
+     * The printer's data (manual:import-printer-data), one workbook per region: 1_Books (a row
+     * per book edition with its QR code number and QR text), 2_Zone_Allocation (copies per zone
+     * and title) and 3_Package_List (a row per carton). Subjects are written "MT(Language)",
+     * "Second Language(Language)" or "Subject(Variant)"; the subject and language aliases above
+     * tidy them. Zone names may end in the woreda count ("Arsii Aanaa 28"), which is dropped.
+     */
+    'printer' => [
+        'mother_tongue' => ['mt', 'mother tongue'],
+        'second_language' => ['second language', '2nd language'],
+        'zone_suffix_pattern' => '/\s+(aanaa|aanna|kutaa\s+magaalaa)\b.*$|\s+\d+\s*$/iu',
+        // Short names used in carton package codes
+        'carton_types' => [
+            'full' => 'F',
+            'student only' => 'S',
+            'teacher guide only' => 'T',
+            'partial' => 'P',
+            'student only partial' => 'SP',
+            'teacher guide only partial' => 'TP',
+        ],
+    ],
 ];

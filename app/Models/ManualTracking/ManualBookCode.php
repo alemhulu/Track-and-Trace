@@ -32,12 +32,30 @@ class ManualBookCode extends ManualBaseModel
         return Str::lower(trim(preg_replace('/\s+/', ' ', (string) $payload)));
     }
 
+    /**
+     * The code a scan names, or null when it names none or several titles. Language editions
+     * of one subject and grade can share a QR text; the code number under the QR tells them apart.
+     */
     public static function findByScan(string $scanned): ?self
     {
-        return self::query()
-            ->where('normalized_payload', self::normalize($scanned))
-            ->orWhere('print_code', trim($scanned))
-            ->first();
+        $matches = self::matchingScan($scanned);
+
+        return $matches->pluck('manual_book_id')->unique()->count() === 1 ? $matches->first() : null;
+    }
+
+    /**
+     * Every code a scan could be: the one whose printed code number it is, otherwise all that
+     * carry its QR text.
+     *
+     * @return \Illuminate\Database\Eloquent\Collection<int, self>
+     */
+    public static function matchingScan(string $scanned)
+    {
+        $byNumber = self::query()->where('print_code', trim($scanned))->get();
+
+        return $byNumber->isNotEmpty()
+            ? $byNumber
+            : self::query()->where('normalized_payload', self::normalize($scanned))->orderBy('id')->get();
     }
 
     public function book(): BelongsTo
