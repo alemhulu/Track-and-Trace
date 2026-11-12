@@ -62,17 +62,18 @@
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">
-                        <x-book.book-info image="{{ $record->book->front_cover_location }}"
+                        <x-book.book-info image="{{ $record->book?->front_cover_location }}"
                             grade="Grade {{ $record->book?->grade?->name ?? '—' }}" subject="{{ $record->book?->subject?->name ?? '—' }}"
-                            type="{{ $record->book->book_type ?  'Teacher Guide' : 'Student Text Book'}}"
-                            edition="{{ $record->book->edition }}st Edition {{ $record->book->created_at->format('Y') }}"
-                            ISBN="{{ $record->book->isbn }}" />
+                            type="{{ $record->book?->book_type ?  'Teacher Guide' : 'Student Text Book'}}"
+                            edition="{{ $record->book?->edition }}st Edition {{ $record->book?->created_at?->format('Y') }}"
+                            ISBN="{{ $record->book?->isbn }}" />
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">
-                        <x-book.print-info batch="PB{{ $record->created_at->format('Y') }}{{ $record->id }}"
-                            copies="{{ $record->no_of_books }} + {{ $record->no_of_books/$record->no_of_packages }}"
-                            packages="{{ $record->no_of_books/$record->no_of_packages }}" />
+                        @php $perPackage = $record->no_of_packages ? $record->no_of_books / $record->no_of_packages : null; @endphp
+                        <x-book.print-info batch="PB{{ $record->created_at?->format('Y') }}{{ $record->id }}"
+                            copies="{{ $record->no_of_books }}{{ $perPackage !== null ? ' + ' . $perPackage : '' }}"
+                            packages="{{ $perPackage ?? '—' }}" />
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">

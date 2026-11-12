@@ -55,6 +55,14 @@ class LegacyMissingRelationsTest extends TestCase
         Livewire::test(PrintRequest::class, ['id' => $this->order->id])->assertOk();
     }
 
+    public function test_an_order_without_packages_is_listed(): void
+    {
+        // Every print order on production has no package count yet
+        $this->order->update(['no_of_packages' => 0]);
+
+        Livewire::test(ListPrintOrder::class)->assertOk()->assertSee('120', false);
+    }
+
     public function test_approving_an_order_for_such_a_book_is_refused_and_changes_nothing(): void
     {
         Livewire::test(PrintRequest::class, ['id' => $this->order->id])
