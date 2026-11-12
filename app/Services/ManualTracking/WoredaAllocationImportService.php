@@ -78,11 +78,19 @@ class WoredaAllocationImportService
 
         $sheets = $this->readSheets($path);
 
-        // Woreda → zone from the sheets that name the zone, for sheets whose zone column lists towns instead
+        // The zones the allocation covers. A sheet whose zone column lists towns ("B/M/Asallaa") can
+        // match a zone named after the town that the allocation does not cover; such a row goes to
+        // the zone the other sheets put its woreda in
+        $allocatedZones = ManualAllocation::query()
+            ->where('academic_year', $year)->where('region_id', $region->id)->whereNotNull('zone_id')
+            ->distinct()->pluck('zone_id')->flip();
+        $covered = fn (?Zone $zone) => $zone && isset($allocatedZones[$zone->id]);
+
+        // Woreda → zone from the sheets that name an allocated zone
         $woredaZones = [];
         foreach ($sheets as $sheet) {
             foreach ($sheet['lines'] as $line) {
-                if ($line['zone'] && ! isset($woredaZones[$line['woreda_key']])) {
+                if ($covered($line['zone']) && ! isset($woredaZones[$line['woreda_key']])) {
                     $woredaZones[$line['woreda_key']] = $line['zone'];
                 }
             }
@@ -131,7 +139,9 @@ class WoredaAllocationImportService
             }
 
             foreach ($sheet['lines'] as $line) {
-                $zone = $line['zone'] ?? $woredaZones[$line['woreda_key']] ?? null;
+                $zone = $covered($line['zone'])
+                    ? $line['zone']
+                    : ($woredaZones[$line['woreda_key']] ?? $line['zone']);
                 if (! $zone) {
                     $result['warnings'][] = "Sheet \"{$sheetName}\" row {$line['row']}: zone \"{$line['zone_label']}\" of woreda \"{$line['woreda']}\" is not a zone of {$region->name}; row skipped.";
 
@@ -495,13 +505,15 @@ class WoredaAllocationImportService
         $name = trim(preg_replace(config('manual_allocation.woreda_zone_suffix_pattern'), '', $label));
         $aliases = config('manual_allocation.zones', []);
 
-        foreach ([$label, $name] as $candidate) {
-            $candidate = Str::lower($this->clean($candidate));
-            $candidate = Str::lower($aliases[$candidate] ?? $candidate);
+        foreach ([$label, $name] as $written) {
+            $written = Str::lower($this->clean($written));
 
-            foreach ([$candidate, "{$candidate} zone", preg_replace('/\s+zone$/', '', $candidate)] as $spelling) {
-                if (isset($this->zoneIndex[$spelling])) {
-                    return $this->zoneIndex[$spelling];
+            // An alias is one more spelling to try: a database may name the zone as the workbook does
+            foreach (array_unique(array_filter([Str::lower($aliases[$written] ?? ''), $written])) as $candidate) {
+                foreach ([$candidate, "{$candidate} zone", preg_replace('/\s+zone$/', '', $candidate)] as $spelling) {
+                    if (isset($this->zoneIndex[$spelling])) {
+                        return $this->zoneIndex[$spelling];
+                    }
                 }
             }
         }
