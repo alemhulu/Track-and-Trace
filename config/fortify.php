@@ -132,7 +132,7 @@ return [
     */
 
     'features' => [
-        Features::registration(),
+        // Accounts are created by administrators in user management; there is no self-registration
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::updateProfileInformation(),
