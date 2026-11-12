@@ -8,42 +8,48 @@ use App\Models\User;
 use App\Models\WareHouse;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
+use Livewire\WithPagination;
 
+/**
+ * Lists are bounded: a national manager reaches 50,000+ organizations and as many warehouses,
+ * and loading them all here exhausted PHP's memory. Organizations are searched, the store list
+ * is paged, and the branch list is the chosen organization's.
+ */
 class AddStore extends Component
 {
     use AuthorizesPermissions;
+    use WithPagination;
+
+    private const OPTION_LIMIT = 50;
 
     // Form fields
     public $organizaton_id = '', $store_id = '', $name = '', $description = '';
-    public $organizations = [];
-    public $stores = [], $assigned_user_id = '';
+    public $organizationSearch = '';
+    public $assigned_user_id = '';
 
-    public function mount()
+    public function updatedOrganizationSearch(): void
     {
-        $actor = Auth::user();
-        if (! $actor) {
-            $this->organizations = collect();
-            $this->stores = [];
-            return;
-        }
-
-        $this->organizations = Organization::query()->accessibleBy($actor)->orderBy('name')->get();
-        $this->loadStores();
+        $this->resetPage();
     }
 
-    protected function loadStores()
+    public function updatedOrganizatonId(): void
     {
-        $actor = Auth::user();
-        if (! $actor) {
-            $this->stores = [];
-            return;
-        }
+        $this->store_id = '';
+    }
 
-        $this->stores = WareHouse::query()
+    // The organizations whose name matches the search, and the one already chosen
+    protected function organizationOptions($actor)
+    {
+        $search = trim((string) $this->organizationSearch);
+
+        return Organization::query()
             ->accessibleBy($actor)
-            ->with(['organization', 'user'])
-            ->orderByDesc('id')
-            ->get();
+            ->where(fn ($query) => $query
+                ->when($search !== '', fn ($match) => $match->where('name', 'like', "%{$search}%"), fn ($match) => $match->whereRaw('1 = 0'))
+                ->when($this->organizaton_id, fn ($chosen) => $chosen->orWhere('id', $this->organizaton_id)))
+            ->orderBy('name')
+            ->limit(self::OPTION_LIMIT + 1)
+            ->get(['id', 'name']);
     }
 
     // Search User To Select  START--------------------------------
@@ -187,7 +193,6 @@ class AddStore extends Component
             'woreda_id' => $organization->woreda_id,
         ]);
 
-        $this->loadStores();
         $this->resetFields();
         $this->dispatchBrowserEvent('alert', [
             'type' => 'success',
@@ -209,8 +214,19 @@ class AddStore extends Component
 
     public function render()
     {
-        $this->loadStores();
-        return view('livewire.oganization.add-store')->extends('main.organization.index');
+        $actor = Auth::user();
+        $organizations = $actor ? $this->organizationOptions($actor) : collect();
+
+        return view('livewire.oganization.add-store', [
+            'organizations' => $organizations->take(self::OPTION_LIMIT),
+            'moreOrganizations' => $organizations->count() > self::OPTION_LIMIT,
+            'branches' => $actor && $this->organizaton_id
+                ? WareHouse::query()->accessibleBy($actor)->where('organization_id', $this->organizaton_id)->orderBy('branch')->get(['id', 'branch'])
+                : collect(),
+            'stores' => $actor
+                ? WareHouse::query()->accessibleBy($actor)->with(['organization:id,name,email,phone', 'user:id,name,email,phone'])->orderByDesc('id')->paginate(20)
+                : collect(),
+        ])->extends('main.organization.index');
     }
 
     protected function permissionMap(): array

@@ -80,6 +80,19 @@ class LocationCascade extends Component
         $this->hadInitialRegion = $this->regionId !== null;
 
         $this->resetHiddenByAccessLevel();
+
+        // An organization user's place is the organization's, even when the user record lacks it
+        if ($this->accessLevel === User::ACCESS_LEVEL_ORGANIZATION && $this->organizationId) {
+            $organization = Organization::query()->select('id', 'country_id', 'region_id', 'zone_id', 'woreda_id')->find($this->organizationId);
+            if ($organization) {
+                $this->countryId = $this->toNullableInt($organization->country_id) ?? $this->countryId;
+                $this->regionId = $this->toNullableInt($organization->region_id);
+                $this->zoneId = $this->toNullableInt($organization->zone_id);
+                $this->woredaId = $this->toNullableInt($organization->woreda_id);
+                $this->hadInitialRegion = $this->regionId !== null;
+            }
+        }
+
         $this->refreshCascade(false);
     }
 
@@ -436,8 +449,18 @@ class LocationCascade extends Component
         ])->all();
     }
 
+    /**
+     * Only an organization-level user picks an organization, and only from the place chosen
+     * above it: a woreda's schools, a zone's or region's own offices, or the national ones.
+     * Listing everything a national manager can reach (50,000+ organizations) exhausted PHP's
+     * memory and broke the form.
+     */
     private function fetchOrganizations(): array
     {
+        if ($this->accessLevel !== User::ACCESS_LEVEL_ORGANIZATION) {
+            return [];
+        }
+
         $query = Organization::query()
             ->select('id', 'name', 'country_id', 'region_id', 'zone_id', 'woreda_id')
             ->accessibleBy($this->currentActor())
@@ -447,17 +470,21 @@ class LocationCascade extends Component
             $query->where('country_id', $this->countryId);
         }
 
-        if ($this->regionId) {
-            $query->where('region_id', $this->regionId);
-        }
+        $query->where(function ($atPlace): void {
+            $atPlace->where(function ($level): void {
+                match (true) {
+                    (bool) $this->woredaId => $level->where('woreda_id', $this->woredaId),
+                    (bool) $this->zoneId => $level->where('zone_id', $this->zoneId)->whereNull('woreda_id'),
+                    (bool) $this->regionId => $level->where('region_id', $this->regionId)->whereNull('zone_id'),
+                    default => $level->whereNull('region_id'),
+                };
+            });
 
-        if ($this->zoneId) {
-            $query->where('zone_id', $this->zoneId);
-        }
-
-        if ($this->woredaId) {
-            $query->where('woreda_id', $this->woredaId);
-        }
+            // The organization already chosen stays selectable
+            if ($this->organizationId) {
+                $atPlace->orWhere('id', $this->organizationId);
+            }
+        });
 
         return $query->get()->map(fn(Organization $organization): array => [
             'id' => (int) $organization->id,
