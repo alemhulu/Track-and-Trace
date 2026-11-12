@@ -183,11 +183,8 @@ class AddManualBook extends Component
 
     private function loadForEdit(int $id): void
     {
-        $book = ManualBook::query()->with('codes')->find($id);
-        if (! $book) {
-            $this->alertError('Title not found.');
-            return;
-        }
+        // An unknown id must not fall through to an empty "Add" form
+        $book = ManualBook::query()->with('codes')->findOrFail($id);
 
         $this->editingBookId = $book->id;
         $this->fill($book->only([

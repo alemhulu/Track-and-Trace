@@ -272,7 +272,7 @@ class ManualScanWorkflowTest extends TestCase
     {
         $school = $this->places['school'];
         $director = User::factory()->create(['access_level' => User::ACCESS_LEVEL_ORGANIZATION, 'organization_id' => $school->id]);
-        app(ManualStockService::class)->recordOpeningStock($this->national, $school, $this->math, ['student' => 10, 'teacher' => 1]);
+        $this->stockSchool($school, $this->math, 10, 1);
         $student = Student::query()->create([
             'organization_id' => $school->id, 'academic_year' => AcademicYear::current(), 'student_no' => 'IB-1',
             'name' => 'Chaltu Tolosa', 'sex' => 'F', 'grade_id' => $this->math->grade_id, 'section' => 'A',

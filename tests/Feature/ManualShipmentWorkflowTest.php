@@ -307,6 +307,21 @@ class ManualShipmentWorkflowTest extends TestCase
         $this->assertSame('teacher', ManualBookCode::findByScan('  oromia  grade 6 MATHEMATICS teacher Guide ')?->edition);
         $this->assertSame($this->book->id, ManualBookCode::findByScan('25110-014-1-1709')?->manual_book_id);
         $this->assertNull(ManualBookCode::findByScan('Amhara Grade 6 Mathematics Teacher guide'));
+
+        // Six South Ethiopia guides were printed as "Environmental ScienceTeacher guide"
+        $this->assertSame('teacher', ManualBookCode::findByScan('Oromia Grade 6 MathematicsTeacher guide')?->edition);
+        $this->assertNull(ManualBookCode::findByScan('   '));
+    }
+
+    public function test_opening_stock_cannot_be_recorded_at_a_school(): void
+    {
+        $this->places['school']->update(['organization_type_id' => OrganizationType::query()->create(['name' => 'School'])->id]);
+
+        $this->assertRejected(
+            fn () => $this->stock->recordOpeningStock($this->national, $this->places['school']->fresh(), $this->book, ['student' => 40]),
+            'Opening stock cannot be recorded at a school'
+        );
+        $this->assertSame(0, ManualStockLedger::query()->count());
     }
 
     private function zoneUser(): User

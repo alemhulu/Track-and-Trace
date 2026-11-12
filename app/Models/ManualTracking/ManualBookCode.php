@@ -53,9 +53,25 @@ class ManualBookCode extends ManualBaseModel
     {
         $byNumber = self::query()->where('print_code', trim($scanned))->get();
 
-        return $byNumber->isNotEmpty()
-            ? $byNumber
-            : self::query()->where('normalized_payload', self::normalize($scanned))->orderBy('id')->get();
+        if ($byNumber->isNotEmpty()) {
+            return $byNumber;
+        }
+
+        $byText = self::query()->where('normalized_payload', self::normalize($scanned))->orderBy('id')->get();
+        if ($byText->isNotEmpty() || self::compact($scanned) === '') {
+            return $byText;
+        }
+
+        // Some printed QRs drop a space ("Environmental ScienceTeacher guide"): ignore spacing last
+        return self::query()
+            ->whereRaw("REPLACE(normalized_payload, ' ', '') = ?", [self::compact($scanned)])
+            ->orderBy('id')
+            ->get();
+    }
+
+    public static function compact(?string $payload): string
+    {
+        return str_replace(' ', '', self::normalize($payload));
     }
 
     public function book(): BelongsTo
