@@ -61,11 +61,6 @@
                 </div>
 
                 <div class="flex items-center gap-2">
-                    @guest
-                    @if (Route::has('register'))
-                    <a href="{{ route('register') }}" class="hidden btn-ghost sm:inline-flex">{{ __('Register') }}</a>
-                    @endif
-                    @endguest
                     <a href="{{ $primaryHref }}" class="btn-primary whitespace-nowrap">
                         <i class="flex fi {{ auth()->check() ? 'fi-rr-apps' : 'fi-rr-sign-in-alt' }}"></i>
                         {{ $primaryLabel }}
