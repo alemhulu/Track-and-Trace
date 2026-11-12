@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Schema;
  * nothing; on such an older database it:
  *
  * - adds the user columns the edited users migration now creates (is_firtst_time,
- *   organization_id, country_id);
+ *   organization_id, country_id), dropping foreign keys that point at tables which no
+ *   longer exist, since MySQL refuses to rebuild users while they are there;
  * - drops the old packages and distributions tables when they are empty, so the current
  *   definitions can be created (renaming them would keep foreign key names the new tables
  *   need). A table that still holds rows is left alone and the migration stops, so no data
@@ -37,11 +38,18 @@ return new class extends Migration
                 if (! Schema::hasColumn('users', 'organization_id')) {
                     $table->foreignId('organization_id')->nullable();
                 }
+                if (! Schema::hasColumn('users', 'country_id')) {
+                    $table->foreignId('country_id')->nullable();
+                }
             });
 
-            if (! Schema::hasColumn('users', 'country_id')) {
+            // A foreign key to a table that no longer exists (users.school_id -> schools) makes
+            // MySQL reject every rebuild of users; it guards nothing, so it goes
+            $this->dropDanglingForeignKeys('users');
+
+            if (! $this->hasForeignKey('users', 'users_country_id_foreign')) {
                 Schema::table('users', function (Blueprint $table) {
-                    $table->foreignId('country_id')->nullable()->constrained();
+                    $table->foreign('country_id')->references('id')->on('countries');
                 });
             }
         }
@@ -57,6 +65,38 @@ return new class extends Migration
 
             Schema::drop($table);
         }
+    }
+
+    private function dropDanglingForeignKeys(string $table): void
+    {
+        if (DB::getDriverName() !== 'mysql') {
+            return;
+        }
+
+        $dangling = DB::select(
+            'SELECT k.CONSTRAINT_NAME AS name FROM information_schema.KEY_COLUMN_USAGE k
+             LEFT JOIN information_schema.TABLES t ON t.TABLE_SCHEMA = k.REFERENCED_TABLE_SCHEMA AND t.TABLE_NAME = k.REFERENCED_TABLE_NAME
+             WHERE k.TABLE_SCHEMA = DATABASE() AND k.TABLE_NAME = ? AND k.REFERENCED_TABLE_NAME IS NOT NULL AND t.TABLE_NAME IS NULL',
+            [$table]
+        );
+
+        foreach (collect($dangling)->pluck('name')->unique() as $name) {
+            DB::statement("ALTER TABLE `{$table}` DROP FOREIGN KEY `{$name}`");
+        }
+    }
+
+    private function hasForeignKey(string $table, string $name): bool
+    {
+        if (DB::getDriverName() !== 'mysql') {
+            return true;
+        }
+
+        return DB::table('information_schema.TABLE_CONSTRAINTS')
+            ->where('CONSTRAINT_SCHEMA', DB::getDatabaseName())
+            ->where('TABLE_NAME', $table)
+            ->where('CONSTRAINT_NAME', $name)
+            ->where('CONSTRAINT_TYPE', 'FOREIGN KEY')
+            ->exists();
     }
 
     public function down(): void
