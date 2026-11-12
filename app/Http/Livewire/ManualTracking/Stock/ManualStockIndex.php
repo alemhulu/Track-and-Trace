@@ -64,13 +64,16 @@ class ManualStockIndex extends Component
     public function updatedOpeningArea($value, $key)
     {
         $this->openingArea = $this->location()->apply($this->openingArea, $key);
-        $this->opening['organization_id'] = $this->location()->organization($this->openingArea, $this->opening['organization_id']);
+        $this->opening['organization_id'] = $this->validOpeningHolder($this->opening['organization_id']);
         $this->updatedOpeningOrganizationId();
     }
 
     // Choosing a location fills in its region and zone, and drops a title of another region
     public function updatedOpeningOrganizationId()
     {
+        $this->opening['organization_id'] = $this->opening['organization_id'] && $this->openingHolders([])->whereKey($this->opening['organization_id'])->exists()
+            ? (string) $this->opening['organization_id']
+            : '';
         $holder = $this->openingHolder();
 
         if ($holder) {
@@ -157,7 +160,7 @@ class ManualStockIndex extends Component
             'balances' => $balances,
             'locationPicker' => $this->location()->picker($this->area),
             'books' => $this->titlesFor($this->area['region_id'] ?? '')->orderBy('title')->get(['id', 'title']),
-            'openingPicker' => $this->location()->picker($this->openingArea),
+            'openingPicker' => $this->location()->picker($this->openingArea, $this->openingHolders($this->openingArea)),
             'openingBooks' => $this->openingTitles()->orderBy('title')->get(['id', 'title']),
             'openingStanding' => $standing = $this->openingStanding(),
             'openingRoom' => $this->openingRoom($standing),
@@ -302,8 +305,22 @@ class ManualStockIndex extends Component
     private function openingHolder(): ?Organization
     {
         return $this->opening['organization_id']
-            ? $this->location()->organizations([])->find($this->opening['organization_id'], ['id', 'region_id', 'zone_id', 'woreda_id'])
+            ? $this->openingHolders([])->find($this->opening['organization_id'], ['id', 'region_id', 'zone_id', 'woreda_id'])
             : null;
+    }
+
+    // Schools only receive by shipment, so they are never offered for opening stock
+    private function openingHolders(array $area)
+    {
+        return $this->location()->organizations($area)
+            ->whereDoesntHave('organizationType', fn ($type) => $type->where('name', 'School'));
+    }
+
+    private function validOpeningHolder($organizationId): string
+    {
+        $id = $this->location()->organization($this->openingArea, $organizationId);
+
+        return $id !== '' && $this->openingHolders($this->openingArea)->whereKey($id)->exists() ? $id : '';
     }
 
     private function openingTitles()

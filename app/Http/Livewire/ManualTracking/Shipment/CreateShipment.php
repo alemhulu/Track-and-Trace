@@ -503,7 +503,21 @@ class CreateShipment extends Component
             return ['id' => $regionId, 'side' => 'destination'];
         }
 
+        // A regional source (not a printer or hub that sends anywhere) holds only its region's titles
+        if (! $this->sendsAnywhere() && ($regionId = $this->sourceRegionId())) {
+            return ['id' => $regionId, 'side' => 'source'];
+        }
+
         return filled($this->source['region_id'] ?? null) ? ['id' => (int) $this->source['region_id'], 'side' => 'source'] : null;
+    }
+
+    private function sourceRegionId(): ?int
+    {
+        $regionId = $this->from_organization_id
+            ? Organization::query()->whereKey($this->from_organization_id)->value('region_id')
+            : null;
+
+        return $regionId ? (int) $regionId : null;
     }
 
     private function destinationRegionId(): ?int

@@ -145,7 +145,7 @@ class FieldAppTest extends TestCase
         $other = Organization::query()->create(['name' => 'Bilisuma Primary School', 'country_id' => $this->school->country_id, 'region_id' => $this->school->region_id]);
         $otherDirector = User::factory()->create(['access_level' => User::ACCESS_LEVEL_ORGANIZATION, 'organization_id' => $other->id]);
         $this->shipToSchool(40);
-        app(ManualStockService::class)->recordOpeningStock($this->national, $this->school, $this->math, ['student' => 5, 'teacher' => 0]);
+        $this->stockSchool($this->school, $this->math, 5, 0);
 
         $result = $this->actingAs($otherDirector)->postJson(route('field.sync'), ['actions' => [
             $this->action('issue_books', ['student_id' => $this->student->id, 'title_ids' => [$this->math->id]]),
@@ -158,7 +158,7 @@ class FieldAppTest extends TestCase
     public function test_offline_actions_need_the_same_permission_as_online(): void
     {
         $this->shipToSchool(40);
-        app(ManualStockService::class)->recordOpeningStock($this->national, $this->school, $this->math, ['student' => 5, 'teacher' => 0]);
+        $this->stockSchool($this->school, $this->math, 5, 0);
         $this->director->revokePermissionTo('manual-tracking.schools.issue');
 
         $result = $this->actingAs($this->director->fresh())->postJson(route('field.sync'), ['actions' => [

@@ -68,7 +68,7 @@ class OversightTest extends TestCase
 
         SchoolEnrolment::query()->create(['organization_id' => $this->school->id, 'academic_year' => $this->year, 'grade_id' => $grade->id, 'male' => 5, 'female' => 5]);
         foreach ([$this->math, $this->english] as $book) {
-            app(ManualStockService::class)->recordOpeningStock($this->national, $this->school, $book, ['student' => 8, 'teacher' => 1]);
+            $this->stockSchool($this->school, $book, 8, 1);
         }
 
         $this->students = collect(range(1, 4))->map(fn ($n) => Student::query()->create([

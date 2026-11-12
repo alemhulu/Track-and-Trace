@@ -35,12 +35,12 @@ At 1440px these tables used to scroll sideways: Shipments (1541px wide in a 1113
 - New `<x-action.view-link>` (an eye button for each row) on Shipments, Schools, Visits, Discrepancies and Misroutes.
 - Shipments: "Reference" and "Dispatched" are merged into one column. Discrepancies: the resolve form is stacked so it fits.
 
-## Noted, not changed
+## Noted, then resolved (2026-11-12)
 
-- `bole.woreda.01@tracktrace.test` has both **Woreda Officer** and **School User** roles, so it is treated as a school: it cannot dispatch or sort. Check whether this is intended in the seed data.
-- Opening stock can be recorded at a school, not only at a warehouse.
-- `books/add?edit=<unknown id>` silently opens an empty "Add" form.
-- For national users, New Shipment lists titles from every region, even when the source is a regional bureau.
+- `bole.woreda.01@tracktrace.test` had both **Woreda Officer** and **School User** roles. The account came from the demo seed, which is gone: the data is now imports-only and no account holds both roles.
+- Opening stock could be recorded at a school. Schools are now left out of the opening-stock location list, and the stock service refuses a school, so a school's stock always comes from a shipment.
+- `books/add?edit=<unknown id>` silently opened an empty "Add" form. It now returns 404.
+- For national users, New Shipment listed titles from every region even when the source was a regional bureau. A regional source now limits the titles to its region (printers and hubs, which send anywhere, still follow the destination).
 
 ## Tests
 

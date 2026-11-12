@@ -35,4 +35,18 @@ abstract class TestCase extends BaseTestCase
 
         User::created(fn (User $user) => $user->givePermissionTo($names));
     }
+
+    /**
+     * Puts copies straight on a school's shelf. Opening stock may not be recorded at a school,
+     * so tests that start from books already there place them with a plain stock movement.
+     */
+    protected function stockSchool(\App\Models\Organization $school, \App\Models\ManualTracking\ManualBook $book, int $student, int $teacher = 0): void
+    {
+        $stock = app(\App\Services\ManualTracking\ManualStockService::class);
+        foreach ([\App\Models\ManualTracking\ManualBook::EDITION_STUDENT => $student, \App\Models\ManualTracking\ManualBook::EDITION_TEACHER => $teacher] as $edition => $quantity) {
+            if ($quantity > 0) {
+                $stock->move($school, $book, $edition, $quantity, \App\Services\ManualTracking\ManualStockService::MOVEMENT_OPENING, ['notes' => 'Test stock']);
+            }
+        }
+    }
 }

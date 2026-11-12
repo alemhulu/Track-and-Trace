@@ -79,6 +79,44 @@ class ManualTrackingTableControlsTest extends TestCase
             ->assertDispatchedBrowserEvent('alert', fn ($event, $data) => $data['message'] === 'The region field is required.');
     }
 
+    public function test_editing_an_unknown_title_is_not_found(): void
+    {
+        $this->actingAs(User::query()->where('email', 'superadmin@gmail.com')->firstOrFail());
+
+        $this->get(route('manual-tracking.books.add', ['edit' => 999999]))->assertNotFound();
+    }
+
+    public function test_schools_are_not_offered_for_opening_stock(): void
+    {
+        $this->actingAs(User::query()->where('email', 'superadmin@gmail.com')->firstOrFail());
+        $school = Organization::query()->whereHas('organizationType', fn ($type) => $type->where('name', 'School'))->firstOrFail();
+
+        $component = Livewire::test(ManualStockIndex::class)
+            ->set('opening.organization_id', (string) $school->id)
+            ->assertSet('opening.organization_id', '');
+
+        $offered = collect($component->viewData('openingPicker')['organizations'])->pluck('id');
+        $this->assertNotContains($school->id, $offered);
+    }
+
+    public function test_a_regional_source_lists_only_its_region_s_titles(): void
+    {
+        $this->actingAs(User::query()->where('email', 'superadmin@gmail.com')->firstOrFail());
+        $bureau = Organization::query()
+            ->whereNotNull('region_id')->whereNull('zone_id')
+            ->whereDoesntHave('organizationType', fn ($type) => $type->whereIn('name', ['School', 'Printer', 'Hub', 'Warehouse']))
+            ->get()
+            ->first(fn ($org) => ManualBook::query()->where('region_id', '!=', $org->region_id)->exists());
+        $this->assertNotNull($bureau, 'The showcase data needs a regional office and a title of another region.');
+
+        $books = Livewire::test(CreateShipment::class)
+            ->set('from_organization_id', (string) $bureau->id)
+            ->viewData('books');
+
+        $this->assertNotEmpty($books);
+        $this->assertTrue($books->keys()->every(fn ($id) => in_array(ManualBook::query()->whereKey($id)->value('region_id'), [null, $bureau->region_id])));
+    }
+
     public function test_a_single_source_is_chosen_for_the_sender(): void
     {
         $officer = User::query()

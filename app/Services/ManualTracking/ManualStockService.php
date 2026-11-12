@@ -105,6 +105,11 @@ class ManualStockService
             throw new ManualTrackingException('Only national or regional users can record opening stock for organizations in their area.');
         }
 
+        // Schools only receive books by shipment, so their stock always traces back to a delivery
+        if ($holder->loadMissing('organizationType')->organizationType?->name === 'School') {
+            throw new ManualTrackingException('Opening stock cannot be recorded at a school; send the books by shipment.');
+        }
+
         $copies = array_filter($copies, fn ($quantity) => (int) $quantity > 0);
         if (empty($copies)) {
             throw new ManualTrackingException('Enter at least one copy of opening stock.');

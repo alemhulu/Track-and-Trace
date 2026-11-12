@@ -24,6 +24,8 @@ window.fieldApp = function (config) {
 
     // Same matching rules as the server: case and spacing do not matter
     const normalizeCode = (text) => String(text || '').replace(/\s+/g, ' ').trim().toLowerCase();
+    // Some printed QRs drop a space ("ScienceTeacher guide"); a last match ignores spaces
+    const compactCode = (text) => normalizeCode(text).replace(/ /g, '');
     const zoneKey = (name) => String(name || '').toLowerCase()
         .replace(/[^\p{L}\p{N}]+/gu, ' ').trim()
         .replace(/\s+(zone|sub ?city|subcity)$/, '').trim();
@@ -205,16 +207,20 @@ window.fieldApp = function (config) {
             const wanted = normalizeCode(text);
             const byNumber = [];
             const byText = [];
+            const bySpacing = [];
+            const compact = compactCode(text);
             for (const title of this.pack.titles) {
                 for (const c of title.codes) {
                     if (c.print_code && c.print_code === number) {
                         byNumber.push({ title: title, edition: c.edition });
                     } else if (c.text === wanted) {
                         byText.push({ title: title, edition: c.edition });
+                    } else if (compact && compactCode(c.text) === compact) {
+                        bySpacing.push({ title: title, edition: c.edition });
                     }
                 }
             }
-            const found = byNumber.length ? byNumber : byText;
+            const found = byNumber.length ? byNumber : (byText.length ? byText : bySpacing);
             if (found.length > 1) {
                 return { ambiguous: found.map((m) => m.title.title) };
             }
