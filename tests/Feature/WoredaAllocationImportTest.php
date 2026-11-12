@@ -119,6 +119,26 @@ class WoredaAllocationImportTest extends TestCase
         $this->assertSame($before, $counts());
     }
 
+    public function test_zones_named_as_in_the_workbook_and_town_named_zones_are_handled(): void
+    {
+        // A database that names East Shewa as the bureau does, and has a zone named after a town
+        // the allocation does not cover
+        $eastShewa = Zone::query()->where('name', 'East Shewa Zone')->firstOrFail();
+        $eastShewa->update(['name' => 'Shawaa Bahaa']);
+        $town = Zone::query()->create(['name' => 'B/M/Asallaa', 'region_id' => $eastShewa->region_id, 'country_id' => $eastShewa->country_id]);
+
+        $service = app(WoredaAllocationImportService::class);
+        $result = $service->parse($this->woredaBook, 'Oromia', '2019');
+
+        $this->assertSame([], $result['errors']);
+        $this->assertSame(600 + 300, $result['zones']['Shawaa Bahaa']['student']);
+        $this->assertSame(400 + 200, $result['zones']['Arsii']['student']);
+        $this->assertArrayNotHasKey('B/M/Asallaa', $result['zones']);
+
+        $service->commit(null, $this->woredaBook, 'woreda.xlsx', 'Oromia', '2019');
+        $this->assertSame(0, ManualWoredaAllocation::query()->where('zone_id', $town->id)->count());
+    }
+
     public function test_largest_remainder_rounding_keeps_the_total(): void
     {
         $rounded = app(WoredaAllocationImportService::class)->roundToTotal(['a' => 0.4, 'b' => 0.4, 'c' => 0.2], 1);
