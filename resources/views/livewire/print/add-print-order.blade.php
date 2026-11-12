@@ -49,7 +49,7 @@
                                         <option>Select Books</option>
                                         @foreach ($books as $book)
                                         <option value="{{ $book->id }}">
-                                            {{ $book->subject->name }}
+                                            {{ $book->subject?->name ?? '—' }}
                                         </option>
                                         @endforeach
                                     </x-form.select>
@@ -61,7 +61,7 @@
                                         <option>Select Books</option>
                                         @foreach ($books as $book)
                                         <option value="{{ $book->id }}">
-                                            {{ $book->subject->name }}
+                                            {{ $book->subject?->name ?? '—' }}
                                         </option>
                                         @endforeach
                                     </x-form.select>

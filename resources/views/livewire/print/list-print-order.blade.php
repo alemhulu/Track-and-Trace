@@ -63,7 +63,7 @@
 
                     <td class="px-5 py-2 whitespace-nowrap">
                         <x-book.book-info image="{{ $record->book->front_cover_location }}"
-                            grade="Grade {{ $record->book->grade->name }}" subject="{{ $record->book->subject->name }}"
+                            grade="Grade {{ $record->book?->grade?->name ?? '—' }}" subject="{{ $record->book?->subject?->name ?? '—' }}"
                             type="{{ $record->book->book_type ?  'Teacher Guide' : 'Student Text Book'}}"
                             edition="{{ $record->book->edition }}st Edition {{ $record->book->created_at->format('Y') }}"
                             ISBN="{{ $record->book->isbn }}" />
@@ -76,17 +76,17 @@
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">
-                        <x-organization.info image="{{ $record->orderOrganization->logo }}"
-                            name="{{ $record->orderOrganization->name }}"
-                            email="{{ $record->orderOrganization->email }}"
-                            phone="+{{ $record->orderOrganization->telephone }}" />
+                        <x-organization.info image="{{ $record->orderOrganization?->logo }}"
+                            name="{{ $record->orderOrganization?->name ?? '—' }}"
+                            email="{{ $record->orderOrganization?->email ?? '—' }}"
+                            phone="+{{ $record->orderOrganization?->telephone }}" />
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">
-                        <x-organization.info image="{{ $record->printOrganization->logo }}"
-                            name="{{ $record->printOrganization->name }}"
-                            email="{{ $record->printOrganization->email }}"
-                            phone="+{{ $record->printOrganization->telephone }}" />
+                        <x-organization.info image="{{ $record->printOrganization?->logo }}"
+                            name="{{ $record->printOrganization?->name ?? '—' }}"
+                            email="{{ $record->printOrganization?->email ?? '—' }}"
+                            phone="+{{ $record->printOrganization?->telephone }}" />
                     </td>
 
                     <td class="px-5 py-2 whitespace-nowrap">

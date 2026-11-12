@@ -23,8 +23,8 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-book.book-info image="{{ $book->front_cover_location }}" grade="{{ $book->grade->name }}"
-                        subject="{{ $book->subject->name }}" type="Student Text Book"
+                    <x-book.book-info image="{{ $book->front_cover_location }}" grade="{{ $book->grade?->name ?? '—' }}"
+                        subject="{{ $book->subject?->name ?? '—' }}" type="Student Text Book"
                         edition="Edition {{ $book->edition }}" ISBN="{{ $book->isbn }}" />
                 </td>
 
@@ -33,7 +33,7 @@
                 </td>
 
                 <td class="px-5 py-2 whitespace-nowrap">
-                    <x-book.book-file name="GRADE {{ $book->grade->name }}  {{ $book->subject->name }}" type="PDF"
+                    <x-book.book-file name="GRADE {{ $book->grade?->name ?? '—' }}  {{ $book->subject?->name ?? '—' }}" type="PDF"
                         size="15MB" />
                 </td>
 
@@ -56,7 +56,7 @@
                                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                                     <div>
                                         <h3 class="text-lg font-semibold text-gray-800 dark:text-white">
-                                            Grade {{ $book->grade->name }} — {{ $book->subject->name }}
+                                            Grade {{ $book->grade?->name ?? '—' }} — {{ $book->subject?->name ?? '—' }}
                                         </h3>
                                         <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
                                             {{ $book->book_type ? 'Teacher Guide' : 'Student Text Book' }}

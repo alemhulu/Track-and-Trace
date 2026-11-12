@@ -15,7 +15,6 @@ use App\Http\Livewire\BookPackage\SendBookPackage;
 use App\Http\Livewire\Distribution\AddDistribution;
 use App\Http\Livewire\Distribution\ListDistribution;
 use App\Http\Livewire\Location\Country;
-use App\Http\Livewire\Location\Kebele;
 use App\Http\Livewire\Location\Region;
 use App\Http\Livewire\Location\Woreda;
 use App\Http\Livewire\Location\Zone;
@@ -80,7 +79,7 @@ Route::middleware(['auth:sanctum', config('jetstream.auth_session'), 'verified']
         Route::get('/location/region', Region::class)->middleware('permission:locations.regions.view')->name('location.region');
         Route::get('/location/zone', Zone::class)->middleware('permission:locations.zones.view')->name('location.zone');
         Route::get('/location/woreda', Woreda::class)->middleware('permission:locations.woredas.view')->name('location.woreda');
-        Route::get('/location/kebele', Kebele::class)->middleware('permission:locations.kebeles.view')->name('location.kebele');
+        // Kebeles are not built yet (no model or table), so the page is not routed
     });
 
     Route::get('/academic-years', \App\Http\Livewire\AcademicYear\AcademicYearIndex::class)->middleware('permission:academic-years.view')->name('academic-years.index');
