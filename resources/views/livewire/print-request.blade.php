@@ -9,7 +9,7 @@
                 <div class="">
                     <x-jet-label class="text-gray-400" value="Book"></x-jet-label>
                     <x-book.book-info image="{{ $order->book->front_cover_location }}"
-                        grade="Grade {{ $order->book->grade->name }}" subject="{{ $order->book->subject->name }}"
+                        grade="Grade {{ $order->book?->grade?->name ?? '—' }}" subject="{{ $order->book?->subject?->name ?? '—' }}"
                         type="{{ $order->book->book_type ?  'Teacher Guide' : 'Student Text Book'}}"
                         edition="{{ $order->book->edition }}st Edition {{ $order->book->created_at->format('Y') }}"
                         ISBN="{{ $order->book->isbn }}" />
@@ -22,17 +22,17 @@
 
                 <div class="">
                     <x-jet-label class="text-gray-400" value="Organization"></x-jet-label>
-                    <x-organization.info image="{{ $order->orderOrganization->logo }}"
-                        name="{{ $order->orderOrganization->name }}" email="{{ $order->orderOrganization->email }}"
-                        phone="+{{ $order->orderOrganization->telephone }}" />
+                    <x-organization.info image="{{ $order->orderOrganization?->logo }}"
+                        name="{{ $order->orderOrganization?->name ?? '—' }}" email="{{ $order->orderOrganization?->email ?? '—' }}"
+                        phone="+{{ $order->orderOrganization?->telephone }}" />
                 </div>
 
                 <div class="">
                     <x-jet-label class="text-gray-400" value="Contact Person"></x-jet-label>
-                    <x-organization.info image="{{ $order->orderOrganization->logo }}"
-                        name="{{ $order->orderOrganization->assignedUser->name }}"
-                        email="{{ $order->orderOrganization->assignedUser->email }}"
-                        phone="{{ $order->orderOrganization->assignedUser->phone }}" />
+                    <x-organization.info image="{{ $order->orderOrganization?->logo }}"
+                        name="{{ $order->orderOrganization?->assignedUser?->name }}"
+                        email="{{ $order->orderOrganization?->assignedUser?->email }}"
+                        phone="{{ $order->orderOrganization?->assignedUser?->phone }}" />
                 </div>
 
                 <div class="">
@@ -121,7 +121,7 @@
                         </td>
 
                         <td class="px-5 py-2 whitespace-nowrap">
-                            <x-stat.book-info grade="Grade {{ $order->book->grade->name }}" quantity="41"
+                            <x-stat.book-info grade="Grade {{ $order->book?->grade?->name ?? '—' }}" quantity="41"
                                 range="{{ $rangeStart }}-{{ $rangeEnd }}" />
                         </td>
 
@@ -143,8 +143,8 @@
                                     <x-stat.package batch="PB{{ $order->created_at->format('Y') }}{{ $order->id }}"
                                         qr="{{ $qrNumber ?? '' }}"
                                         Qrcode="{{ $qrFile ? '/storage/printOrders/'.$order->id.'/'.$packageKey.'/'.$qrFile : '' }}"
-                                        grade="{{ $order->book->grade->name }}"
-                                        subject="{{ $order->book->subject->name }}"
+                                        grade="{{ $order->book?->grade?->name ?? '—' }}"
+                                        subject="{{ $order->book?->subject?->name ?? '—' }}"
                                         isbn="{{ $order->book->isbn }}"
                                         volume="{{ $order->book->volume ?? '----' }}"
                                         edition="{{ $order->book->edition }}"

@@ -62,23 +62,28 @@ class PrintRequest extends Component
             abort(403, 'You are not authorized to modify this print request.');
         }
 
+        // Approving packs the order, which needs the printer's warehouse and the book's grade and
+        // subject: check them before the status changes, so a refusal leaves the order as it was
+        if ($status == 2) {
+            $warehouse = WareHouse::where('organization_id', $this->order->printer_organization_id)->first();
+            $book = Book::find($this->order->book_id);
+            $problem = match (true) {
+                ! $warehouse => 'The printer has no warehouse yet. Add one under Organizations before approving.',
+                ! $book => 'The book of this order no longer exists.',
+                ! $book->grade || ! $book->subject => 'The book has no grade or subject. Set them on the book before approving.',
+                default => null,
+            };
+
+            if ($problem) {
+                $this->dispatchBrowserEvent('alert', ['type' => 'error', 'message' => $problem]);
+
+                return;
+            }
+        }
+
         $this->order->request_status = $status;
         $this->order->save();
         if ($status == 2) {
-            $warehouse = WareHouse::where('organization_id', $this->order->printer_organization_id)->first();
-            if (!$warehouse) {
-                throw new \Exception("Warehouse not found for organization {$this->order->printer_organization_id}");
-            }
-            $book = Book::findOrFail($this->order->book_id);
-
-            // Validate book relationships
-            if (!$book->subject) {
-                throw new \Exception("Book ID {$book->id} does not have a valid subject");
-            }
-            if (!$book->grade) {
-                throw new \Exception("Book ID {$book->id} does not have a valid grade");
-            }
-
             $data = [
                 'ware_house_id' => $warehouse->id,
                 'print_order_id' => $this->order->id,
