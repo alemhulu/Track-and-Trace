@@ -155,6 +155,21 @@ class OversightTest extends TestCase
             ->get(route('manual-tracking.visits.show', $visit->id))->assertNotFound();
     }
 
+    public function test_overview_counts_schools_without_figures_but_does_not_load_them(): void
+    {
+        $this->school->replicate()->fill(['name' => 'Quiet Primary School'])->save();
+        $loaded = 0;
+        \Illuminate\Support\Facades\Event::listen('eloquent.retrieved: ' . Organization::class, function () use (&$loaded) {
+            $loaded++;
+        });
+
+        $overview = app(OversightService::class)->overview($this->woredaUser, $this->year);
+
+        // Two schools in the area, one with enrolment: only that one is read
+        $this->assertSame([2, 1, 20], [$overview['schools'], $overview['schools_with_data'], $overview['required']]);
+        $this->assertSame(1, $loaded);
+    }
+
     public function test_overview_and_exports_cover_only_the_users_area(): void
     {
         $overview = app(OversightService::class)->overview($this->woredaUser, $this->year);

@@ -6,6 +6,8 @@ use App\Models\ManualTracking\ManualDiscrepancy;
 use App\Models\ManualTracking\ManualScan;
 use App\Models\Organization;
 use App\Models\Oversight\VerificationVisit;
+use App\Models\School\SchoolEnrolment;
+use App\Models\School\Student;
 use App\Models\User;
 use App\Services\School\SchoolAllocationService;
 use Illuminate\Database\Eloquent\Builder;
@@ -36,9 +38,9 @@ class OversightService
      *
      * @return Collection<int, array{school: Organization, totals: array, visit: ?VerificationVisit}>
      */
-    public function schoolRows(User $actor, int $year): Collection
+    public function schoolRows(User $actor, int $year, ?Builder $schools = null): Collection
     {
-        $schools = $this->schools($actor)
+        $schools = ($schools ?? $this->schools($actor))
             ->with(['region:id,name', 'zone:id,name', 'woreda:id,name'])
             ->orderBy('name')
             ->get();
@@ -60,12 +62,23 @@ class OversightService
     }
 
     /**
+     * Schools that have enrolment or registered students for the year: only they have books to
+     * cover, so only they are loaded for the dashboard (a national user can reach 50,000 schools).
+     */
+    public function schoolsWithFigures(User $actor, int $year): Builder
+    {
+        return $this->schools($actor)->where(fn (Builder $school) => $school
+            ->whereIn('organizations.id', SchoolEnrolment::query()->select('organization_id')->where('academic_year', $year))
+            ->orWhereIn('organizations.id', Student::query()->active()->select('organization_id')->where('academic_year', $year)));
+    }
+
+    /**
      * Dashboard figures, kept for ten minutes per user since they cover every school in the area.
      */
     public function overview(User $actor, int $year): array
     {
         return Cache::remember("oversight-overview:{$actor->id}:{$year}", now()->addMinutes(10), function () use ($actor, $year): array {
-            $rows = $this->schoolRows($actor, $year);
+            $rows = $this->schoolRows($actor, $year, $this->schoolsWithFigures($actor, $year));
             $withData = $rows->filter(fn ($row) => $row['totals']['required_student'] > 0);
             $required = (int) $withData->sum(fn ($row) => $row['totals']['required_student']);
             $issued = (int) $withData->sum(fn ($row) => $row['totals']['issued_student']);
@@ -73,7 +86,7 @@ class OversightService
             $expected = (int) $visits->sum('books_expected');
 
             return [
-                'schools' => $rows->count(),
+                'schools' => $this->schools($actor)->count(),
                 'schools_with_data' => $withData->count(),
                 'required' => $required,
                 'issued' => $issued,
