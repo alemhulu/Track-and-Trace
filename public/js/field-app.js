@@ -199,15 +199,26 @@ window.fieldApp = function (config) {
 
         // ---- Scanning ----------------------------------------------------------------
 
+        // The code number under the QR names one edition; a QR text may be shared by language editions
         titleForCode(text) {
+            const number = String(text).trim();
             const wanted = normalizeCode(text);
+            const byNumber = [];
+            const byText = [];
             for (const title of this.pack.titles) {
-                const code = title.codes.find((c) => c.text === wanted || (c.print_code && c.print_code === String(text).trim()));
-                if (code) {
-                    return { title: title, edition: code.edition };
+                for (const c of title.codes) {
+                    if (c.print_code && c.print_code === number) {
+                        byNumber.push({ title: title, edition: c.edition });
+                    } else if (c.text === wanted) {
+                        byText.push({ title: title, edition: c.edition });
+                    }
                 }
             }
-            return null;
+            const found = byNumber.length ? byNumber : byText;
+            if (found.length > 1) {
+                return { ambiguous: found.map((m) => m.title.title) };
+            }
+            return found[0] || null;
         },
 
         scanned(text) {
@@ -225,14 +236,16 @@ window.fieldApp = function (config) {
 
         // Count packages coming off the truck and check each label's zone
         scanPackage(text) {
-            const scannedKey = zoneKey(text);
-            const zone = this.pack.zones.find((z) => z.key === scannedKey);
+            const zone = this.zoneForLabel(text);
             if (!zone) {
                 return this.say('"' + text + '" is not a zone label.', 'error');
             }
             const own = this.pack.organization.zone_key;
+            const ownCode = this.pack.organization.zone_code;
             const region = this.pack.organization.region_id;
-            const belongs = own ? scannedKey === own : (!region || this.pack.zones.some((z) => z.key === scannedKey && z.region_id === region));
+            const belongs = own
+                ? (zone.key === own || (ownCode && zone.code === ownCode))
+                : (!region || zone.region_id === region);
             if (belongs) {
                 this.packageScans.own++;
                 this.say('Package ' + (this.packageScans.own) + ' counted.', 'success');
@@ -243,10 +256,26 @@ window.fieldApp = function (config) {
             }
         },
 
+        // A zone by name, or by the code at the end of a printer label ("ORM-Z-1001", "Arsii Aanaa 28 1001")
+        zoneForLabel(text) {
+            const key = zoneKey(text);
+            const region = this.pack.organization.region_id;
+            const byName = this.pack.zones.filter((z) => z.key === key);
+            const match = (zones) => zones.find((z) => z.region_id === region) || zones[0] || null;
+            if (byName.length) {
+                return match(byName);
+            }
+            const code = (String(text).trim().match(/(?:^|[\s-])(\d{4})\s*$/) || [])[1];
+            return code ? match(this.pack.zones.filter((z) => z.code === code)) : null;
+        },
+
         scanBook(text) {
             const match = this.titleForCode(text);
             if (!match) {
                 return this.say('"' + text + '" is not a known book code for this region.', 'error');
+            }
+            if (match.ambiguous) {
+                return this.say('That QR is printed on ' + match.ambiguous.length + ' titles. Type the code number printed under it.', 'error');
             }
             if (match.edition !== 'student') {
                 return this.say('That is a teacher guide. Teacher guides are issued online.', 'error');

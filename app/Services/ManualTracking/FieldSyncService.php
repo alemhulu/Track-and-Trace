@@ -80,12 +80,14 @@ class FieldSyncService
                 'name' => $organization->name,
                 'is_school' => $isSchool,
                 'zone_key' => $organization->zone ? ManualScanService::zoneKey($organization->zone->name) : null,
+                'zone_code' => $organization->zone->code ?? null,
                 'zone' => $organization->zone->name ?? null,
                 'region_id' => $organization->region_id,
             ],
             'academic_year' => AcademicYear::label($year),
-            'zones' => Zone::query()->get(['name', 'region_id'])->map(fn ($zone) => [
+            'zones' => Zone::query()->get(['name', 'code', 'region_id'])->map(fn ($zone) => [
                 'key' => ManualScanService::zoneKey($zone->name),
+                'code' => $zone->code,
                 'name' => $zone->name,
                 'region_id' => $zone->region_id,
             ])->values(),

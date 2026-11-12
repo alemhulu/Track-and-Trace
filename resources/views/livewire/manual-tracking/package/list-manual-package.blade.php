@@ -11,7 +11,8 @@
             <x-data-table.th scope="col">#</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Package') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Book') }}</x-data-table.th>
-            <x-data-table.th scope="col">{{ __('Subject') }}</x-data-table.th>
+            <x-data-table.th scope="col">{{ __('Zone') }}</x-data-table.th>
+            <x-data-table.th scope="col">{{ __('Cartons') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Books') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Balance') }}</x-data-table.th>
             <x-data-table.th scope="col">{{ __('Status') }}</x-data-table.th>
@@ -30,10 +31,19 @@
                     {{ $package->book->title ?? '-' }}
                 </td>
                 <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
-                    {{ $package->book->subject_name ?? '-' }}
+                    {{ $package->zone->name ?? '-' }}
+                </td>
+                <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
+                    {{ number_format($package->no_of_packages) }}
+                    @if ($package->carton_type)
+                    <div class="text-xs text-gray-500">{{ $package->carton_type }}</div>
+                    @endif
                 </td>
                 <td class="px-5 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-100">
                     {{ number_format($package->total_books) }}
+                    @if ($package->total_teacher_guides)
+                    <div class="text-xs text-gray-500">+ {{ number_format($package->total_teacher_guides) }} TG</div>
+                    @endif
                 </td>
                 <td class="px-5 py-2 whitespace-nowrap text-sm font-semibold text-gray-700 dark:text-gray-100">
                     {{ number_format($package->current_balance) }}
@@ -80,6 +90,29 @@
                                     {{ number_format($package->no_of_packages) }}
                                 </div>
                             </div>
+                            @if ($package->zone)
+                            <div class="p-3 panel-muted">
+                                <div class="text-xs text-gray-500">Zone</div>
+                                <div class="mt-1 font-semibold text-gray-800">{{ $package->zone->name }}{{ $package->region ? ', ' . $package->region->name : '' }}</div>
+                            </div>
+                            @endif
+                            @if ($package->package_qr_code)
+                            <div class="p-3 panel-muted">
+                                <div class="text-xs text-gray-500">Package QR</div>
+                                <div class="mt-1 font-semibold text-gray-800">{{ $package->package_qr_code }}</div>
+                                <div class="text-xs text-gray-500">{{ $package->package_qr_text }}</div>
+                            </div>
+                            @endif
+                            @if ($package->carton_type)
+                            <div class="p-3 panel-muted">
+                                <div class="text-xs text-gray-500">Carton Type</div>
+                                <div class="mt-1 font-semibold text-gray-800">{{ $package->carton_type }}</div>
+                            </div>
+                            <div class="p-3 panel-muted">
+                                <div class="text-xs text-gray-500">Teacher Guides Per Package</div>
+                                <div class="mt-1 font-semibold text-gray-800">{{ number_format($package->teacher_guides_per_package) }}</div>
+                            </div>
+                            @endif
                             <div class="p-3 panel-muted">
                                 <div class="text-xs text-gray-500">Books Per Package</div>
                                 <div class="mt-1 font-semibold text-gray-800">
