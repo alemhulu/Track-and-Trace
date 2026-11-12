@@ -59,7 +59,7 @@ class SortPackages extends Component
             ->where('scanned_at', '>=', $this->sinceDate());
 
         return view('livewire.manual-tracking.scan.sort-packages', [
-            'locationPicker' => $this->location()->picker($this->area),
+            'locationPicker' => $this->location()->picker($this->area, null, $this->organizationId),
             'place' => $place,
             'titles' => ManualBook::query()
                 ->when($place?->region_id, fn ($query) => $query->where(fn ($match) => $match->whereNull('region_id')->orWhere('region_id', $place->region_id)))

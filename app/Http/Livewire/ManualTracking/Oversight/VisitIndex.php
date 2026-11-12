@@ -79,11 +79,15 @@ class VisitIndex extends Component
                 ->with(['school:id,name,zone_id,woreda_id', 'school.zone:id,name', 'school.woreda:id,name', 'visitor:id,name'])
                 ->latest('visited_at')
                 ->paginate(15),
-            // A school's own staff cannot verify it
+            // A school's own staff cannot verify it. Schools are listed for the chosen woreda only,
+            // plus the one already picked, so a national user never loads every school.
             'schools' => Organization::query()
                 ->accessibleBy($actor)
                 ->whereHas('organizationType', fn ($type) => $type->where('name', 'School'))
                 ->when($actor->organization_id, fn ($query) => $query->whereKeyNot($actor->organization_id))
+                ->where(fn ($listed) => $listed
+                    ->when($this->area['woreda_id'] ?? null, fn ($query, $id) => $query->where('woreda_id', $id), fn ($query) => $query->whereRaw('1 = 0'))
+                    ->when($this->schoolId, fn ($query, $id) => $query->orWhere('id', $id)))
                 ->orderBy('name')
                 ->get(['id', 'name']),
             'years' => AcademicYear::options(),

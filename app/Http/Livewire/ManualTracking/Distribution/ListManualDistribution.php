@@ -115,7 +115,7 @@ class ListManualDistribution extends Component
         return view('livewire.manual-tracking.distribution.list-manual-distribution', [
             'distributions' => $distributions,
             'canCreate' => Gate::allows('create', ManualDistribution::class),
-            'locationPicker' => $this->location()->picker($this->area),
+            'locationPicker' => $this->location()->picker($this->area, null, $this->organizationFilter),
             'stats' => $this->stats(),
             'books' => ManualBook::query()->accessibleBy($actor)->orderBy('title')->get(['id', 'title']),
             'placeChosen' => $this->filtersByPlace(),
