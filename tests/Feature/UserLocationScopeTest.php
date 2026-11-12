@@ -87,6 +87,34 @@ class UserLocationScopeTest extends TestCase
             ->assertSee($this->lockedInput('organization_id', $id('school')), false);
     }
 
+    public function test_organizations_are_listed_only_for_the_place_chosen(): void
+    {
+        $p = $this->places;
+        $bureau = Organization::query()->create(['name' => 'Oromia Education Bureau', 'country_id' => $p['country']->id, 'region_id' => $p['oromia']->id]);
+        $zoneOffice = Organization::query()->create(['name' => 'East Shewa Office', 'country_id' => $p['country']->id, 'region_id' => $p['oromia']->id, 'zone_id' => $p['eastShewa']->id]);
+        $ministry = Organization::query()->create(['name' => 'Ministry of Education', 'country_id' => $p['country']->id]);
+        $national = User::factory()->create(['access_level' => User::ACCESS_LEVEL_NATIONAL]);
+        $listed = fn (array $ids) => fn ($organizations) => collect($organizations)->pluck('id')->sort()->values()->all() === collect($ids)->sort()->values()->all();
+
+        // A national manager editing a regional or woreda user loads no organizations at all
+        Livewire::actingAs($national)->test(LocationCascade::class, ['initialAccessLevel' => User::ACCESS_LEVEL_WOREDA])
+            ->assertSet('organizations', []);
+
+        Livewire::actingAs($national)->test(LocationCascade::class, ['initialAccessLevel' => User::ACCESS_LEVEL_ORGANIZATION])
+            ->assertSet('organizations', $listed([$ministry->id]))
+            ->set('regionId', $p['oromia']->id)
+            ->assertSet('organizations', $listed([$bureau->id]))
+            ->set('zoneId', $p['eastShewa']->id)
+            ->assertSet('organizations', $listed([$zoneOffice->id]))
+            ->set('woredaId', $p['adama']->id)
+            ->assertSet('organizations', $listed([$p['school']->id]));
+
+        // Editing a school user lists that school's woreda, with the school selected
+        Livewire::actingAs($national)->test(LocationCascade::class, ['initialAccessLevel' => User::ACCESS_LEVEL_ORGANIZATION, 'initialOrganizationId' => $p['school']->id])
+            ->assertSet('organizationId', $p['school']->id)
+            ->assertSet('organizations', $listed([$p['school']->id]));
+    }
+
     public function test_only_the_fields_the_access_level_needs_are_shown(): void
     {
         $shown = [

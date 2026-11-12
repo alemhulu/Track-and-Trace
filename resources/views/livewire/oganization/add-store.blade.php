@@ -4,12 +4,16 @@
         <x-form.card function="addStore" can="warehouses.create" title="Add New Store To Wearhouse">
             <div>
                 <x-jet-label for="organizaton_id" value=" {{__('Organization')}}" />
+                <x-jet-input type="search" wire:model.debounce.400ms="organizationSearch" placeholder="Type part of the organization's name" class="block w-full mb-2" />
                 <x-form.select wire:model="organizaton_id" id="organizaton_id">
-                    <option value=""> {{__('select') }}</option>
+                    <option value=""> {{ trim($organizationSearch) === '' && ! $organizaton_id ? __('Search above to list organizations') : __('select') }}</option>
                     @foreach ($organizations as $organization)
                     <option value="{{ $organization->id }}">{{ $organization->name }}</option>
                     @endforeach
                 </x-form.select>
+                @if ($moreOrganizations)
+                <p class="mt-1 text-xs text-slate-500">{{ __('Showing the first 50 matches; type more of the name to narrow them.') }}</p>
+                @endif
                 <x-jet-input-error for="organizaton_id" alert="Select organization" />
             </div>
 
@@ -17,7 +21,7 @@
                 <x-jet-label for="store_id" value=" {{__('Store')}}" />
                 <x-form.select wire:model="store_id" id="store_id">
                     <option value=""> {{__('select') }}</option>
-                    @foreach ($stores as $store)
+                    @foreach ($branches as $store)
                     <option value="{{ $store->branch }}">{{ __('Branch') }} {{ $store->branch }}</option>
                     @endforeach
                 </x-form.select>
@@ -56,7 +60,7 @@
         </x-slot>
 
         <x-slot name="tableRows">
-            @php $i = 1; @endphp
+            @php $i = method_exists($stores, 'firstItem') ? (int) $stores->firstItem() : 1; @endphp
             @forelse($stores as $record)
             <x-data-table.tr>
                 <td class="px-5 py-2 whitespace-nowrap">
@@ -94,7 +98,9 @@
             <x-data-table.empty colspan=5 />
             @endforelse
         </x-slot>
-        {{-- {{ $wearhouses->links() }} --}}
+        @if (method_exists($stores, 'links'))
+        <div class="px-5 py-3">{{ $stores->links() }}</div>
+        @endif
     </x-form.table>
 
     <livewire:oganization.modal.edit-wearhouse>

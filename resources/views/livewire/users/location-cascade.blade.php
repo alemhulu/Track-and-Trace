@@ -96,6 +96,8 @@
             </select>
             @if ($this->isLocked('organization_id'))
             <input type="hidden" name="organization_id" value="{{ $organizationId }}">
+            @else
+            <p class="mt-1 text-xs text-slate-500">Lists the organizations of the place chosen above: pick a woreda for its schools.</p>
             @endif
             <x-input-error for="organization_id" />
         </div>

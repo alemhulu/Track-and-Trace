@@ -31,15 +31,19 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
                         <x-jet-label value="From wearhouse" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
+                            <x-jet-input type="search" wire:model.debounce.400ms="fromSearch" placeholder="Type part of the organization's name" class="block w-full max-w-md mb-2" />
                             <x-form.select wire:model="from_warehouse" id="from_warehouse" class="max-w-md">
-                                <option value="">select</option>
-                                @foreach ($warehouses as $warehouse)
+                                <option value="">{{ trim($fromSearch) === '' && ! $from_warehouse ? 'Search above to list warehouses' : 'select' }}</option>
+                                @foreach ($fromWarehouses as $warehouse)
                                 <option value="{{ $warehouse->id }}">
                                     Branch {{ $warehouse->branch }} -
                                     {{ optional($warehouse->organization)->name ?? 'N/A' }}
                                 </option>
                                 @endforeach
                             </x-form.select>
+                            @if ($moreFrom)
+                            <p class="mt-1 text-xs text-slate-500">Showing the first 50 matches; type more of the name to narrow them.</p>
+                            @endif
                             <x-jet-input-error for="from_warehouse" alert="From Warehouse" />
                         </div>
                     </div>
@@ -47,15 +51,19 @@
                     <div class="sm:grid sm:grid-cols-3 sm:gap-4 sm:items-start sm:pt-5">
                         <x-jet-label value="To wearhouse" />
                         <div class="mt-1 sm:mt-0 sm:col-span-2">
+                            <x-jet-input type="search" wire:model.debounce.400ms="toSearch" placeholder="Type part of the organization's name" class="block w-full max-w-md mb-2" />
                             <x-form.select wire:model="to_warehouse" id="to_warehouse" class="max-w-md">
-                                <option value="">select</option>
-                                @foreach ($warehouses as $warehouse)
+                                <option value="">{{ trim($toSearch) === '' && ! $to_warehouse ? 'Search above to list warehouses' : 'select' }}</option>
+                                @foreach ($toWarehouses as $warehouse)
                                 <option value="{{ $warehouse->id }}">
                                     Branch {{ $warehouse->branch }} -
                                     {{ optional($warehouse->organization)->name ?? 'N/A' }}
                                 </option>
                                 @endforeach
                             </x-form.select>
+                            @if ($moreTo)
+                            <p class="mt-1 text-xs text-slate-500">Showing the first 50 matches; type more of the name to narrow them.</p>
+                            @endif
                             <x-jet-input-error for="to_warehouse" alert="To Warehouse" />
                         </div>
                     </div>

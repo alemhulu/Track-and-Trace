@@ -19,7 +19,12 @@ class AddRoute extends Component
     public $from_warehouse;
     public $to_warehouse;
     public $is_active = 1;
-    public $warehouses = [];
+    // Warehouses are searched by organization name: there are tens of thousands, and listing them
+    // all in both selects exhausted PHP's memory
+    public $fromSearch = '';
+    public $toSearch = '';
+
+    private const OPTION_LIMIT = 50;
 
     protected function rules()
     {
@@ -39,15 +44,6 @@ class AddRoute extends Component
 
     public function mount()
     {
-        $actor = Auth::user();
-
-        $warehouseQuery = WareHouse::query()->with('organization')->orderBy('id');
-        if ($actor) {
-            $warehouseQuery->accessibleBy($actor);
-        }
-
-        $this->warehouses = $warehouseQuery->get();
-
         $editId = request()->query('edit');
         if ($editId) {
             $this->loadRouteForEdit($editId);
@@ -164,7 +160,32 @@ class AddRoute extends Component
 
     public function render()
     {
-        return view('livewire.route.add-route')->extends('main.route.index');
+        $from = $this->warehouseOptions($this->fromSearch, $this->from_warehouse);
+        $to = $this->warehouseOptions($this->toSearch, $this->to_warehouse);
+
+        return view('livewire.route.add-route', [
+            'fromWarehouses' => $from->take(self::OPTION_LIMIT),
+            'toWarehouses' => $to->take(self::OPTION_LIMIT),
+            'moreFrom' => $from->count() > self::OPTION_LIMIT,
+            'moreTo' => $to->count() > self::OPTION_LIMIT,
+        ])->extends('main.route.index');
+    }
+
+    // Warehouses whose organization's name matches the search, and the one already chosen
+    private function warehouseOptions($search, $chosenId)
+    {
+        $actor = Auth::user();
+        $search = trim((string) $search);
+
+        return WareHouse::query()
+            ->when($actor, fn ($query) => $query->accessibleBy($actor))
+            ->where(fn ($query) => $query
+                ->when($search !== '', fn ($match) => $match->whereHas('organization', fn ($organization) => $organization->where('name', 'like', "%{$search}%")), fn ($match) => $match->whereRaw('1 = 0'))
+                ->when($chosenId, fn ($chosen) => $chosen->orWhere('ware_houses.id', $chosenId)))
+            ->with('organization:id,name')
+            ->orderBy('id')
+            ->limit(self::OPTION_LIMIT + 1)
+            ->get(['id', 'branch', 'organization_id']);
     }
 
     protected function permissionMap(): array

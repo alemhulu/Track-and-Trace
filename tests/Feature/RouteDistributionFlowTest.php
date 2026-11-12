@@ -70,6 +70,23 @@ class RouteDistributionFlowTest extends TestCase
         $this->assertSame(1, DistributionRoute::count());
     }
 
+    public function test_route_form_lists_warehouses_only_when_searched(): void
+    {
+        $printer = $this->createWarehouse('Printer Warehouse', 101);
+        $this->createWarehouse('MoE Warehouse', 202);
+
+        $component = Livewire::test(AddRoute::class);
+        $this->assertSame([], $component->viewData('fromWarehouses')->pluck('id')->all());
+
+        $component->set('fromSearch', 'print');
+        $this->assertSame([$printer->id], $component->viewData('fromWarehouses')->pluck('id')->all());
+        $this->assertSame([], $component->viewData('toWarehouses')->pluck('id')->all());
+
+        // The chosen warehouse stays listed after the search is cleared
+        $component->set('from_warehouse', $printer->id)->set('fromSearch', '');
+        $this->assertSame([$printer->id], $component->viewData('fromWarehouses')->pluck('id')->all());
+    }
+
     public function test_distribution_can_be_updated_with_reordered_steps(): void
     {
         $warehouseA = $this->createWarehouse('Org A', 301);
