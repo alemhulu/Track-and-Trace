@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Country;
 use App\Models\Organization;
 use App\Models\Region;
 use App\Models\User;
@@ -34,7 +33,7 @@ class UserController extends Controller
         $filterOptions = [
             'accessLevels' => config('access_hierarchy.levels', []),
             'roles' => Role::query()->orderBy('name')->pluck('name')->all(),
-            // Same region scoping as formContext(), without loading the other location lists.
+            // Scoped to the manager's region, without loading the other location lists.
             'regions' => Region::query()
                 ->when(! $actor->hasNationalAccess() && ! empty($actor->country_id), fn ($query) => $query->where('country_id', $actor->country_id))
                 ->when(! $actor->hasNationalAccess() && ! empty($actor->region_id), fn ($query) => $query->where('id', $actor->region_id))
@@ -83,10 +82,8 @@ class UserController extends Controller
         $roles = $actor->assignableRoles()->pluck('name')->all();
         $keptRoles = [];
 
-        return view('users.create', array_merge(
-            compact('roles', 'keptRoles'),
-            $this->formContext($actor)
-        ));
+        // The location picker (Users\LocationCascade) loads only the places it needs
+        return view('users.create', compact('roles', 'keptRoles'));
     }
 
     /**
@@ -143,10 +140,7 @@ class UserController extends Controller
         // Roles the user holds that this manager cannot give: shown, but left as they are
         $keptRoles = array_values(array_diff(array_keys($userRole), $roles));
 
-        return view('users.edit', array_merge(
-            compact('user', 'roles', 'userRole', 'keptRoles'),
-            $this->formContext($actor)
-        ));
+        return view('users.edit', compact('user', 'roles', 'userRole', 'keptRoles'));
     }
 
     /**
@@ -434,60 +428,6 @@ class UserController extends Controller
     private function failValidation(string $field, string $message): void
     {
         throw ValidationException::withMessages([$field => $message]);
-    }
-
-    private function formContext(User $actor): array
-    {
-        $countries = Country::query();
-        $regions = Region::query();
-        $zones = Zone::query();
-        $woredas = Woreda::query();
-        $organizations = Organization::query()->select('id', 'name', 'country_id', 'region_id', 'zone_id', 'woreda_id');
-
-        if (!$actor->hasNationalAccess()) {
-            if (!empty($actor->country_id)) {
-                $countries->where('id', $actor->country_id);
-                $regions->where('country_id', $actor->country_id);
-                $zones->where('country_id', $actor->country_id);
-                $woredas->whereHas('zone', function ($zoneQuery) use ($actor) {
-                    $zoneQuery->where('country_id', $actor->country_id);
-                });
-                $organizations->where('country_id', $actor->country_id);
-            }
-
-            if (!empty($actor->region_id)) {
-                $regions->where('id', $actor->region_id);
-                $zones->where('region_id', $actor->region_id);
-                $woredas->whereHas('zone', function ($zoneQuery) use ($actor) {
-                    $zoneQuery->where('region_id', $actor->region_id);
-                });
-                $organizations->where('region_id', $actor->region_id);
-            }
-
-            if (!empty($actor->zone_id)) {
-                $zones->where('id', $actor->zone_id);
-                $woredas->where('zone_id', $actor->zone_id);
-                $organizations->where('zone_id', $actor->zone_id);
-            }
-
-            if (!empty($actor->woreda_id)) {
-                $woredas->where('id', $actor->woreda_id);
-                $organizations->where('woreda_id', $actor->woreda_id);
-            }
-
-            if (!empty($actor->organization_id)) {
-                $organizations->where('id', $actor->organization_id);
-            }
-        }
-
-        return [
-            'accessLevels' => config('access_hierarchy.levels', []),
-            'countries' => $countries->orderBy('name')->get(),
-            'regions' => $regions->orderBy('name')->get(),
-            'zones' => $zones->orderBy('name')->get(),
-            'woredas' => $woredas->orderBy('name')->get(),
-            'organizations' => $organizations->orderBy('name')->get(),
-        ];
     }
 
     /**
