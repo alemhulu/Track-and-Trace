@@ -158,9 +158,9 @@ class ManualStockIndex extends Component
 
         return view('livewire.manual-tracking.stock.manual-stock-index', [
             'balances' => $balances,
-            'locationPicker' => $this->location()->picker($this->area),
+            'locationPicker' => $this->location()->picker($this->area, null, $this->organizationFilter),
             'books' => $this->titlesFor($this->area['region_id'] ?? '')->orderBy('title')->get(['id', 'title']),
-            'openingPicker' => $this->location()->picker($this->openingArea, $this->openingHolders($this->openingArea)),
+            'openingPicker' => $this->location()->picker($this->openingArea, $this->openingHolders($this->openingArea), $this->opening['organization_id'] ?? null),
             'openingBooks' => $this->openingTitles()->orderBy('title')->get(['id', 'title']),
             'openingStanding' => $standing = $this->openingStanding(),
             'openingRoom' => $this->openingRoom($standing),

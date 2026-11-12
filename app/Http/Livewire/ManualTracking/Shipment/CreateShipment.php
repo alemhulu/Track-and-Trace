@@ -221,8 +221,8 @@ class CreateShipment extends Component
 
         // Shipments stay inside the user's own area, except from printers and hubs, which deliver anywhere
         return view('livewire.manual-tracking.shipment.create-shipment', [
-            'sourcePicker' => $this->sourceScope()->picker($this->source, $this->sources()),
-            'destinationPicker' => $this->destinationScope()->picker($this->destination, $destinations),
+            'sourcePicker' => $this->sourceScope()->picker($this->source, $this->sources(), $this->from_organization_id),
+            'destinationPicker' => $this->destinationScope()->picker($this->destination, $destinations, $this->to_organization_id),
             'openDestinations' => $openDestinations,
             'titleRegion' => ($titleRegion = $this->titleRegion())
                 ? ['name' => \App\Models\Region::query()->whereKey($titleRegion['id'])->value('name'), 'side' => $titleRegion['side']]

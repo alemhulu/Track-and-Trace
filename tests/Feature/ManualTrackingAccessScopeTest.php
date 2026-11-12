@@ -112,7 +112,9 @@ class ManualTrackingAccessScopeTest extends TestCase
         Livewire::actingAs($store)
             ->test(CreateShipment::class)
             ->assertSet('from_organization_id', $printer->id)
-            ->assertViewHas('destinationPicker', fn ($picker) => $picker['locked'] === [] && $picker['organizations']->contains('id', $this->places['amharaBureau']->id));
+            ->assertViewHas('destinationPicker', fn ($picker) => $picker['locked'] === [])
+            ->set('destination.region_id', (string) $this->places['amharaBureau']->region_id)
+            ->assertViewHas('destinationPicker', fn ($picker) => $picker['organizations']->contains('id', $this->places['amharaBureau']->id));
     }
 
     public function test_titles_from_another_region_cannot_be_sent(): void
@@ -174,7 +176,7 @@ class ManualTrackingAccessScopeTest extends TestCase
     {
         Livewire::actingAs($this->zoneUser())
             ->test(CreateShipment::class)
-            ->set('source.region_id', (string) $this->places['amhara']->id)
+            ->set('source.region_id', (string) $this->places['amharaBureau']->region_id)
             ->assertSet('source.region_id', (string) $this->places['oromia']->id)
             ->set('destination.zone_id', (string) $this->places['jimma']->id)
             ->assertSet('destination.zone_id', (string) $this->places['eastShewa']->id)

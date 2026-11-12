@@ -23,7 +23,7 @@
             <div class="w-64">
                 <x-jet-label for="visit-school" value="Visit a school" />
                 <x-form.select wire:model.defer="schoolId" id="visit-school">
-                    <option value="">Choose school</option>
+                    <option value="">{{ empty($area['woreda_id']) ? 'Choose a woreda below first' : 'Choose school' }}</option>
                     @foreach ($schools as $school)
                     <option value="{{ $school->id }}">{{ $school->name }}</option>
                     @endforeach

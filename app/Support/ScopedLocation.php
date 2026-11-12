@@ -163,17 +163,49 @@ class ScopedLocation
     }
 
     /**
-     * Everything the location picker component needs.
+     * Everything the location picker component needs. The organization list holds only the
+     * place chosen so far (a woreda's organizations, or a zone's, region's or the national
+     * level's own offices) plus the selected or locked organization, so a national user
+     * never loads every school.
      */
-    public function picker(array $area, ?Builder $organizations = null): array
+    public function picker(array $area, ?Builder $organizations = null, $selected = null): array
     {
+        $locked = $this->locked();
+        $keep = array_values(array_filter([$locked['organization_id'] ?? null, $selected], fn ($id) => filled($id)));
+
+        $list = ($organizations ?? $this->organizations($area))
+            ->where(function ($query) use ($area, $keep) {
+                $query->where(fn ($level) => $this->atPlace($level, $area));
+
+                // The organization already chosen stays selectable
+                if ($keep) {
+                    $query->orWhereIn('id', $keep);
+                }
+            })
+            ->orderBy('name')
+            ->get(['id', 'name']);
+
         return [
             'area' => $area,
-            'locked' => $this->locked(),
+            'locked' => $locked,
             'regions' => $this->regions(),
             'zones' => $this->zones($area),
             'woredas' => $this->woredas($area),
-            'organizations' => ($organizations ?? $this->organizations($area))->orderBy('name')->get(['id', 'name']),
+            'organizations' => $list,
+            'organizationHint' => empty($area['woreda_id']) && ! array_key_exists('organization_id', $locked)
+                ? 'Only offices at the chosen level are listed. Choose a woreda to see its schools.'
+                : null,
         ];
+    }
+
+    // Organizations that sit at the deepest level chosen, not below it
+    private function atPlace($query, array $area): void
+    {
+        match (true) {
+            ! empty($area['woreda_id']) => $query->where('woreda_id', $area['woreda_id']),
+            ! empty($area['zone_id']) => $query->where('zone_id', $area['zone_id'])->whereNull('woreda_id'),
+            ! empty($area['region_id']) => $query->where('region_id', $area['region_id'])->whereNull('zone_id'),
+            default => $query->whereNull('region_id'),
+        };
     }
 }

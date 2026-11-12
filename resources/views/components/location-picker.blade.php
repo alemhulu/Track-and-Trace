@@ -48,6 +48,9 @@
         <option value="{{ $option->id }}">{{ $option->name }}</option>
         @endforeach
     </x-form.select>
+    @if (! empty($picker['organizationHint']))
+    <p class="mt-1 text-xs text-gray-500">{{ $picker['organizationHint'] }}</p>
+    @endif
     {{ $slot }}
 </div>
 @endif
